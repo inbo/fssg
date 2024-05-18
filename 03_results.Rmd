@@ -33,63 +33,40 @@ comp_obs <- compress(cth_file = data)
 ```
 
 ```{r warning=FALSE}
-gate_onder <- read_excel("./data/extern/valves.xlsx", sheet = 1)
-gate_onder <- gate_onder %>%
-  rename(date_time = 'Date Time',
-         opening_onder = 'Valve 1') %>%
-  dplyr::select(date_time, opening_onder)
-gate_onder$date_time <- round_date(ymd_hms(gate_onder$date_time),unit="1 second")
+gate_onder <- read_excel("./data/extern/valves/valves2023.xlsx", sheet = 1)[,c(2,3)]
+gate_boven <- read_excel("./data/extern/valves/valves2023.xlsx", sheet = 2)[,c(2,3)]
 
-gate_boven <- read_excel("./data/extern/valves.xlsx", sheet = 2)
-gate_boven <- gate_boven %>%
-  rename(date_time = 'Date time',
-         opening_boven = 'Value') %>%
-  dplyr::select(date_time, opening_boven)
-gate_boven$date_time <- round_date(ymd_hms(gate_boven$date_time),unit="1 second")
-```
-
-```{r}
-#Determine the time interval by determining the earliest and latest measurement
-start<-min(c(min(gate_onder$date_time,na.rm=TRUE),
-             min(gate_boven$date_time,na.rm=TRUE)
-             ))
-stop<-max(c(max(gate_onder$date_time,na.rm=TRUE),
-            max(gate_boven$date_time,na.rm=TRUE)
-            ))
-seq=as.data.frame(seq(start,stop,by=1)) #Time interval with steps of one second
-colnames(seq)="date_time"
-gate <- left_join(seq,gate_onder[which(duplicated(gate_onder$date_time)==FALSE),], by=c("date_time")) #Merge all data with this time interval
-gate <- left_join(gate,gate_boven[which(duplicated(gate_boven$date_time)==FALSE),], by=c("date_time")) #Merge all data with this time interval
-gate$opening_onder<-na_interpolation(gate$opening_onder,option ="linear")
-gate$opening_boven<-na_interpolation(gate$opening_boven,option ="linear")
-gate$open_onder=FALSE
-gate$open_onder[which(gate$opening_onder>2.55)]=TRUE
-gate$open_boven=FALSE 
-gate$open_boven[which(gate$opening_boven>2.55)]=TRUE
-```
-
-```{r}
-gate$open_onder_lag<-dplyr::lag(gate$open_onder)
-open_onder<-which(gate$open_onder!=gate$open_onder_lag & gate$open_onder==FALSE & gate$open_onder_lag==TRUE)
-gate$onder_periode=NA
-k=1
-for (i in open_onder-1){
-  gate$onder_periode[i]=k
-  k=k+1
+gate_cleaning<-function(data){
+  colnames(data)<-c("date_time","opening")
+  data$date_time <- round_date(ymd_hms(data$date_time),unit="1 second")
+  start<-min(data$date_time,na.rm=TRUE)
+  stop<-max(data$date_time,na.rm=TRUE)
+  seq=as.data.frame(seq(start,stop,by=1)) #Time interval with steps of one second
+  colnames(seq)="date_time"
+  gate <- left_join(seq,data[which(duplicated(data$date_time)==FALSE),], by=c("date_time")) 
+  gate$opening<-na_interpolation(gate$opening,option ="linear")
+  gate$open=FALSE
+  gate$open[which(gate$opening>2.55)]=TRUE
+  gate$open_lag<-dplyr::lag(gate$open)
+  open<-which(gate$open!=gate$open_lag & gate$open==TRUE & gate$open_lag==TRUE)
+  gate$periode=NA
+  k=1
+  for (i in open-1){
+    gate$periode[i]=k
+    k=k+1
+  }
+  gate <- gate %>% fill(periode, .direction = 'up') %>% dplyr::select(-open_lag,-open)
+  gate$since_open<-with(rle(gate$periode), sequence(lengths))
+  gate <- gate %>% dplyr::select(-periode)
+  gate$since_open[which(gate$open==TRUE)]=0
+  return(gate)
 }
-gate <- gate %>% fill(onder_periode, .direction = 'up') %>% dplyr::select(-open_onder_lag)
-gate$since_onder_event<-with(rle(gate$onder_periode), sequence(lengths))
-gate$since_onder_event[which(gate$open_onder==TRUE)]=0
+  
+gate_onder<-gate_cleaning(gate_onder)
+colnames(gate_onder)=c("date_time","opening_onder","since_open_onder")
+gate_boven<-gate_cleaning(gate_boven)
+colnames(gate_boven)=c("date_time","opening_boven","since_open_boven")
 
-gate$open_boven_lag<-dplyr::lag(gate$open_boven)
-open_boven<-which(gate$open_boven!=gate$open_boven_lag & gate$open_boven==FALSE & gate$open_boven_lag==TRUE)
-gate$boven_periode=NA
-k=1
-for (i in open_boven-1){
-  gate$boven_periode[i]=k
-  k=k+1
-}
-gate <- gate %>% fill(boven_periode, .direction = 'up') %>% dplyr::select(-open_boven_lag)
-gate$since_boven_event<-with(rle(gate$boven_periode), sequence(lengths))
-gate$since_boven_event[which(gate$open_boven==TRUE)]=0
+gate<-inner_join(gate_onder,gate_boven,by="date_time")
 ```
+

@@ -48,10 +48,10 @@ gate_cleaning<-function(data){
   gate$open=FALSE
   gate$open[which(gate$opening>2.55)]=TRUE
   gate$open_lag<-dplyr::lag(gate$open)
-  open<-which(gate$open!=gate$open_lag & gate$open==TRUE & gate$open_lag==TRUE)
+  open<-which(gate$open!=gate$open_lag & gate$open==TRUE)
   gate$periode=NA
   k=1
-  for (i in open-1){
+  for (i in open){
     gate$periode[i]=k
     k=k+1
   }

@@ -91,3 +91,16 @@ for (i in open_boven-1){
 gate <- gate %>% fill(boven_periode, .direction = 'up') %>% dplyr::select(-open_boven_lag)
 gate$since_boven_event<-with(rle(gate$boven_periode), sequence(lengths))
 ```
+
+```{r}
+gate$since_onder_open<-NA
+gate$since_boven_open<-NA
+k=0
+l=0
+for (j in 1:nrow(gate)){
+  if (gate$open_onder[j]==FALSE){k=k+1} else{k=0}
+  gate$since_onder_open[j]=k
+  if (gate$open_boven[j]==FALSE){l=l+1} else{l=0}
+  gate$since_boven_open[j]=l
+}
+```

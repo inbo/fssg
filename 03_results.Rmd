@@ -16,12 +16,13 @@ for (i in 1:length(folders)){
     file<-as.data.frame(file[substr(file$V1, 0, 1) == "D", ])
     file<-as.data.frame(str_split_fixed(file[,1], "\\s+", 12))[,c(2,3,6)]
     colnames(file)<-c("Date","Time","tag_code")
-    file$event_date_time_value<-as.POSIXct(paste(file$Date,file$Time),format="%Y-%m-%d %H:%M:%OS")
+    file$event_date_time_value<-round_date(as.POSIXct(paste(file$Date,file$Time),format="%Y-%m-%d %H:%M:%OS",tz="GMT"),unit="1 second")
     file<-file %>% dplyr::select(-Date,-Time)
     file$event_site_code_value<-sub("\\s+[^ ]+$", "", files[j])
     if (i==1 & j==1){data=file} else{data=rbind(data,file)}
   }
 }
+remove(dir1,dir2,dir3,file,folders,files)
 data$event_site_code_value=tolower(data$event_site_code_value)
 data$antenna_id="01"
 data$antenna_group_configuration_value=100
@@ -48,25 +49,45 @@ gate_cleaning<-function(data){
   gate$open=FALSE
   gate$open[which(gate$opening>2.55)]=TRUE
   gate$open_lag<-dplyr::lag(gate$open)
-  open<-which(gate$open!=gate$open_lag & gate$open==TRUE)
+  open<-which(gate$open!=gate$open_lag & gate$open==TRUE & gate$open_lag==FALSE)
   gate$periode=NA
   k=1
   for (i in open){
     gate$periode[i]=k
     k=k+1
   }
-  gate <- gate %>% fill(periode, .direction = 'up') %>% dplyr::select(-open_lag,-open)
-  gate$since_open<-with(rle(gate$periode), sequence(lengths))
+  gate <- gate %>% fill(periode, .direction = 'up') %>% dplyr::select(-open_lag,-open,-opening)
+  gate$since_open<-with(rle(gate$periode), sequence(lengths)-1)
   gate <- gate %>% dplyr::select(-periode)
-  gate$since_open[which(gate$open==TRUE)]=0
   return(gate)
 }
   
 gate_onder<-gate_cleaning(gate_onder)
-colnames(gate_onder)=c("date_time","opening_onder","since_open_onder")
+gate_onder$node<-"vdz onder"
 gate_boven<-gate_cleaning(gate_boven)
-colnames(gate_boven)=c("date_time","opening_boven","since_open_boven")
+gate_boven$node<-"vdz boven"
 
-gate<-inner_join(gate_onder,gate_boven,by="date_time")
+gate<-rbind(gate_onder,gate_boven)
+remove(gate_onder,gate_boven)
+
+comp_obs<-left_join(comp_obs,gate,by=join_by(min_det==date_time,node==node))
 ```
+
+## Aantal individuen (unieke tags) op onder en boven antenne gedetecteerd
+
+```{r}
+comp_obs %>% 
+  group_by(node) %>%
+  summarise(unieke_tags = n_distinct(tag_code))
+```
+
+## Tijdstip eerste detectie per vis op onder en boven antenne
+
+```{r}
+comp_obs %>% 
+  group_by(node,tag_code) %>%
+  summarise(eerste_detectie=min(min_det))
+```
+
+## voor alle boven gedetecteerde vissen: tijd tussen laatste detectie onder en eerste boven + frequentieverdeling per 10'
 

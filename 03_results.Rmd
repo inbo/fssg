@@ -1,0 +1,70 @@
+# Results
+
+```{r}
+source("./code/not_functions/libraries.R")
+```
+
+```{r}
+dir1<-"./data/extern/pit/"
+folders<-list.files(path=dir1)
+for (i in 1:length(folders)){
+  dir2<-paste0(dir1,folders[i],"/")
+  files<-list.files(path=dir2)
+  for (j in 1:length(files)){
+    dir3<-paste0(dir2,files[j])
+    file<-read.table(dir3,header=FALSE,sep='\t')
+    file<-as.data.frame(file[substr(file$V1, 0, 1) == "D", ])
+    file<-as.data.frame(str_split_fixed(file[,1], "\\s+", 12))[,c(2,3,6)]
+    colnames(file)<-c("Date","Time","tag_code")
+    file$event_date_time_value<-as.POSIXct(paste(file$Date,file$Time),format="%Y-%m-%d %H:%M:%OS")
+    file<-file %>% dplyr::select(-Date,-Time)
+    file$event_site_code_value<-sub("\\s+[^ ]+$", "", files[j])
+    if (i==1 & j==1){data=file} else{data=rbind(data,file)}
+  }
+}
+data$event_site_code_value=tolower(data$event_site_code_value)
+data$antenna_id="01"
+data$antenna_group_configuration_value=100
+data<-data[startsWith(data$tag_code,"9")==TRUE,]
+```
+
+```{r}
+comp_obs <- compress(cth_file = data)
+```
+
+```{r warning=FALSE}
+gate_onder <- read_excel("./data/extern/valves.xlsx", sheet = 1)
+gate_onder <- gate_onder %>%
+  rename(date_time = 'Date Time',
+         opening_onder = 'Valve 1') %>%
+  dplyr::select(date_time, opening_onder)
+gate_onder$date_time <- round_date(ymd_hms(gate_onder$date_time),unit="1 second")
+
+gate_boven <- read_excel("./data/extern/valves.xlsx", sheet = 2)
+gate_boven <- gate_boven %>%
+  rename(date_time = 'Date time',
+         opening_boven = 'Value') %>%
+  dplyr::select(date_time, opening_boven)
+gate_boven$date_time <- round_date(ymd_hms(gate_boven$date_time),unit="1 second")
+```
+
+```{r}
+#Determine the time interval by determining the earliest and latest measurement
+start<-min(c(min(gate_onder$date_time,na.rm=TRUE),
+             min(gate_boven$date_time,na.rm=TRUE)
+             ))
+stop<-max(c(max(gate_onder$date_time,na.rm=TRUE),
+            max(gate_boven$date_time,na.rm=TRUE)
+            ))
+seq=as.data.frame(seq(start,stop,by=1)) #Time interval with steps of one second
+colnames(seq)="date_time"
+gate <- left_join(seq,gate_onder[which(duplicated(gate_onder$date_time)==FALSE),], by=c("date_time")) #Merge all data with this time interval
+gate <- left_join(gate,gate_boven[which(duplicated(gate_boven$date_time)==FALSE),], by=c("date_time")) #Merge all data with this time interval
+gate$opening_onder<-na_interpolation(gate$opening_onder,option ="linear")
+gate$opening_boven<-na_interpolation(gate$opening_boven,option ="linear")
+gate$open_onder=FALSE
+gate$open_onder[which(gate$opening_onder>2.55)]=TRUE
+gate$open_boven=FALSE 
+gate$open_boven[which(gate$opening_boven>2.55)]=TRUE
+```
+

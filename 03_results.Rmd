@@ -1,6 +1,6 @@
 # Resultaten
 
-```{r}
+```{r warning=FALSE, include=FALSE}
 source("./code/not_functions/libraries.R")
 source("./code/functions/function_gate_cleaning.R")
 ```
@@ -103,46 +103,124 @@ comp_obs$tag_code<-gsub("_","",comp_obs$tag_code)
 comp_obs<-left_join(comp_obs,metadata,by="tag_code")
 ```
 
+## Proef 0 (mei 2023)
+
 ```{r}
-comp_obs<-comp_obs[which(format(as.Date(comp_obs$min_det, format="%d/%m/%Y"),"%Y")=="2024"),]
+comp_obs_proef0<-comp_obs[which(format(as.Date(comp_obs$min_det, format="%d/%m/%Y"),"%Y")=="2023"),]
 ```
 
-## Aantal individuen (unieke tags) op onder en boven antenne gedetecteerd
-
 ```{r}
-comp_obs %>% 
+comp_obs_proef0 %>% 
   group_by(node) %>%
-  summarise(unieke_tags = n_distinct(tag_code))
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  kable(caption="Aantal individuen (unieke tags) op onder en boven antenne gedetecteerd")
 ```
 
-## Tijdstip eerste detectie per vis op onder en boven antenne
-
 ```{r}
-comp_obs %>% 
+comp_obs_proef0 %>% 
   group_by(node,tag_code) %>%
-  summarise(eerste_detectie=min(min_det))
+  summarise(eerste_detectie=min(min_det)) %>%
+  pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
+  kable(caption="Tijdstip eerste detectie per vis op onder en boven antenne",longtable=TRUE)
 ```
 
-## Voor alle boven gedetecteerde vissen: tijd tussen laatste detectie onder en eerste boven + frequentieverdeling per 10'
-
-Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. 
-
 ```{r}
-tags_boven=unique(comp_obs$tag_code[which(comp_obs$node=="vdz_boven")])
+tags_boven=unique(comp_obs_proef0$tag_code[which(comp_obs_proef0$node=="vdz_boven")])
 
-comp_obs %>% 
+comp_obs_proef0 %>% 
   dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
-  dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening)
+  mutate(travel_time=round(travel_time),
+         since_open=round(since_open),
+         opening=round(opening,digits=2)) %>% 
+  dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening) %>% 
+  kable(caption="Voor alle boven gedetecteerde vissen worden volgende zaken opgelijst: travel time (in minuten) is de tijd tussen de laatste detectie onder en eerste boven. Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. Verder wordt de eerste (min det) en laatste (max det) detectie op de bovenste antenne tijdens de betreffende cyclus weergegeven. since open geeft de tijd aan tussen het moment dat de bovenste schuif als open wordt beschouwd en de eerste detectie op de bovenste schuif. opening geeft weer wat de opening van de bovenste schuif was op het moment van de eerste detectie op de bovenste schuif (in centimeters).",longtable=TRUE) %>% 
+  kable_styling(latex_options="scale_down")
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2023-05-01") & date_time<as.POSIXct("2023-05-25") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef0 %>% dplyr::filter(min_det>as.POSIXct("2023-05-1") & min_det<as.POSIXct("2023-05-25") & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2023-05-01") & date_time<as.POSIXct("2023-05-25") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef0 %>% dplyr::filter(min_det>as.POSIXct("2023-05-1") & min_det<as.POSIXct("2023-05-25") & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+## Proef 1 (mei 2024)
+
+```{r}
+comp_obs_proef1<-comp_obs[which(format(as.Date(comp_obs$min_det, format="%d/%m/%Y"),"%Y")=="2024"),]
 ```
 
 ```{r}
-comp_obs_plot<-comp_obs %>% dplyr::filter(min_det>as.POSIXct("2024-05-1") & min_det<as.POSIXct("2024-05-25") & node=="vdz_boven")
-gate_plot<- gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-01") & date_time<as.POSIXct("2024-05-25") & node=="vdz_boven") 
-
-g<-ggplot(gate_plot,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs_plot,aes(xintercept = min_det),colour="red",size=1)
-g
-#ggplotly(g)
+comp_obs_proef1 %>% 
+  group_by(node) %>%
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  kable(caption="Aantal individuen (unieke tags) op onder en boven antenne gedetecteerd")
 ```
 
+```{r}
+comp_obs_proef1 %>% 
+  group_by(node,tag_code) %>%
+  summarise(eerste_detectie=min(min_det)) %>%
+  pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
+  kable(caption="Tijdstip eerste detectie per vis op onder en boven antenne",longtable=TRUE)
+```
+
+```{r}
+tags_boven=unique(comp_obs_proef1$tag_code[which(comp_obs_proef1$node=="vdz_boven")])
+
+comp_obs_proef1 %>% 
+  dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+  mutate(travel_time=round(travel_time),
+         since_open=round(since_open),
+         opening=round(opening,digits=2)) %>% 
+  dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening) %>% 
+  kable(caption="Voor alle boven gedetecteerde vissen worden volgende zaken opgelijst: travel time (in minuten) is de tijd tussen de laatste detectie onder en eerste boven. Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. Verder wordt de eerste (min det) en laatste (max det) detectie op de bovenste antenne tijdens de betreffende cyclus weergegeven. since open geeft de tijd aan tussen het moment dat de bovenste schuif als open wordt beschouwd en de eerste detectie op de bovenste schuif. opening geeft weer wat de opening van de bovenste schuif was op het moment van de eerste detectie op de bovenste schuif (in centimeters).") %>% 
+  kable_styling(latex_options="scale_down")
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-01") & date_time<as.POSIXct("2024-05-25") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-1") & min_det<as.POSIXct("2024-05-25") & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-01") & date_time<as.POSIXct("2024-05-25") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-1") & min_det<as.POSIXct("2024-05-25") & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-18") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-15") & min_det<as.POSIXct("2024-05-18") & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-18") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-15") & min_det<as.POSIXct("2024-05-18") & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```

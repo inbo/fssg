@@ -1,10 +1,12 @@
-# Results
+# Resultaten
 
 ```{r}
 source("./code/not_functions/libraries.R")
+source("./code/functions/function_gate_cleaning.R")
 ```
 
 ```{r}
+# Read in all pit tag data (proef0 and proef1)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
 for (i in 1:length(folders)){
@@ -16,61 +18,93 @@ for (i in 1:length(folders)){
     file<-as.data.frame(file[substr(file$V1, 0, 1) == "D", ])
     file<-as.data.frame(str_split_fixed(file[,1], "\\s+", 12))[,c(2,3,6)]
     colnames(file)<-c("Date","Time","tag_code")
-    file$event_date_time_value<-round_date(as.POSIXct(paste(file$Date,file$Time),format="%Y-%m-%d %H:%M:%OS",tz="GMT"),unit="1 second")
+    file$event_date_time_value<-round_date(as.POSIXct(paste(file$Date,file$Time),format="%Y-%m-%d %H:%M:%OS",tz="Europe/Brussels"),unit="1 second")
+    attr(file$event_date_time_value, "tzone") <- "UTC"
     file<-file %>% dplyr::select(-Date,-Time)
     file$event_site_code_value<-sub("\\s+[^ ]+$", "", files[j])
     if (i==1 & j==1){data=file} else{data=rbind(data,file)}
   }
 }
 remove(dir1,dir2,dir3,file,folders,files)
-data$event_site_code_value=tolower(data$event_site_code_value)
+data$event_site_code_value=gsub(" ","_",tolower(data$event_site_code_value))
 data$antenna_id="01"
 data$antenna_group_configuration_value=100
 data<-data[startsWith(data$tag_code,"9")==TRUE,]
+data<-data[-which(data$tag_code %in% c("900_2280000_228000535717","900_2280\xc9D\xe2LI","900_228000535Y")),]
+
+data$proef<-NA
+data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2023")]="proef0"
+data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2024")]="proef1"
+data$tag_code<-paste0(data$tag_code,"_",data$proef)
+```
+
+```{r warning=FALSE, cache=TRUE}
+# Read in valve data of proef0 
+gate_onder_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 1)[,c(2,3)]
+gate_boven_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 2)[,c(2,3)]
+  
+gate_onder_2023<-gate_cleaning(gate_onder_2023,"2023")
+gate_onder_2023$node<-"vdz_onder"
+gate_boven_2023<-gate_cleaning(gate_boven_2023,"2023")
+gate_boven_2023$node<-"vdz_boven"
+
+gate<-rbind(gate_onder_2023,gate_boven_2023)
+remove(gate_onder_2023,gate_boven_2023)
 ```
 
 ```{r}
-comp_obs <- compress(cth_file = data)
+# Read in valve data of proef1 (different format from proef0 :( )
+dir1<-"./data/extern/valves/2024/"
+files<-list.files(path=dir1)
+for (i in 1:length(files)){
+  dir2<-paste0(dir1,files[i])
+  file<-read.csv(dir2,sep=";")
+  temp_onder_2024<-file[,c(1,2)]
+  temp_boven_2024<-file[,c(3,4)]
+  if (i==1){
+    gate_onder_2024=temp_onder_2024
+    gate_boven_2024=temp_boven_2024
+  } else{
+    gate_onder_2024=rbind(gate_onder_2024,temp_onder_2024)
+    gate_boven_2024=rbind(gate_boven_2024,temp_boven_2024)
+    }
+}
+
+gate_onder_2024<-gate_cleaning(gate_onder_2024,"2024")
+gate_onder_2024$node<-"vdz_onder"
+gate_boven_2024<-gate_cleaning(gate_boven_2024,"2024")
+gate_boven_2024$node<-"vdz_boven"
+
+gate<-rbind(gate,gate_onder_2024,gate_boven_2024)
 ```
 
-```{r warning=FALSE}
-gate_onder <- read_excel("./data/extern/valves/valves2023.xlsx", sheet = 1)[,c(2,3)]
-gate_boven <- read_excel("./data/extern/valves/valves2023.xlsx", sheet = 2)[,c(2,3)]
-
-gate_cleaning<-function(data){
-  colnames(data)<-c("date_time","opening")
-  data$date_time <- round_date(ymd_hms(data$date_time),unit="1 second")
-  start<-min(data$date_time,na.rm=TRUE)
-  stop<-max(data$date_time,na.rm=TRUE)
-  seq=as.data.frame(seq(start,stop,by=1)) #Time interval with steps of one second
-  colnames(seq)="date_time"
-  gate <- left_join(seq,data[which(duplicated(data$date_time)==FALSE),], by=c("date_time")) 
-  gate$opening<-na_interpolation(gate$opening,option ="linear")
-  gate$open=FALSE
-  gate$open[which(gate$opening>2.55)]=TRUE
-  gate$open_lag<-dplyr::lag(gate$open)
-  open<-which(gate$open!=gate$open_lag & gate$open==TRUE & gate$open_lag==FALSE)
-  gate$periode=NA
-  k=1
-  for (i in open){
-    gate$periode[i]=k
-    k=k+1
-  }
-  gate <- gate %>% fill(periode, .direction = 'up') %>% dplyr::select(-open_lag,-open,-opening)
-  gate$since_open<-with(rle(gate$periode), sequence(lengths)-1)
-  gate <- gate %>% dplyr::select(-periode)
-  return(gate)
+```{r}
+# Read in length and species data of proef0
+dir1<-"./data/extern/lengte_en_soort/verwerkt/"
+folders<-list.files(path=dir1)
+for (i in 1:length(folders)){
+  dir2<-paste0(dir1,folders[i])
+  temp<-read_excel(path=dir2)
+  tag_code_start<-parse_number(colnames(temp)[3])
+  colnames(temp)<-c("soort","lengte","tag_code","opmerkingen")
+  temp$tag_code<-paste0(tag_code_start,as.character(temp$tag_code))
+  if (i==1){metadata=temp} else{metadata=rbind(metadata,temp)}
 }
-  
-gate_onder<-gate_cleaning(gate_onder)
-gate_onder$node<-"vdz onder"
-gate_boven<-gate_cleaning(gate_boven)
-gate_boven$node<-"vdz boven"
+metadata$opmerkingen<-NULL
+metadata$proef="proef0"
+metadata$tag_code<-paste0(metadata$tag_code,"_",metadata$proef)
+```
 
-gate<-rbind(gate_onder,gate_boven)
-remove(gate_onder,gate_boven)
-
+```{r}
+# summarize pit tag data
+comp_obs <- compress(cth_file = data)
 comp_obs<-left_join(comp_obs,gate,by=join_by(min_det==date_time,node==node))
+comp_obs$tag_code<-gsub("_","",comp_obs$tag_code)
+comp_obs<-left_join(comp_obs,metadata,by="tag_code")
+```
+
+```{r}
+comp_obs<-comp_obs[which(format(as.Date(comp_obs$min_det, format="%d/%m/%Y"),"%Y")=="2024"),]
 ```
 
 ## Aantal individuen (unieke tags) op onder en boven antenne gedetecteerd
@@ -89,5 +123,24 @@ comp_obs %>%
   summarise(eerste_detectie=min(min_det))
 ```
 
-## voor alle boven gedetecteerde vissen: tijd tussen laatste detectie onder en eerste boven + frequentieverdeling per 10'
+## Voor alle boven gedetecteerde vissen: tijd tussen laatste detectie onder en eerste boven + frequentieverdeling per 10'
+
+```{r}
+tags_boven=unique(comp_obs$tag_code[which(comp_obs$node=="vdz_boven")])
+
+comp_obs %>% 
+  dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+  dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening)
+```
+
+```{r}
+comp_obs_plot<-comp_obs %>% dplyr::filter(min_det>as.POSIXct("2024-05-1") & min_det<as.POSIXct("2024-05-25") & node=="vdz_boven")
+gate_plot<- gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-01") & date_time<as.POSIXct("2024-05-25") & node=="vdz_boven") 
+
+g<-ggplot(gate_plot,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_plot,aes(xintercept = min_det),colour="red",size=1)
+g
+#ggplotly(g)
+```
 

@@ -131,17 +131,6 @@ Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis
 tags_boven=unique(comp_obs$tag_code[which(comp_obs$node=="vdz_boven")])
 
 comp_obs %>% 
-dplyr::filter(tag_code %in% tags_boven) %>%
-group_by(tag_code,node) %>%
-summarise(laatste_detectie=max(max_det),
-          eerste_detectie=min(min_det)) %>%
-mutate(detectie=case_when(node=="vdz_boven"~eerste_detectie,
-                          node=="vdz_onder"~laatste_detectie)) %>%
-dplyr::select(-eerste_detectie,-laatste_detectie) %>%
-pivot_wider(names_from = node, values_from = detectie) %>%
-mutate(tijdsverschil=vdz_onder-vdz_boven)
-
-comp_obs %>% 
   dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
   dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening)
 ```

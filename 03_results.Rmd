@@ -6,7 +6,7 @@ source("./code/functions/function_gate_cleaning.R")
 ```
 
 ```{r}
-# Read in all pit tag data (proef0 and proef1)
+# Read in all pit tag data (proef0, proef1 and proef2)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
 for (i in 1:length(folders)){
@@ -31,11 +31,43 @@ data$antenna_id="01"
 data$antenna_group_configuration_value=100
 data<-data[startsWith(data$tag_code,"9")==TRUE,]
 data<-data[-which(data$tag_code %in% c("900_2280000_228000535717","900_2280\xc9D\xe2LI","900_228000535Y")),]
+data$tag_code<-gsub("_","",data$tag_code)
 
 data$proef<-NA
 data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2023")]="proef0"
 data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2024")]="proef1"
+data$proef[which(data$event_date_time_value>as.POSIXct("21-05-2024",format="%d-%m-%Y"))]="proef2"
 data$tag_code<-paste0(data$tag_code,"_",data$proef)
+data$type<-"detectie"
+```
+
+```{r}
+# Read in hervangst proef1
+hervangst<-read.csv("./data/extern/hervangst/Evaluatie 1e proef 21_05.csv")
+hervangst$Fish.Spiral<-NULL
+colnames(hervangst)<-c("tag_code","opmerkingen")
+numbers_only <- function(x) !grepl("\\D", x)
+hervangst$tag_code[which(numbers_only(hervangst$tag_code)==TRUE)]=paste0("90020900008",hervangst$tag_code[which(numbers_only(hervangst$tag_code)==TRUE)])
+hervangst<-hervangst[which(numbers_only(hervangst$tag_code)==TRUE),]
+hervangst$toestand<-NA
+hervangst$toestand[which(sapply(hervangst$opmerkingen, grepl, pattern = 'dood')==TRUE)]="dood"
+hervangst$toestand[which(sapply(hervangst$opmerkingen, grepl, pattern = 'levend')==TRUE)]="levend"
+hervangst$event_site_code_value<-NA
+hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'buitenring onder')==TRUE)]="buitenring onder"
+hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'binnenring')==TRUE)]="binnenring"
+hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'tank beneden')==TRUE)]="tank beneden"
+hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'tank boven')==TRUE)]="tank boven"
+hervangst$event_date_time_value<-as.POSIXct("2024-05-21 12:00:00",format="%Y-%m-%d %H:%M:%OS",tz="Europe/Brussels")
+hervangst$antenna_id<-"01"
+hervangst$antenna_group_configuration_value<-100
+hervangst$proef<-"proef1"
+hervangst$tag_code<-paste0(hervangst$tag_code,"_",hervangst$proef)
+hervangst <- hervangst %>% dplyr::select(-opmerkingen,-toestand)
+hervangst$type<-"hervangst"
+```
+
+```{r}
+data<-rbind(data,hervangst)
 ```
 
 ```{r warning=FALSE, cache=TRUE}
@@ -99,8 +131,10 @@ metadata$tag_code<-paste0(metadata$tag_code,"_",metadata$proef)
 # summarize pit tag data
 comp_obs <- compress(cth_file = data)
 comp_obs<-left_join(comp_obs,gate,by=join_by(min_det==date_time,node==node))
-comp_obs$tag_code<-gsub("_","",comp_obs$tag_code)
 comp_obs<-left_join(comp_obs,metadata,by="tag_code")
+comp_obs<-comp_obs %>% 
+            group_by(tag_code) %>%
+            mutate(last_sequence=paste0(dplyr::lag(node),"-",node))
 ```
 
 ## Proef 0 (mei 2023)
@@ -223,4 +257,43 @@ g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<
   ylab("opening schuif (cm)")+
   xlab("datum")
 g
+```
+
+```{r}
+comp_obs_proef1 %>% 
+  group_by(last_sequence) %>%
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  kable(caption="Aantal individuen (unieke tags) per sequentie")
+```
+
+## Proef 2 (mei 2023)
+
+```{r}
+comp_obs_proef2<-comp_obs[which(comp_obs$min_det>as.POSIXct("22-05-2024",format="%d-%m-%Y")),]
+```
+
+```{r}
+comp_obs_proef2 %>% 
+  group_by(node) %>%
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  kable(caption="Aantal individuen (unieke tags) op onder en boven antenne gedetecteerd")
+```
+
+```{r}
+comp_obs_proef2 %>% 
+  group_by(node,tag_code) %>%
+  summarise(eerste_detectie=min(min_det)) %>%
+  pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
+  kable(caption="Tijdstip eerste detectie per vis op onder en boven antenne",longtable=TRUE)
+```
+
+```{r}
+tags_boven=unique(comp_obs_proef2$tag_code[which(comp_obs_proef2$node=="vdz_boven")])
+
+comp_obs_proef2 %>% 
+  dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+  mutate(travel_time=round(travel_time)) %>% 
+  dplyr::select(tag_code,travel_time,min_det,max_det) %>% 
+  kable(caption="Voor alle boven gedetecteerde vissen worden volgende zaken opgelijst: travel time (in minuten) is de tijd tussen de laatste detectie onder en eerste boven. Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. Verder wordt de eerste (min det) en laatste (max det) detectie op de bovenste antenne tijdens de betreffende cyclus weergegeven. since open geeft de tijd aan tussen het moment dat de bovenste schuif als open wordt beschouwd en de eerste detectie op de bovenste schuif. opening geeft weer wat de opening van de bovenste schuif was op het moment van de eerste detectie op de bovenste schuif (in centimeters).") %>% 
+  kable_styling(latex_options="scale_down")
 ```

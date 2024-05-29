@@ -3,6 +3,7 @@
 ```{r warning=FALSE, include=FALSE}
 source("./code/not_functions/libraries.R")
 source("./code/functions/function_gate_cleaning.R")
+source("./code/functions/function_clean_hervangst_and_uitzet.R")
 ```
 
 ```{r}
@@ -42,32 +43,24 @@ data$type<-"detectie"
 ```
 
 ```{r}
-# Read in hervangst proef1
-hervangst<-read.csv("./data/extern/hervangst/Evaluatie 1e proef 21_05.csv")
-hervangst$Fish.Spiral<-NULL
-colnames(hervangst)<-c("tag_code","opmerkingen")
-numbers_only <- function(x) !grepl("\\D", x)
-hervangst$tag_code[which(numbers_only(hervangst$tag_code)==TRUE)]=paste0("90020900008",hervangst$tag_code[which(numbers_only(hervangst$tag_code)==TRUE)])
-hervangst<-hervangst[which(numbers_only(hervangst$tag_code)==TRUE),]
-hervangst$toestand<-NA
-hervangst$toestand[which(sapply(hervangst$opmerkingen, grepl, pattern = 'dood')==TRUE)]="dood"
-hervangst$toestand[which(sapply(hervangst$opmerkingen, grepl, pattern = 'levend')==TRUE)]="levend"
-hervangst$event_site_code_value<-NA
-hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'buitenring onder')==TRUE)]="buitenring onder"
-hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'binnenring')==TRUE)]="binnenring"
-hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'tank beneden')==TRUE)]="tank beneden"
-hervangst$event_site_code_value[which(sapply(hervangst$opmerkingen, grepl, pattern = 'tank boven')==TRUE)]="tank boven"
-hervangst$event_date_time_value<-as.POSIXct("2024-05-21 12:00:00",format="%Y-%m-%d %H:%M:%OS",tz="Europe/Brussels")
-hervangst$antenna_id<-"01"
-hervangst$antenna_group_configuration_value<-100
-hervangst$proef<-"proef1"
-hervangst$tag_code<-paste0(hervangst$tag_code,"_",hervangst$proef)
-hervangst <- hervangst %>% dplyr::select(-opmerkingen,-toestand)
-hervangst$type<-"hervangst"
+# Read in hervangst proef1, uitzet proef1 and uitzet proef2
+hervangst_proef1<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 1e proef 21_05.csv",
+                           proef="proef1",
+                           type="hervangst",
+                           tijdstip="2024-05-21 12:00:00")
+uitzet_proef1<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 15_05.csv",
+                           proef="proef1",
+                           type="uitzet",
+                           tijdstip="2024-05-15 12:00:00")
+uitzet_proef2<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 22_05.csv",
+                           proef="proef2",
+                           type="uitzet",
+                           tijdstip="2024-05-22 12:00:00")
 ```
 
 ```{r}
-data<-rbind(data,hervangst)
+# combine pit data and hervangst proef1
+data<-rbind(data,hervangst_proef1,uitzet_proef1,uitzet_proef2)
 ```
 
 ```{r warning=FALSE, cache=TRUE}
@@ -189,6 +182,23 @@ g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2023-05-01") & date_time<
 g
 ```
 
+```{r}
+comp_obs_proef0 %>% 
+  group_by(last_sequence) %>%
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  kable(caption="Aantal individuen (unieke tags) per sequentie")
+```
+
+```{r}
+x<-comp_obs_proef0 %>% 
+  mutate(hour_min_det=lubridate::hour(min_det)) %>%
+  group_by(node,hour_min_det) %>%
+  summarise(unieke_tags = n_distinct(tag_code))
+ggplot(x, aes(x=hour_min_det, y=unieke_tags)) + 
+  geom_bar(stat = "identity") +
+  facet_wrap(~ node)
+```
+
 ## Proef 1 (mei 2024)
 
 ```{r}
@@ -242,18 +252,18 @@ g
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-18") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-16") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
   geom_line()+
-  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-15") & min_det<as.POSIXct("2024-05-18") & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
+  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-15") & min_det<as.POSIXct("2024-05-16") & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
   ylab("opening schuif (cm)")+
   xlab("datum")
 g
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-18") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-16") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
   geom_line()+
-  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-15") & min_det<as.POSIXct("2024-05-18") & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
+  geom_vline(data=comp_obs_proef1 %>% dplyr::filter(min_det>as.POSIXct("2024-05-15") & min_det<as.POSIXct("2024-05-16") & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
   ylab("opening schuif (cm)")+
   xlab("datum")
 g
@@ -264,6 +274,16 @@ comp_obs_proef1 %>%
   group_by(last_sequence) %>%
   summarise(unieke_tags = n_distinct(tag_code)) %>% 
   kable(caption="Aantal individuen (unieke tags) per sequentie")
+```
+
+```{r}
+x<-comp_obs_proef1 %>% 
+  mutate(hour_min_det=lubridate::hour(min_det)) %>%
+  group_by(node,hour_min_det) %>%
+  summarise(unieke_tags = n_distinct(tag_code))
+ggplot(x, aes(x=hour_min_det, y=unieke_tags)) + 
+  geom_bar(stat = "identity") +
+  facet_wrap(~ node)
 ```
 
 ## Proef 2 (mei 2023)
@@ -292,8 +312,63 @@ tags_boven=unique(comp_obs_proef2$tag_code[which(comp_obs_proef2$node=="vdz_bove
 
 comp_obs_proef2 %>% 
   dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
-  mutate(travel_time=round(travel_time)) %>% 
-  dplyr::select(tag_code,travel_time,min_det,max_det) %>% 
+  mutate(travel_time=round(travel_time),
+         since_open=round(since_open),
+         opening=round(opening,digits=2)) %>% 
+  dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening) %>% 
   kable(caption="Voor alle boven gedetecteerde vissen worden volgende zaken opgelijst: travel time (in minuten) is de tijd tussen de laatste detectie onder en eerste boven. Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. Verder wordt de eerste (min det) en laatste (max det) detectie op de bovenste antenne tijdens de betreffende cyclus weergegeven. since open geeft de tijd aan tussen het moment dat de bovenste schuif als open wordt beschouwd en de eerste detectie op de bovenste schuif. opening geeft weer wat de opening van de bovenste schuif was op het moment van de eerste detectie op de bovenste schuif (in centimeters).") %>% 
   kable_styling(latex_options="scale_down")
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-29") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef2 %>% dplyr::filter(min_det>as.POSIXct("2024-05-22") & min_det<as.POSIXct("2024-05-29") & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-29") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef2 %>% dplyr::filter(min_det>as.POSIXct("2024-05-22") & min_det<as.POSIXct("2024-05-29") & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-23") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef2 %>% dplyr::filter(min_det>as.POSIXct("2024-05-22") & min_det<as.POSIXct("2024-05-23") & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-23") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
+  geom_line()+
+  geom_vline(data=comp_obs_proef2 %>% dplyr::filter(min_det>as.POSIXct("2024-05-22") & min_det<as.POSIXct("2024-05-23") & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
+  ylab("opening schuif (cm)")+
+  xlab("datum")
+g
+```
+
+```{r}
+comp_obs_proef2 %>% 
+  group_by(last_sequence) %>%
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  kable(caption="Aantal individuen (unieke tags) per sequentie")
+```
+
+```{r}
+x<-comp_obs_proef2 %>% 
+  mutate(hour_min_det=lubridate::hour(min_det)) %>%
+  group_by(node,hour_min_det) %>%
+  summarise(unieke_tags = n_distinct(tag_code))
+ggplot(x, aes(x=hour_min_det, y=unieke_tags)) + 
+  geom_bar(stat = "identity") +
+  facet_wrap(~ node)
 ```

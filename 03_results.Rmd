@@ -43,30 +43,40 @@ data$type<-"detectie"
 ```
 
 ```{r}
-# Read in uitzet proef1, hervangst proef1 en uitzet proef2
-hervangst_proef1<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 1e proef 21_05.csv",
-                           proef="proef1",
-                           type="hervangst",
-                           tijdstip="2024-05-21 12:00:00",
-                           first.numbers="90020900008")
+# Read in uitzet proef1, hervangst proef1, uitzet proef2, hervangst proef2, uitzet proef3
 uitzet_proef1<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 15_05.csv",
                            proef="proef1",
                            type="uitzet",
                            tijdstip="2024-05-15 12:00:00",
+                           first.numbers="90020900008")
+hervangst_proef1<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 1e proef 21_05.csv",
+                           proef="proef1",
+                           type="hervangst",
+                           tijdstip="2024-05-21 12:00:00",
                            first.numbers="90020900008")
 uitzet_proef2<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 22_05.csv",
                            proef="proef2",
                            type="uitzet",
                            tijdstip="2024-05-22 12:00:00",
                            first.numbers="90020900008")
+hervangst_proef2<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 2e proef 28_05.csv",
+                           proef="proef2",
+                           type="hervangst",
+                           tijdstip="2024-05-28 12:00:00",
+                           first.numbers="90020900008")
+uitzet_proef3<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 29_05.csv",
+                           proef="proef3",
+                           type="uitzet",
+                           tijdstip="2024-05-29 12:00:00",
+                           first.numbers="90020900008")
 ```
 
 ```{r}
 # combine pit data, uitzet proef1, hervangst proef1 en uitzet proef2
-data<-rbind(data,hervangst_proef1,uitzet_proef1,uitzet_proef2)
+data<-rbind(data,uitzet_proef1,hervangst_proef1,uitzet_proef2,hervangst_proef2,uitzet_proef3)
 ```
 
-```{r warning=FALSE, cache=TRUE}
+```{r warning=FALSE, cache=FALSE}
 # Read in valve data of proef0 
 gate_onder_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 1)[,c(2,3)]
 gate_boven_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 2)[,c(2,3)]
@@ -81,7 +91,7 @@ remove(gate_onder_2023,gate_boven_2023)
 ```
 
 ```{r}
-# Read in valve data of proef1 (different format from proef0 :( )
+# Read in valve data of proef1 and proef2 (different format from proef0 :( )
 dir1<-"./data/extern/valves/2024/"
 files<-list.files(path=dir1)
 for (i in 1:length(files)){
@@ -169,8 +179,11 @@ comp_obs %>%
 comp_obs %>% 
   group_by(proef,node,tag_code) %>%
   summarise(eerste_detectie=min(min_det)) %>%
+  ungroup() %>%
   pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
-  kable(caption="Tijdstip eerste detectie per vis op onder en boven antenne",longtable=TRUE)
+  dplyr::select(tag_code,vdz_onder,vdz_boven,`tank boven`) %>%
+  kable(caption="Tijdstip eerste detectie per vis op onder en boven antenne",longtable=TRUE) %>% 
+  kable_styling(latex_options="scale_down")
 ```
 
 ```{r}
@@ -182,6 +195,7 @@ comp_obs %>%
          since_open=round(since_open),
          opening=round(opening,digits=2)) %>% 
   dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening) %>% 
+  arrange(min_det) %>%
   kable(caption="Voor alle boven gedetecteerde vissen worden volgende zaken opgelijst: travel time (in minuten) is de tijd tussen de laatste detectie onder en eerste boven. Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. Verder wordt de eerste (min det) en laatste (max det) detectie op de bovenste antenne tijdens de betreffende cyclus weergegeven. since open geeft de tijd aan tussen het moment dat de bovenste schuif als open wordt beschouwd en de eerste detectie op de bovenste schuif. opening geeft weer wat de opening van de bovenste schuif was op het moment van de eerste detectie op de bovenste schuif (in centimeters).",longtable=TRUE) %>% 
   kable_styling(latex_options="scale_down")
 ```
@@ -206,96 +220,72 @@ ggplot(comp_obs %>%
 
 ## Grafieken proef0 (mei 2023)
 
+```{r}
+plot_vdz <- function(start, stop, node_input,proef_input){
+  start = as.POSIXct(start)
+  stop = as.POSIXct(stop)
+  
+  g<-ggplot(gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input) ,aes(x=date_time,y=opening))+
+    geom_line()+
+    geom_point(data=gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input & measurement==TRUE),aes(x=date_time,y=opening))+
+    geom_vline(data=comp_obs %>% dplyr::filter(proef==proef_input & node==node_input),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
+    ylab("opening schuif (cm)")+
+    xlab("datum")
+  print(g)
+}
+```
+
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2023-05-01") & date_time<as.POSIXct("2023-05-25") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef0" & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="vdz_boven",proef_input="proef0")
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2023-05-01") & date_time<as.POSIXct("2023-05-25") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef0" & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="vdz_onder",proef_input="proef0")
 ```
 
 ## Grafieken proef1 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-01") & date_time<as.POSIXct("2024-05-25") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef1" & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="vdz_boven",proef_input="proef1")
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-01") & date_time<as.POSIXct("2024-05-25") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef1" & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="vdz_onder",proef_input="proef1")
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-16") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef1" & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_boven",proef_input="proef1")
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-15") & date_time<as.POSIXct("2024-05-16") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef1" & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_onder",proef_input="proef1")
 ```
 
 ## Grafieken proef2 (mei 2023)
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-29") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef2" & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="vdz_boven",proef_input="proef2")
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-29") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef2" & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="vdz_onder",proef_input="proef2")
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-23") & node=="vdz_boven") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef2" & node=="vdz_boven"),aes(xintercept = min_det),colour="red",size=1)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="vdz_boven",proef_input="proef2")
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-g<-ggplot(gate %>% dplyr::filter(date_time>as.POSIXct("2024-05-22") & date_time<as.POSIXct("2024-05-23") & node=="vdz_onder") ,aes(x=date_time,y=opening))+
-  geom_line()+
-  geom_vline(data=comp_obs %>% dplyr::filter(proef=="proef2" & node=="vdz_onder"),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
-  ylab("opening schuif (cm)")+
-  xlab("datum")
-g
+plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="vdz_onder",proef_input="proef2")
 ```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
+plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_boven",proef_input="proef2")
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_onder",proef_input="proef2")
+```
+
+
+

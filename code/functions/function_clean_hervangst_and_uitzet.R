@@ -12,6 +12,7 @@ clean_hervangst_and_uitzet<-function(dir,proef,type,tijdstip,first.numbers){
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'buitenring onder')==TRUE)]="buitenring onder"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'binnenring')==TRUE)]="binnenring"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank beneden')==TRUE)]="tank beneden"
+  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank onder')==TRUE)]="tank beneden"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank boven')==TRUE)]="tank boven"
   if (type=="uitzet"){data$event_site_code_value="tank beneden"}
   data$event_date_time_value<-as.POSIXct(tijdstip,format="%Y-%m-%d %H:%M:%OS",tz="Europe/Brussels")

@@ -2,6 +2,7 @@ gate_cleaning<-function(data,jaar){
   colnames(data)<-c("date_time","opening")
   if (jaar=="2023"){data$date_time <- round_date(ymd_hms(data$date_time,tz = "Europe/Brussels"),unit="1 second")}
   if (jaar=="2024"){data$date_time <- round_date(mdy_hms(data$date_time,tz = "Europe/Brussels"),unit="1 second")}
+  data$measurement=TRUE
   attr(data$date_time, "tzone") <- "UTC"
   start<-min(data$date_time,na.rm=TRUE)
   stop<-max(data$date_time,na.rm=TRUE)

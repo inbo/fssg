@@ -7,7 +7,7 @@ source("./code/functions/function_clean_hervangst_and_uitzet.R")
 ```
 
 ```{r}
-# Read in all pit tag data (proef0, proef1 and proef2)
+# Read in all pit tag data (proef0, proef1, proef2 and proef3)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
 for (i in 1:length(folders)){
@@ -75,6 +75,12 @@ hervangst_proef3<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evalua
                            type="hervangst",
                            tijdstip="2024-06-05 12:00:00",
                            first.numbers="90020900008")
+```
+
+```{r}
+uitzet_proef1$tag_code[which(!uitzet_proef1$tag_code %in% hervangst_proef1$tag_code)]
+uitzet_proef2$tag_code[which(!uitzet_proef2$tag_code %in% hervangst_proef2$tag_code)]
+uitzet_proef3$tag_code[which(!uitzet_proef3$tag_code %in% hervangst_proef3$tag_code)]
 ```
 
 ```{r}
@@ -185,8 +191,8 @@ links <- comp_dir %>%
             dplyr::filter(is.na(stop)==FALSE) %>%
             dplyr::select(tag_code,start,stop,proef) %>%
             ungroup() %>%
-            group_by(proef) %>%
-            count(start,stop) %>%
+            group_by(proef,start,stop) %>%
+            summarize(n=n_distinct(tag_code)) %>%
             mutate(color = case_when(start == "tank beneden" & stop == "vdz_onder" ~ "green",
                                      start == "vdz_onder" & stop == "vdz_boven" ~ "green",
                                      start == "vdz_boven" & stop == "tank boven" ~ "green",
@@ -194,9 +200,9 @@ links <- comp_dir %>%
             ungroup()
 
 nodes <- comp_dir %>% 
-            dplyr::select(node,proef) %>%
-            group_by(proef) %>%
-            count(node) %>%
+            dplyr::select(node,proef,tag_code) %>%
+            group_by(proef,node) %>%
+            summarize(n=n_distinct(tag_code)) %>%
             ungroup()
 ```
 
@@ -266,12 +272,13 @@ comp_dir %>%
 
 ```{r fig.height=10, fig.width=10,}
 ggplot(comp_dir %>% 
+  dplyr::filter(node %in% c("vdz_onder","vdz_boven")) %>% 
   mutate(hour_min_det=lubridate::hour(min_det)) %>%
   group_by(proef,node,hour_min_det) %>%
   summarise(unieke_tags = n_distinct(tag_code)),
     aes(x=hour_min_det, y=unieke_tags)) + 
     geom_bar(stat = "identity") +
-    facet_wrap(~ proef + node)
+    facet_wrap(~ proef + node, ncol=2)
 ```
 
 ## Grafieken proef0 (mei 2023)

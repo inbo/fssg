@@ -10,6 +10,7 @@ clean_hervangst_and_uitzet<-function(dir,proef,type,tijdstip,first.numbers){
   data$toestand[which(sapply(data$opmerkingen, grepl, pattern = 'levend')==TRUE)]="levend"
   data$event_site_code_value<-NA
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'buitenring onder')==TRUE)]="buitenring onder"
+  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'buitenring beneden')==TRUE)]="buitenring onder"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'binnenring')==TRUE)]="binnenring"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank beneden')==TRUE)]="tank beneden"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank onder')==TRUE)]="tank beneden"
@@ -24,5 +25,6 @@ clean_hervangst_and_uitzet<-function(dir,proef,type,tijdstip,first.numbers){
   data <- data %>% dplyr::select(-opmerkingen,-toestand)
   data$type<-type
   data$event_site_code_value[which(is.na(data$event_site_code_value)==TRUE)]="ontsnapt"
+  if (type=="hervangst"){data<-data[-which(sapply(data$event_site_code_value, grepl, pattern = 'tank beneden')==TRUE & sapply(data$tag_code, grepl, pattern = 'unknown')==TRUE),]}
   return(data)
 }

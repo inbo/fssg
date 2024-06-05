@@ -30,6 +30,7 @@ library(readr)
 library(imputeTS)
 library(plotly)
 library(sessioninfo)
+library(igraph)
 
 # package_info(
 #   pkgs = "loaded",

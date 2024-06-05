@@ -1,5 +1,5 @@
 clean_hervangst_and_uitzet<-function(dir,proef,type,tijdstip,first.numbers){
-  data<-read.csv(dir)
+  data<-read.csv(dir,sep=";")
   data$Fish.Spiral<-NULL
   colnames(data)<-c("tag_code","opmerkingen")
   numbers_only <- function(x) !grepl("\\D", x)
@@ -16,6 +16,7 @@ clean_hervangst_and_uitzet<-function(dir,proef,type,tijdstip,first.numbers){
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank boven')==TRUE)]="tank boven"
   if (type=="uitzet"){data$event_site_code_value="tank beneden"}
   data$event_date_time_value<-as.POSIXct(tijdstip,format="%Y-%m-%d %H:%M:%OS",tz="Europe/Brussels")
+  attr(data$event_date_time_value, "tzone") <- "UTC"
   data$antenna_id<-"01"
   data$antenna_group_configuration_value<-100
   data$proef<-proef

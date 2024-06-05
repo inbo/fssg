@@ -4,7 +4,7 @@ clean_hervangst_and_uitzet<-function(dir,proef,type,tijdstip,first.numbers){
   colnames(data)<-c("tag_code","opmerkingen")
   numbers_only <- function(x) !grepl("\\D", x)
   data$tag_code[which(numbers_only(data$tag_code)==TRUE)]=paste0("90020900008",data$tag_code[which(numbers_only(data$tag_code)==TRUE)])
-  data<-data[which(numbers_only(data$tag_code)==TRUE),]
+  data$tag_code[which(numbers_only(data$tag_code)==FALSE)]=paste("unknown",rownames(data[which(numbers_only(data$tag_code)==FALSE),]),sep="_")
   data$toestand<-NA
   data$toestand[which(sapply(data$opmerkingen, grepl, pattern = 'dood')==TRUE)]="dood"
   data$toestand[which(sapply(data$opmerkingen, grepl, pattern = 'levend')==TRUE)]="levend"
@@ -23,5 +23,6 @@ clean_hervangst_and_uitzet<-function(dir,proef,type,tijdstip,first.numbers){
   data$tag_code<-paste0(data$tag_code,"_",data$proef)
   data <- data %>% dplyr::select(-opmerkingen,-toestand)
   data$type<-type
+  data$event_site_code_value[which(is.na(data$event_site_code_value)==TRUE)]="ontsnapt"
   return(data)
 }

@@ -38,6 +38,7 @@ data$proef<-NA
 data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2023")]="proef0"
 data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2024")]="proef1"
 data$proef[which(data$event_date_time_value>as.POSIXct("21-05-2024",format="%d-%m-%Y"))]="proef2"
+data$proef[which(data$event_date_time_value>as.POSIXct("28-05-2024",format="%d-%m-%Y"))]="proef3"
 data$tag_code<-paste0(data$tag_code,"_",data$proef)
 data$type<-"detectie"
 ```
@@ -69,14 +70,19 @@ uitzet_proef3<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 29_05
                            type="uitzet",
                            tijdstip="2024-05-29 12:00:00",
                            first.numbers="90020900008")
+hervangst_proef3<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 3e proef 05_06.csv",
+                           proef="proef3",
+                           type="hervangst",
+                           tijdstip="2024-06-05 12:00:00",
+                           first.numbers="90020900008")
 ```
 
 ```{r}
 # combine pit data, uitzet proef1, hervangst proef1 en uitzet proef2
-data<-rbind(data,uitzet_proef1,hervangst_proef1,uitzet_proef2,hervangst_proef2,uitzet_proef3)
+data<-rbind(data,uitzet_proef1,hervangst_proef1,uitzet_proef2,hervangst_proef2,uitzet_proef3,hervangst_proef3)
 ```
 
-```{r warning=FALSE, cache=FALSE}
+```{r warning=FALSE, cache=TRUE}
 # Read in valve data of proef0 
 gate_onder_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 1)[,c(2,3)]
 gate_boven_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 2)[,c(2,3)]
@@ -134,21 +140,71 @@ metadata$tag_code<-paste0(metadata$tag_code,"_",metadata$proef)
 ```
 
 ```{r}
+configuration<-read.csv("./data/extern/configuration.csv",sep=";")
+configuration$antenna_id<-as.character(configuration$antenna_id)
+```
+
+```{r}
+parent_child<-read.csv("./data/extern/parent_child.csv",sep=";")
+parent_child_nodes <- addParentChildNodes(parent_child = parent_child,
+                                          configuration = configuration)
+```
+
+```{r}
+buildPaths(parent_child = parent_child_nodes, direction = c("u"))
+```
+
+```{r}
+nodegraph<-buildNodeGraph(parent_child = parent_child_nodes)
+plot(nodegraph)
+```
+
+```{r}
 # summarize pit tag data
 comp_obs <- compress(cth_file = data)
-comp_obs<-left_join(comp_obs,gate,by=join_by(min_det==date_time,node==node))
-comp_obs<-left_join(comp_obs,metadata,by="tag_code")
 comp_obs<-comp_obs %>% 
             group_by(tag_code) %>%
             mutate(last_sequence=paste0(dplyr::lag(node),"-",node))
 comp_obs$proef<-gsub(".*_", "", comp_obs$tag_code)
+
+comp_dir <- addDirection(compress_obs = comp_obs,
+                         parent_child = parent_child_nodes,
+                         direction = "u")
+
+comp_dir<-left_join(comp_dir,gate %>% dplyr::select(-measurement),by=join_by(min_det==date_time,node==node))
+comp_dir<-left_join(comp_dir,metadata %>% dplyr::select(-proef),by="tag_code")
+
+remove(comp_obs)
+```
+
+```{r}
+links <- comp_dir %>% 
+            group_by(tag_code) %>%
+            mutate(start=node,
+                   stop=dplyr::lead(node)) %>%
+            dplyr::filter(is.na(stop)==FALSE) %>%
+            dplyr::select(tag_code,start,stop,proef) %>%
+            ungroup() %>%
+            group_by(proef) %>%
+            count(start,stop) %>%
+            mutate(color = case_when(start == "tank beneden" & stop == "vdz_onder" ~ "green",
+                                     start == "vdz_onder" & stop == "vdz_boven" ~ "green",
+                                     start == "vdz_boven" & stop == "tank boven" ~ "green",
+                                     .default = "red")) %>%
+            ungroup()
+
+nodes <- comp_dir %>% 
+            dplyr::select(node,proef) %>%
+            group_by(proef) %>%
+            count(node) %>%
+            ungroup()
 ```
 
 ## Tabellen
 
 ```{r}
 passage_succes<-function(pattern_value,berekening_value){
-  data<-comp_obs %>% 
+  data<-comp_dir %>% 
       mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "boven",
                             .default = "beneden"),
              berekening=berekening_value) %>%
@@ -168,7 +224,7 @@ rbind(passage_succes(pattern_value='boven',berekening_value="hervangst en detect
 ```
 
 ```{r}
-comp_obs %>% 
+comp_dir %>% 
   group_by(proef,node) %>%
   summarise(unieke_tags = n_distinct(tag_code)) %>% 
   pivot_wider(names_from = proef, values_from = unieke_tags) %>%
@@ -176,7 +232,7 @@ comp_obs %>%
 ```
 
 ```{r}
-comp_obs %>% 
+comp_dir %>% 
   group_by(proef,node,tag_code) %>%
   summarise(eerste_detectie=min(min_det)) %>%
   ungroup() %>%
@@ -187,9 +243,9 @@ comp_obs %>%
 ```
 
 ```{r}
-tags_boven=unique(comp_obs$tag_code[which(comp_obs$node=="vdz_boven" & dplyr::lag(comp_obs$node)=="vdz_onder")])
+tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="vdz_boven" & dplyr::lag(comp_dir$node)=="vdz_onder")])
 
-comp_obs %>% 
+comp_dir %>% 
   dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
   mutate(travel_time=round(travel_time),
          since_open=round(since_open),
@@ -201,7 +257,7 @@ comp_obs %>%
 ```
 
 ```{r}
-comp_obs %>% 
+comp_dir %>% 
   group_by(proef,last_sequence) %>%
   summarise(unieke_tags = n_distinct(tag_code)) %>% 
   pivot_wider(names_from = proef, values_from = unieke_tags) %>%
@@ -209,7 +265,7 @@ comp_obs %>%
 ```
 
 ```{r fig.height=10, fig.width=10,}
-ggplot(comp_obs %>% 
+ggplot(comp_dir %>% 
   mutate(hour_min_det=lubridate::hour(min_det)) %>%
   group_by(proef,node,hour_min_det) %>%
   summarise(unieke_tags = n_distinct(tag_code)),
@@ -221,14 +277,16 @@ ggplot(comp_obs %>%
 ## Grafieken proef0 (mei 2023)
 
 ```{r}
-plot_vdz <- function(start, stop, node_input,proef_input){
-  start = as.POSIXct(start)
-  stop = as.POSIXct(stop)
+plot_vdz <- function(start, stop, node_input, proef_input, points = FALSE){
+  start = as.POSIXct(start,tz = "UTC")
+  stop = as.POSIXct(stop,tz = "UTC")
   
   g<-ggplot(gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input) ,aes(x=date_time,y=opening))+
-    geom_line()+
-    geom_point(data=gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input & measurement==TRUE),aes(x=date_time,y=opening))+
-    geom_vline(data=comp_obs %>% dplyr::filter(proef==proef_input & node==node_input),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
+    geom_line()
+  if (points == TRUE){
+    g<-g+geom_point(data=gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input & measurement == TRUE),aes(x=date_time,y=opening))
+  }
+  g<-g+geom_vline(data=comp_dir %>% dplyr::filter(proef==proef_input & node==node_input),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
     ylab("opening schuif (cm)")+
     xlab("datum")
   print(g)
@@ -243,6 +301,14 @@ plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="vdz_boven",proef_input
 plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="vdz_onder",proef_input="proef0")
 ```
 
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
+plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="vdz_boven",proef_input="proef0", points = TRUE)
+```
+
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="vdz_onder",proef_input="proef0", points = TRUE)
+```
+
 ## Grafieken proef1 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
@@ -254,11 +320,11 @@ plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="vdz_onder",proef_input
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_boven",proef_input="proef1")
+plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_boven",proef_input="proef1", points=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_onder",proef_input="proef1")
+plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_onder",proef_input="proef1", points=TRUE)
 ```
 
 ## Grafieken proef2 (mei 2023)
@@ -280,12 +346,67 @@ plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="vdz_onder",proef_input
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_boven",proef_input="proef2")
+plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_boven",proef_input="proef2", points=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_onder",proef_input="proef2")
+plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_onder",proef_input="proef2", points=TRUE)
 ```
 
+```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
+plot_vdz(start="2024-05-22 13:00",stop="2024-05-22 15:00",node_input="vdz_onder",proef_input="proef2", points=TRUE)
+```
 
+## Netwerk analyse
 
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef0."}
+network <- graph_from_data_frame(d=links %>% 
+                                   dplyr::filter(proef=="proef0") %>%
+                                   dplyr::select(-proef), 
+                                 vertices=nodes %>% 
+                                   dplyr::filter(proef=="proef0") %>%
+                                   dplyr::select(-proef),
+                                 directed=T) 
+l <- layout_in_circle(network)
+plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
+     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef0")],vertex.label = paste(nodes$node[which(nodes$proef=="proef0")],nodes$n[which(nodes$proef=="proef0")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+```
+
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef1."}
+network <- graph_from_data_frame(d=links %>% 
+                                   dplyr::filter(proef=="proef1") %>%
+                                   dplyr::select(-proef), 
+                                 vertices=nodes %>% 
+                                   dplyr::filter(proef=="proef1") %>%
+                                   dplyr::select(-proef),
+                                 directed=T) 
+l <- layout_in_circle(network)
+plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
+     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef1")],vertex.label = paste(nodes$node[which(nodes$proef=="proef1")],nodes$n[which(nodes$proef=="proef1")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+```
+
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef2."}
+network <- graph_from_data_frame(d=links %>% 
+                                   dplyr::filter(proef=="proef2") %>%
+                                   dplyr::select(-proef), 
+                                 vertices=nodes %>% 
+                                   dplyr::filter(proef=="proef2") %>%
+                                   dplyr::select(-proef),
+                                 directed=T) 
+l <- layout_in_circle(network)
+plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
+     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef2")],vertex.label = paste(nodes$node[which(nodes$proef=="proef2")],nodes$n[which(nodes$proef=="proef2")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+```
+
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef3."}
+network <- graph_from_data_frame(d=links %>% 
+                                   dplyr::filter(proef=="proef3") %>%
+                                   dplyr::select(-proef), 
+                                 vertices=nodes %>% 
+                                   dplyr::filter(proef=="proef3") %>%
+                                   dplyr::select(-proef),
+                                 directed=T) 
+l <- layout_in_circle(network)
+plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
+     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef3")],vertex.label = paste(nodes$node[which(nodes$proef=="proef3")],nodes$n[which(nodes$proef=="proef3")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+```

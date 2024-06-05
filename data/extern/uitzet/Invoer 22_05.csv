@@ -1,103 +1,103 @@
-RFID code,Fish Spiral,Opmerkingen
-6613,beneden 5% boven 58% 30min,3 windes dood bij Vandeput codes starten met 90020900008
-6550,beneden 5% boven 5% 5min,2 windes dood tijdens transport: 9002090000086610 & 595
-"6578,beneden 58% boven 5% 10min,""Herinvoer vissen 1e proef: niet meer ingevoerd= 6177, 6219, 6229, 6246 (te veel schade)"""
-6623,beneden 5% boven 5% 5min,
-6579,1 cycli =-55min,
-6596,Licht permanent aan,
-6635,Log Spiral registreert GMT,
-6612,Readers GMT+2h,
-6561,Invoer: 15u07,
-6576,,
-6590,,
-6605,,
-6573,,
-6617,,
-6565,,
-6636,,
-6594,,
-6588,,
-6554,,
-6589,,
-6648,,
-6611,,
-6643,,
-6601,,
-6602,,
-6575,,
-6570,,
-6624,,
-6598,,
-6552,,
-6572,,
-6577,,
-6593,,
-6632,,
-6581,,
-6591,,
-6587,,
-6597,,
-6562,,
-6627,,
-6582,,
-6621,,
-6580,,
-6638,,
-6566,,
-6563,,
-6564,,
-6645,,
-6568,,
-6574,,
-6626,,
-6642,,
-6553,,
-6599,,
-6586,,
-6567,,
-6592,,
-6631,,
-6606,,
-6549,,
-6149,herinvoer uit 1e proef,
-6212,herinvoer uit 1e proef,
-6233,herinvoer uit 1e proef,
-6186,herinvoer uit 1e proef,
-6200,herinvoer uit 1e proef,
-6150,herinvoer uit 1e proef,
-6235,herinvoer uit 1e proef,
-6157,herinvoer uit 1e proef,
-6183,herinvoer uit 1e proef,
-6148,herinvoer uit 1e proef,
-6243,herinvoer uit 1e proef,
-6156,herinvoer uit 1e proef,
-6225,herinvoer uit 1e proef,
-6222,herinvoer uit 1e proef,
-6230,herinvoer uit 1e proef,
-6179,herinvoer uit 1e proef,
-6194,herinvoer uit 1e proef,
-6188,herinvoer uit 1e proef,
-6174,herinvoer uit 1e proef,
-6182,herinvoer uit 1e proef,
-6196,herinvoer uit 1e proef,
-6204,herinvoer uit 1e proef,
-6168,herinvoer uit 1e proef,
-6190,herinvoer uit 1e proef,
-6199,herinvoer uit 1e proef,
-6224,herinvoer uit 1e proef,
-6244,herinvoer uit 1e proef,
-6238,herinvoer uit 1e proef,
-6245,herinvoer uit 1e proef,
-6197,herinvoer uit 1e proef,
-6187,herinvoer uit 1e proef,
-6203,herinvoer uit 1e proef,
-6220,herinvoer uit 1e proef,
-6180,herinvoer uit 1e proef,
-6169,herinvoer uit 1e proef,
-6218,herinvoer uit 1e proef,
-6237,herinvoer uit 1e proef,
-6216,herinvoer uit 1e proef,
-6228,herinvoer uit 1e proef,
-6236,herinvoer uit 1e proef,
-6162,herinvoer uit 1e proef,
-6178,herinvoer uit 1e proef,
+RFID code;Fish Spiral;Opmerkingen
+6613;beneden 5% boven 58% 30min;3 windes dood bij Vandeput codes starten met 90020900008
+6550;beneden 5% boven 5% 5min;2 windes dood tijdens transport: 9002090000086610 & 595
+6578;beneden 58% boven 5% 10min;Herinvoer vissen 1e proef: niet meer ingevoerd= 6177, 6219, 6229, 6246 (te veel schade)
+6623;beneden 5% boven 5% 5min;
+6579;1 cycli =-55min;
+6596;Licht permanent aan;
+6635;Log Spiral registreert GMT;
+6612;Readers GMT+2h;
+6561;Invoer: 15u07;
+6576;;
+6590;;
+6605;;
+6573;;
+6617;;
+6565;;
+6636;;
+6594;;
+6588;;
+6554;;
+6589;;
+6648;;
+6611;;
+6643;;
+6601;;
+6602;;
+6575;;
+6570;;
+6624;;
+6598;;
+6552;;
+6572;;
+6577;;
+6593;;
+6632;;
+6581;;
+6591;;
+6587;;
+6597;;
+6562;;
+6627;;
+6582;;
+6621;;
+6580;;
+6638;;
+6566;;
+6563;;
+6564;;
+6645;;
+6568;;
+6574;;
+6626;;
+6642;;
+6553;;
+6599;;
+6586;;
+6567;;
+6592;;
+6631;;
+6606;;
+6549;;
+6149;herinvoer uit 1e proef;
+6212;herinvoer uit 1e proef;
+6233;herinvoer uit 1e proef;
+6186;herinvoer uit 1e proef;
+6200;herinvoer uit 1e proef;
+6150;herinvoer uit 1e proef;
+6235;herinvoer uit 1e proef;
+6157;herinvoer uit 1e proef;
+6183;herinvoer uit 1e proef;
+6148;herinvoer uit 1e proef;
+6243;herinvoer uit 1e proef;
+6156;herinvoer uit 1e proef;
+6225;herinvoer uit 1e proef;
+6222;herinvoer uit 1e proef;
+6230;herinvoer uit 1e proef;
+6179;herinvoer uit 1e proef;
+6194;herinvoer uit 1e proef;
+6188;herinvoer uit 1e proef;
+6174;herinvoer uit 1e proef;
+6182;herinvoer uit 1e proef;
+6196;herinvoer uit 1e proef;
+6204;herinvoer uit 1e proef;
+6168;herinvoer uit 1e proef;
+6190;herinvoer uit 1e proef;
+6199;herinvoer uit 1e proef;
+6224;herinvoer uit 1e proef;
+6244;herinvoer uit 1e proef;
+6238;herinvoer uit 1e proef;
+6245;herinvoer uit 1e proef;
+6197;herinvoer uit 1e proef;
+6187;herinvoer uit 1e proef;
+6203;herinvoer uit 1e proef;
+6220;herinvoer uit 1e proef;
+6180;herinvoer uit 1e proef;
+6169;herinvoer uit 1e proef;
+6218;herinvoer uit 1e proef;
+6237;herinvoer uit 1e proef;
+6216;herinvoer uit 1e proef;
+6228;herinvoer uit 1e proef;
+6236;herinvoer uit 1e proef;
+6162;herinvoer uit 1e proef;
+6178;herinvoer uit 1e proef;

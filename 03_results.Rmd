@@ -77,10 +77,13 @@ hervangst_proef3<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evalua
                            first.numbers="90020900008")
 ```
 
-```{r}
+```{r eval=FALSE}
 uitzet_proef1$tag_code[which(!uitzet_proef1$tag_code %in% hervangst_proef1$tag_code)]
+ 
 uitzet_proef2$tag_code[which(!uitzet_proef2$tag_code %in% hervangst_proef2$tag_code)]
+ 
 uitzet_proef3$tag_code[which(!uitzet_proef3$tag_code %in% hervangst_proef3$tag_code)]
+hervangst_proef3$tag_code[which(!hervangst_proef3$tag_code %in% uitzet_proef3$tag_code)]
 ```
 
 ```{r}
@@ -103,7 +106,7 @@ remove(gate_onder_2023,gate_boven_2023)
 ```
 
 ```{r}
-# Read in valve data of proef1 and proef2 (different format from proef0 :( )
+# Read in valve data of proef1, proef2 and proef3 (different format from proef0 :( )
 dir1<-"./data/extern/valves/2024/"
 files<-list.files(path=dir1)
 for (i in 1:length(files)){
@@ -170,9 +173,19 @@ plot(nodegraph)
 comp_obs <- compress(cth_file = data)
 comp_obs<-comp_obs %>% 
             group_by(tag_code) %>%
-            mutate(last_sequence=paste0(dplyr::lag(node),"-",node))
-comp_obs$proef<-gsub(".*_", "", comp_obs$tag_code)
-comp_obs$tag_code2<-gsub("\\_.*","", comp_obs$tag_code)
+            mutate(last_sequence=paste0(dplyr::lag(node),"-",node),
+                   proef=gsub(".*_", "", tag_code),
+                   tag_code2=gsub("\\_.*","", tag_code)) %>%
+            ungroup()
+
+hergebruikt<-comp_obs %>%
+            dplyr::select(tag_code2,proef,tag_code) %>%
+            distinct() %>%
+            group_by(tag_code2) %>%
+            arrange((proef)) %>%
+            dplyr::mutate(hergebruikt = dplyr::row_number()) %>%
+            ungroup() %>%
+            dplyr::select(tag_code,hergebruikt) 
 
 comp_dir <- addDirection(compress_obs = comp_obs,
                          parent_child = parent_child_nodes,
@@ -180,7 +193,8 @@ comp_dir <- addDirection(compress_obs = comp_obs,
 
 comp_dir<-left_join(comp_dir,gate %>% dplyr::select(-measurement),by=join_by(min_det==date_time,node==node))
 comp_dir<-left_join(comp_dir,metadata,by=join_by(tag_code2==tag_code))
-remove(comp_obs)
+comp_dir<-left_join(comp_dir,hergebruikt,by=join_by(tag_code==tag_code))
+remove(comp_obs, hergebruikt)
 ```
 
 ```{r}
@@ -206,7 +220,7 @@ nodes <- comp_dir %>%
             ungroup()
 ```
 
-## Tabellen
+## Passage succes
 
 ```{r}
 passage_succes<-function(pattern_value,berekening_value){
@@ -229,6 +243,8 @@ rbind(passage_succes(pattern_value='boven',berekening_value="hervangst en detect
   kable(caption="Passagesucces berekend op verschillende manieren.")
 ```
 
+## Aantal unieke tags per locatie
+
 ```{r}
 comp_dir %>% 
   group_by(proef,node) %>%
@@ -236,6 +252,8 @@ comp_dir %>%
   pivot_wider(names_from = proef, values_from = unieke_tags) %>%
   kable(caption="Aantal individuen (unieke tags) op verschillende antennes en locaties")
 ```
+
+## Aankomsttijd op verschillende locaties
 
 ```{r}
 comp_dir %>% 
@@ -248,6 +266,8 @@ comp_dir %>%
   kable_styling(latex_options="scale_down")
 ```
 
+## Reistijd
+
 ```{r}
 tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="vdz_boven" & dplyr::lag(comp_dir$node)=="vdz_onder")])
 
@@ -257,10 +277,58 @@ comp_dir %>%
          since_open=round(since_open),
          opening=round(opening,digits=2)) %>% 
   dplyr::select(tag_code,travel_time,min_det,max_det,since_open,opening) %>% 
-  arrange(min_det) %>%
+  arrange(tag_code,min_det) %>%
+  group_by(tag_code) %>%
+  dplyr::mutate(loop = dplyr::row_number()) %>%
   kable(caption="Voor alle boven gedetecteerde vissen worden volgende zaken opgelijst: travel time (in minuten) is de tijd tussen de laatste detectie onder en eerste boven. Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. Verder wordt de eerste (min det) en laatste (max det) detectie op de bovenste antenne tijdens de betreffende cyclus weergegeven. since open geeft de tijd aan tussen het moment dat de bovenste schuif als open wordt beschouwd en de eerste detectie op de bovenste schuif. opening geeft weer wat de opening van de bovenste schuif was op het moment van de eerste detectie op de bovenste schuif (in centimeters).",longtable=TRUE) %>% 
   kable_styling(latex_options="scale_down")
 ```
+
+```{r fig.cap = "Reistijd van de onderste naar de bovenste antenne voor vissen die 1, 2 en 3 keer gebruikt zijn voor de experimenten."}
+tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="vdz_boven" & dplyr::lag(comp_dir$node)=="vdz_onder")])
+
+b<-ggplot(data=comp_dir %>%
+            dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+            dplyr::filter(is.na(travel_time)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(as.factor(hergebruikt), travel_time),size = 0.5, color = "black") + 
+  geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+  ylab("Reistijd van de onderste naar de bovenste antenne (minuten)") + 
+  xlab("Aantal keer gebruikt voor experiment") + 
+  theme_bw()
+print(b)
+```
+
+```{r fig.cap = "Reistijd van de onderste naar de bovenste antenne voor verschillende pogingen tijdens een experiment voor vissen die 1, 2 en 3 keer gebruikt zijn voor de experimenten."}
+give.n <- function(x){
+  return(c(y = median(x)+100, label = length(x))) 
+}
+
+tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="vdz_boven" & dplyr::lag(comp_dir$node)=="vdz_onder")])
+
+b<-ggplot(data=comp_dir %>%
+            dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+            dplyr::filter(is.na(travel_time)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code) %>%
+            dplyr::mutate(loop = dplyr::row_number()),
+          aes(as.factor(loop), travel_time),size = 0.5, color = "black") + 
+  geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+  ylab("Reistijd van de onderste naar de bovenste antenne (minuten)") + 
+  xlab("Aantal trajecten van de onderste naar de bovenste antenne") + 
+  theme_bw() + 
+  facet_wrap(~ hergebruikt) +
+stat_summary(fun.data = give.n, geom = "text", fun.y = median,
+                  position = position_dodge(width = 0.75))
+print(b)
+```
+
+## Aantal unieke tags per sequentie
 
 ```{r}
 comp_dir %>% 
@@ -269,6 +337,8 @@ comp_dir %>%
   pivot_wider(names_from = proef, values_from = unieke_tags) %>%
   kable(caption="Aantal individuen (unieke tags) per sequentie")
 ```
+
+## Aankomsttijd op de verschillende antennes tijdens de dag
 
 ```{r fig.height=10, fig.width=10,}
 ggplot(comp_dir %>% 
@@ -281,7 +351,7 @@ ggplot(comp_dir %>%
     facet_wrap(~ proef + node, ncol=2)
 ```
 
-## Grafieken proef0 (mei 2023)
+## Grafieken schuifopening proef0 (mei 2023)
 
 ```{r}
 plot_vdz <- function(start, stop, node_input, proef_input, points = FALSE){
@@ -316,7 +386,7 @@ plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="vdz_boven",proef_input
 plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="vdz_onder",proef_input="proef0", points = TRUE)
 ```
 
-## Grafieken proef1 (mei 2024)
+## Grafieken schuifopening proef1 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
 plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="vdz_boven",proef_input="proef1")
@@ -334,7 +404,7 @@ plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_boven",proef_input
 plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_onder",proef_input="proef1", points=TRUE)
 ```
 
-## Grafieken proef2 (mei 2023)
+## Grafieken schuifopening proef2 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
 plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="vdz_boven",proef_input="proef2")

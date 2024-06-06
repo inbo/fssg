@@ -7,21 +7,6 @@ source("./code/functions/function_clean_hervangst_and_uitzet.R")
 ```
 
 ```{r}
-# Read in length and species data of proef0, proef1, proef2 and proef3
-dir1<-"./data/extern/lengte_en_soort/verwerkt/"
-folders<-list.files(path=dir1)
-for (i in 1:length(folders)){
-  dir2<-paste0(dir1,folders[i])
-  temp<-read_excel(path=dir2)
-  tag_code_start<-parse_number(colnames(temp)[4])
-  colnames(temp)<-c("soort","lengte","gewicht","tag_code","opmerkingen")
-  temp$tag_code<-paste0(tag_code_start,as.character(temp$tag_code))
-  if (i==1){metadata=temp} else{metadata=rbind(metadata,temp)}
-}
-metadata$opmerkingen<-NULL
-```
-
-```{r}
 # Read in all pit tag data (proef0, proef1, proef2 and proef3)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
@@ -144,6 +129,23 @@ gate<-rbind(gate,gate_onder_2024,gate_boven_2024)
 ```
 
 ```{r}
+# Read in length and species data of proef0, proef1, proef2 and proef3
+dir1<-"./data/extern/lengte_en_soort/verwerkt/"
+folders<-list.files(path=dir1)
+for (i in 1:length(folders)){
+  dir2<-paste0(dir1,folders[i])
+  temp<-read_excel(path=dir2)
+  tag_code_start<-parse_number(colnames(temp)[4])
+  colnames(temp)<-c("soort","lengte","gewicht","tag_code","opmerkingen")
+  temp$tag_code<-paste0(tag_code_start,as.character(temp$tag_code))
+  if (i==1){metadata=temp} else{metadata=rbind(metadata,temp)}
+}
+metadata$opmerkingen<-NULL
+metadata[which(metadata$tag_code %in% metadata$tag_code[which(duplicated(metadata$tag_code)==TRUE)]),c("lengte","gewicht")]=NA
+metadata<-metadata[!duplicated(metadata), ]
+```
+
+```{r}
 configuration<-read.csv("./data/extern/configuration.csv",sep=";")
 configuration$antenna_id<-as.character(configuration$antenna_id)
 ```
@@ -170,16 +172,14 @@ comp_obs<-comp_obs %>%
             group_by(tag_code) %>%
             mutate(last_sequence=paste0(dplyr::lag(node),"-",node))
 comp_obs$proef<-gsub(".*_", "", comp_obs$tag_code)
-comp_obs$tag_code2<-gsub("\\._*","", comp_obs$tag_code)
-
+comp_obs$tag_code2<-gsub("\\_.*","", comp_obs$tag_code)
 
 comp_dir <- addDirection(compress_obs = comp_obs,
                          parent_child = parent_child_nodes,
                          direction = "u")
 
 comp_dir<-left_join(comp_dir,gate %>% dplyr::select(-measurement),by=join_by(min_det==date_time,node==node))
-comp_dir<-left_join(comp_dir,metadata %>% dplyr::select(-proef),by="tag_code")
-
+comp_dir<-left_join(comp_dir,metadata,by=join_by(tag_code2==tag_code))
 remove(comp_obs)
 ```
 

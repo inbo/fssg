@@ -7,6 +7,21 @@ source("./code/functions/function_clean_hervangst_and_uitzet.R")
 ```
 
 ```{r}
+# Read in length and species data of proef0, proef1, proef2 and proef3
+dir1<-"./data/extern/lengte_en_soort/verwerkt/"
+folders<-list.files(path=dir1)
+for (i in 1:length(folders)){
+  dir2<-paste0(dir1,folders[i])
+  temp<-read_excel(path=dir2)
+  tag_code_start<-parse_number(colnames(temp)[4])
+  colnames(temp)<-c("soort","lengte","gewicht","tag_code","opmerkingen")
+  temp$tag_code<-paste0(tag_code_start,as.character(temp$tag_code))
+  if (i==1){metadata=temp} else{metadata=rbind(metadata,temp)}
+}
+metadata$opmerkingen<-NULL
+```
+
+```{r}
 # Read in all pit tag data (proef0, proef1, proef2 and proef3)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
@@ -129,23 +144,6 @@ gate<-rbind(gate,gate_onder_2024,gate_boven_2024)
 ```
 
 ```{r}
-# Read in length and species data of proef0
-dir1<-"./data/extern/lengte_en_soort/verwerkt/"
-folders<-list.files(path=dir1)
-for (i in 1:length(folders)){
-  dir2<-paste0(dir1,folders[i])
-  temp<-read_excel(path=dir2)
-  tag_code_start<-parse_number(colnames(temp)[3])
-  colnames(temp)<-c("soort","lengte","tag_code","opmerkingen")
-  temp$tag_code<-paste0(tag_code_start,as.character(temp$tag_code))
-  if (i==1){metadata=temp} else{metadata=rbind(metadata,temp)}
-}
-metadata$opmerkingen<-NULL
-metadata$proef="proef0"
-metadata$tag_code<-paste0(metadata$tag_code,"_",metadata$proef)
-```
-
-```{r}
 configuration<-read.csv("./data/extern/configuration.csv",sep=";")
 configuration$antenna_id<-as.character(configuration$antenna_id)
 ```
@@ -172,6 +170,8 @@ comp_obs<-comp_obs %>%
             group_by(tag_code) %>%
             mutate(last_sequence=paste0(dplyr::lag(node),"-",node))
 comp_obs$proef<-gsub(".*_", "", comp_obs$tag_code)
+comp_obs$tag_code2<-gsub("\\._*","", comp_obs$tag_code)
+
 
 comp_dir <- addDirection(compress_obs = comp_obs,
                          parent_child = parent_child_nodes,
@@ -366,54 +366,45 @@ plot_vdz(start="2024-05-22 13:00",stop="2024-05-22 15:00",node_input="vdz_onder"
 
 ## Netwerk analyse
 
+```{r}
+plot_network<-function(proef_input,to_include="all"){
+  
+  
+  if (to_include=="all"){
+    d=links %>% 
+       dplyr::filter(proef==proef_input) %>%
+       dplyr::select(-proef)
+    vertices=nodes %>% 
+       dplyr::filter(proef==proef_input) %>%
+       dplyr::select(-proef)
+  } else{
+    d=links %>% 
+       dplyr::filter(proef==proef_input & stop!="binnenring" & stop!="buitenring onder") %>%
+       dplyr::select(-proef)
+    vertices=nodes %>% 
+       dplyr::filter(proef==proef_input & node!="binnenring" & node!="buitenring onder") %>%
+       dplyr::select(-proef)
+  }
+    
+  network <- graph_from_data_frame(d,vertices,directed=T) 
+  l <- layout_in_circle(network)
+  plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
+       edge.color=E(network)$color,edge.label = d$n,vertex.label = paste(vertices$node,vertices$n,sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+}
+```
+
 ```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef0."}
-network <- graph_from_data_frame(d=links %>% 
-                                   dplyr::filter(proef=="proef0") %>%
-                                   dplyr::select(-proef), 
-                                 vertices=nodes %>% 
-                                   dplyr::filter(proef=="proef0") %>%
-                                   dplyr::select(-proef),
-                                 directed=T) 
-l <- layout_in_circle(network)
-plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
-     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef0")],vertex.label = paste(nodes$node[which(nodes$proef=="proef0")],nodes$n[which(nodes$proef=="proef0")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+plot_network("proef0")
 ```
 
 ```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef1."}
-network <- graph_from_data_frame(d=links %>% 
-                                   dplyr::filter(proef=="proef1") %>%
-                                   dplyr::select(-proef), 
-                                 vertices=nodes %>% 
-                                   dplyr::filter(proef=="proef1") %>%
-                                   dplyr::select(-proef),
-                                 directed=T) 
-l <- layout_in_circle(network)
-plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
-     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef1")],vertex.label = paste(nodes$node[which(nodes$proef=="proef1")],nodes$n[which(nodes$proef=="proef1")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+plot_network("proef1", to_include = "not all")
 ```
 
 ```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef2."}
-network <- graph_from_data_frame(d=links %>% 
-                                   dplyr::filter(proef=="proef2") %>%
-                                   dplyr::select(-proef), 
-                                 vertices=nodes %>% 
-                                   dplyr::filter(proef=="proef2") %>%
-                                   dplyr::select(-proef),
-                                 directed=T) 
-l <- layout_in_circle(network)
-plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
-     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef2")],vertex.label = paste(nodes$node[which(nodes$proef=="proef2")],nodes$n[which(nodes$proef=="proef2")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+plot_network("proef2")
 ```
 
 ```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef3."}
-network <- graph_from_data_frame(d=links %>% 
-                                   dplyr::filter(proef=="proef3") %>%
-                                   dplyr::select(-proef), 
-                                 vertices=nodes %>% 
-                                   dplyr::filter(proef=="proef3") %>%
-                                   dplyr::select(-proef),
-                                 directed=T) 
-l <- layout_in_circle(network)
-plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
-     edge.color=E(network)$color,edge.label = links$n[which(links$proef=="proef3")],vertex.label = paste(nodes$node[which(nodes$proef=="proef3")],nodes$n[which(nodes$proef=="proef3")],sep="\n"),vertex.label.cex=2,edge.label.cex=2)
+plot_network("proef3", to_include = "not all")
 ```

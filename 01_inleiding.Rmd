@@ -1,4 +1,21 @@
 <!-- hier komt de inhoudstafel bij pdf -->
+
 \mainmatter
 
-# Inleiding
+# Introduction
+
+## Context
+
+Migration barriers and habitat fragmentation are the main threats impacting freshwater and diadromous fish species globally [@belletti2020]. Though barrier removal is often the preferred course of action, it is not always feasible because of economical or safety-realted reasons. Potential other solutions to promote fish movement include fish passes and fish elevators, though there efficiency is often strongly dependent on the local conditions and target species [@noonan2012]. Therefore these systems need to be thorougly assessed to understand how the efficiency is determined by the environmental conditions and target species.
+
+## Design of the Fish Spiral Sluice Gate (FSSG)
+
+The Fish Spiral Sluice Gate (FSSG) was designed to provide a simple, compact solution for fish to overcome barriers between 1 m and 10 m high. It consists of three vertical and immobile “canals” shaped as Archimedes’ screws, each with an entry (i.e the lower valves) and exit (i.e the upper valves). The lower and upper valves are surrounded by outflow chambers. Each canal has an artificial substratum, is completely filled with water and contains five pressure sensors: three throughout the canal, one at the entrance and one at the exit. The lower and upper valves are adjusted accordingly to the pressure inside of the canal. When the lower valve is fully opened then the upper valve opening is at its smallest. The main idea is for fish to be attracted by the flow at the lower valve when it starts to open, enter the system when the lower valve fully opens and make their way towards the upper valve, to then exit the “canal” when the upper valve opens.
+
+## Aims
+
+The aim of this study is to assess the **efficiency of the FSSG** and understand how fish of **different species and sizes** **respond** to its mechanisms. In doing so, recommendations can be formulated on how approriate and feasible the use of the FSSG for fish passage would be under different conditions.
+
+## PIT (Passive Integrated Transponder) telemetry
+
+PIT telemetry is a wildly used technology, enabling the tracking of fish or terrestrial animals, especially in narrow systems [@thorstad2013]. Similar to other telemetry techniques, it relies on a tag inserted or fixed on a fish but also on an antenna, which generates a magnetic field, charging the tag which then emits a response that can be read by the system [@bubb2002]. Two types of PIT telemetry exist: Half-Duplex (HDX) and Full-Duplex (FDX). In FDX systems, the antenna continuously generates a magnetic field and the tag response can constantly be detected and recorded. HDX systems switch between the “generating a magnetic field” mode and “reading tag response” mode. Antennae are simpler in HDX, can be larger and also require less power. They are made of a copper inductor wire wrapped as a loop, generating the magnetic field. This antenna is then connected to a tuning box, itself linked to a reader box where the data logging computer is [@barbour2011]. The tracked animal is usually tagged internally in the abdominal cavity with a different tag depending on whether the system is HDX or FDX. Tags of different sizes can be used, with the large ones having a strong signal and the smaller ones having a weaker signal. The signal range can be impacted by the presence of metal around the antennae, although it is often still useable. **HDX telemetry was used in the present study.**

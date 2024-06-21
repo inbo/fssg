@@ -1,7 +1,7 @@
 site_code;antenna_id;config_id;node;latitude;longitude;start_date;end_date
-tank beneden;1;100;tank beneden;;;;
-vdz_onder;1;100;vdz_onder;;;;
-vdz_boven;1;100;vdz_boven;;;;
-tank boven;1;100;tank boven;;;;
-buitenring onder;1;100;buitenring onder;;;;
-binnenring;1;100;binnenring;;;;
+basin down;1;100;basin down;;;;
+antenna_down;1;100;antenna_down;;;;
+antenna_up;1;100;antenna_up;;;;
+basin up;1;100;basin up;;;;
+outer ring;1;100;outer ring;;;;
+inner ring;1;100;inner ring;;;;

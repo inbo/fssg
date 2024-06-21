@@ -1,6 +1,6 @@
 parent;child
-tank beneden;vdz_onder
-vdz_onder;vdz_boven
-vdz_boven;tank boven
-tank beneden;buitenring onder
-tank beneden;binnenring
+basin down;antenna_down
+antenna_down;antenna_up
+antenna_up;basin up
+basin down;outer ring
+basin down;inner ring

@@ -1,4 +1,4 @@
-# Resultaten
+# Results
 
 ```{r warning=FALSE, include=FALSE}
 source("./code/not_functions/libraries.R")
@@ -7,7 +7,7 @@ source("./code/functions/function_clean_hervangst_and_uitzet.R")
 ```
 
 ```{r}
-# Read in all pit tag data (proef0, proef1, proef2 and proef3)
+# Read in all pit tag data (exp0, exp1, exp2 and exp3)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
 for (i in 1:length(folders)){
@@ -33,80 +33,90 @@ data$antenna_group_configuration_value=100
 data<-data[startsWith(data$tag_code,"9")==TRUE,]
 data<-data[-which(data$tag_code %in% c("900_2280000_228000535717","900_2280\xc9D\xe2LI","900_228000535Y")),]
 data$tag_code<-gsub("_","",data$tag_code)
+data$event_site_code_value[which(data$event_site_code_value=="vdz_boven")]="antenna_up"
+data$event_site_code_value[which(data$event_site_code_value=="vdz_onder")]="antenna_down"
 
-data$proef<-NA
-data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2023")]="proef0"
-data$proef[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2024")]="proef1"
-data$proef[which(data$event_date_time_value>as.POSIXct("21-05-2024",format="%d-%m-%Y"))]="proef2"
-data$proef[which(data$event_date_time_value>as.POSIXct("28-05-2024",format="%d-%m-%Y"))]="proef3"
-data$tag_code<-paste0(data$tag_code,"_",data$proef)
-data$type<-"detectie"
+data$exp<-NA
+data$exp[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2023")]="exp0"
+data$exp[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2024")]="exp1"
+data$exp[which(data$event_date_time_value>as.POSIXct("22-05-2024 10:00",format="%d-%m-%Y %H:%M",tz="UTC"))]="exp2"
+data$exp[which(data$event_date_time_value>as.POSIXct("28-05-2024 10:00",format="%d-%m-%Y %H:%M",tz="UTC"))]="exp3"
+data$tag_code<-paste0(data$tag_code,"_",data$exp)
+data$type<-"detection"
+
+remove(i,j)
 ```
 
 ```{r}
-# Read in uitzet proef1, hervangst proef1, uitzet proef2, hervangst proef2, uitzet proef3
-uitzet_proef1<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 15_05.csv",
-                           proef="proef1",
-                           type="uitzet",
+# Read in uitzet exp1, hervangst exp1, uitzet exp2, hervangst exp2, uitzet exp3
+uitzet_exp1<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 15_05.csv",
+                           exp="exp1",
+                           type="release",
                            tijdstip="2024-05-15 12:00:00",
                            first.numbers="90020900008")
-hervangst_proef1<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 1e proef 21_05.csv",
-                           proef="proef1",
-                           type="hervangst",
+hervangst_exp1<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 1e proef 21_05.csv",
+                           exp="exp1",
+                           type="recapture",
                            tijdstip="2024-05-21 12:00:00",
                            first.numbers="90020900008")
-uitzet_proef2<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 22_05.csv",
-                           proef="proef2",
-                           type="uitzet",
+uitzet_exp2<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 22_05.csv",
+                           exp="exp2",
+                           type="release",
                            tijdstip="2024-05-22 12:00:00",
                            first.numbers="90020900008")
-hervangst_proef2<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 2e proef 28_05.csv",
-                           proef="proef2",
-                           type="hervangst",
+hervangst_exp2<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 2e proef 28_05.csv",
+                           exp="exp2",
+                           type="recapture",
                            tijdstip="2024-05-28 12:00:00",
                            first.numbers="90020900008")
-uitzet_proef3<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 29_05.csv",
-                           proef="proef3",
-                           type="uitzet",
+uitzet_exp3<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 29_05.csv",
+                           exp="exp3",
+                           type="release",
                            tijdstip="2024-05-29 12:00:00",
                            first.numbers="90020900008")
-hervangst_proef3<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 3e proef 05_06.csv",
-                           proef="proef3",
-                           type="hervangst",
+hervangst_exp3<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 3e proef 05_06.csv",
+                           exp="exp3",
+                           type="recapture",
                            tijdstip="2024-06-05 12:00:00",
                            first.numbers="90020900008")
 ```
 
+```{r}
+uitzet<-rbind(uitzet_exp1,uitzet_exp2,uitzet_exp3)
+hervangst<-rbind(hervangst_exp1,hervangst_exp2,hervangst_exp3)
+
+tags.to.remove<-c(uitzet$tag_code[which(!uitzet$tag_code %in% hervangst$tag_code)], hervangst$tag_code[which(!hervangst$tag_code %in% uitzet$tag_code)], unique(hervangst$tag_code[which(hervangst$event_site_code_value %in% c("outer ring", "inner ring"))]))
+
+remove(uitzet_exp1,hervangst_exp1,uitzet_exp2,hervangst_exp2,uitzet_exp3,hervangst_exp3)
+```
+
 ```{r eval=FALSE}
-uitzet_proef1$tag_code[which(!uitzet_proef1$tag_code %in% hervangst_proef1$tag_code)]
- 
-uitzet_proef2$tag_code[which(!uitzet_proef2$tag_code %in% hervangst_proef2$tag_code)]
- 
-uitzet_proef3$tag_code[which(!uitzet_proef3$tag_code %in% hervangst_proef3$tag_code)]
-hervangst_proef3$tag_code[which(!hervangst_proef3$tag_code %in% uitzet_proef3$tag_code)]
+data<-unique(data$tag_code[which(!data$tag_code %in% uitzet$tag_code)])
 ```
 
 ```{r}
-# combine pit data, uitzet proef1, hervangst proef1 en uitzet proef2
-data<-rbind(data,uitzet_proef1,hervangst_proef1,uitzet_proef2,hervangst_proef2,uitzet_proef3,hervangst_proef3)
+# combine pit data, uitzet en hervangst
+data<-rbind(data,uitzet,hervangst)
+data<-data[which(!data$tag_code %in% tags.to.remove),]
+remove(uitzet,hervangst)
 ```
 
 ```{r warning=FALSE, cache=TRUE}
-# Read in valve data of proef0 
+# Read in valve data of exp0 
 gate_onder_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 1)[,c(2,3)]
 gate_boven_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 2)[,c(2,3)]
   
 gate_onder_2023<-gate_cleaning(gate_onder_2023,"2023")
-gate_onder_2023$node<-"vdz_onder"
+gate_onder_2023$node<-"antenna_down"
 gate_boven_2023<-gate_cleaning(gate_boven_2023,"2023")
-gate_boven_2023$node<-"vdz_boven"
+gate_boven_2023$node<-"antenna_up"
 
 gate<-rbind(gate_onder_2023,gate_boven_2023)
 remove(gate_onder_2023,gate_boven_2023)
 ```
 
 ```{r}
-# Read in valve data of proef1, proef2 and proef3 (different format from proef0 :( )
+# Read in valve data of exp1, exp2 and exp3 (different format from exp0 :( )
 dir1<-"./data/extern/valves/2024/"
 files<-list.files(path=dir1)
 for (i in 1:length(files)){
@@ -124,15 +134,16 @@ for (i in 1:length(files)){
 }
 
 gate_onder_2024<-gate_cleaning(gate_onder_2024,"2024")
-gate_onder_2024$node<-"vdz_onder"
+gate_onder_2024$node<-"antenna_down"
 gate_boven_2024<-gate_cleaning(gate_boven_2024,"2024")
-gate_boven_2024$node<-"vdz_boven"
+gate_boven_2024$node<-"antenna_up"
 
 gate<-rbind(gate,gate_onder_2024,gate_boven_2024)
+remove(gate_onder_2024,gate_boven_2024,dir1,dir2,files,file,i)
 ```
 
 ```{r}
-# Read in length and species data of proef0, proef1, proef2 and proef3
+# Read in length and species data of exp0, exp1, exp2 and exp3
 dir1<-"./data/extern/lengte_en_soort/verwerkt/"
 folders<-list.files(path=dir1)
 for (i in 1:length(folders)){
@@ -146,6 +157,7 @@ for (i in 1:length(folders)){
 metadata$opmerkingen<-NULL
 metadata[which(metadata$tag_code %in% metadata$tag_code[which(duplicated(metadata$tag_code)==TRUE)]),c("lengte","gewicht")]=NA
 metadata<-metadata[!duplicated(metadata), ]
+remove(temp,temp_boven_2024,temp_onder_2024,folders,tag_code_start)
 ```
 
 ```{r}
@@ -159,7 +171,7 @@ parent_child_nodes <- addParentChildNodes(parent_child = parent_child,
                                           configuration = configuration)
 ```
 
-```{r}
+```{r include=FALSE}
 buildPaths(parent_child = parent_child_nodes, direction = c("u"))
 ```
 
@@ -174,15 +186,15 @@ comp_obs <- compress(cth_file = data)
 comp_obs<-comp_obs %>% 
             group_by(tag_code) %>%
             mutate(last_sequence=paste0(dplyr::lag(node),"-",node),
-                   proef=gsub(".*_", "", tag_code),
+                   exp=gsub(".*_", "", tag_code),
                    tag_code2=gsub("\\_.*","", tag_code)) %>%
             ungroup()
 
 hergebruikt<-comp_obs %>%
-            dplyr::select(tag_code2,proef,tag_code) %>%
+            dplyr::select(tag_code2,exp,tag_code) %>%
             distinct() %>%
             group_by(tag_code2) %>%
-            arrange((proef)) %>%
+            arrange((exp)) %>%
             dplyr::mutate(hergebruikt = dplyr::row_number()) %>%
             ungroup() %>%
             dplyr::select(tag_code,hergebruikt) 
@@ -202,77 +214,79 @@ links <- comp_dir %>%
             group_by(tag_code) %>%
             mutate(start=node,
                    stop=dplyr::lead(node)) %>%
-            dplyr::filter(is.na(stop)==FALSE) %>%
-            dplyr::select(tag_code,start,stop,proef) %>%
+            #dplyr::filter(is.na(stop)==FALSE) %>%
+            dplyr::select(tag_code,start,stop,exp) %>%
+            mutate(stop = case_when(is.na(stop)==TRUE ~ start,
+                                     .default=stop)) %>%
             ungroup() %>%
-            group_by(proef,start,stop) %>%
+            group_by(exp,start,stop) %>%
             summarize(n=n_distinct(tag_code)) %>%
-            mutate(color = case_when(start == "tank beneden" & stop == "vdz_onder" ~ "green",
-                                     start == "vdz_onder" & stop == "vdz_boven" ~ "green",
-                                     start == "vdz_boven" & stop == "tank boven" ~ "green",
+            mutate(color = case_when(start == "basin down" & stop == "antenna_down" ~ "green",
+                                     start == "antenna_down" & stop == "antenna_up" ~ "green",
+                                     start == "antenna_up" & stop == "basin up" ~ "green",
                                      .default = "red")) %>%
             ungroup()
 
 nodes <- comp_dir %>% 
-            dplyr::select(node,proef,tag_code) %>%
-            group_by(proef,node) %>%
+            dplyr::select(node,exp,tag_code) %>%
+            group_by(exp,node) %>%
             summarize(n=n_distinct(tag_code)) %>%
             ungroup()
 ```
 
-## Passage succes
+## Passage success
 
 ```{r}
 passage_succes<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
       mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "boven",
                             .default = "beneden"),
-             berekening=berekening_value) %>%
-      group_by(proef,niveau,berekening) %>%
+             calculation=berekening_value) %>%
+      group_by(exp, niveau, calculation) %>%
       summarise(unieke_tags = n_distinct(tag_code)) %>%
       ungroup() %>%
-      group_by(proef,berekening) %>%
-      summarise(passage_succes=unieke_tags[niveau=="boven"]/unieke_tags[niveau=="beneden"]) 
+      group_by(exp, calculation) %>%
+      summarise(passage_succes=round(unieke_tags[niveau=="boven"]/unieke_tags[niveau=="beneden"],digits=2)) 
   return(data)
 }
 
-rbind(passage_succes(pattern_value='boven',berekening_value="hervangst en detecties"),
-      passage_succes(pattern_value='tank boven',berekening_value="hervangst"),
-      passage_succes(pattern_value='vdz_boven',berekening_value="detecties")) %>% 
-    pivot_wider(names_from = proef, values_from = passage_succes) %>%
-  kable(caption="Passagesucces berekend op verschillende manieren.")
+rbind(passage_succes(pattern_value='up',berekening_value="recapture and detections"),
+      passage_succes(pattern_value='basin up',berekening_value="recapture"),
+      passage_succes(pattern_value='antenna_up',berekening_value="detections")) %>% 
+    pivot_wider(names_from = exp, values_from = passage_succes) %>%
+  kable(caption="Passage success calculated in different ways.")
 ```
 
-## Aantal unieke tags per locatie
+## Number of individuals (unique tags) at different antennas and locations
 
 ```{r}
 comp_dir %>% 
-  group_by(proef,node) %>%
+  group_by(exp,node) %>%
   summarise(unieke_tags = n_distinct(tag_code)) %>% 
-  pivot_wider(names_from = proef, values_from = unieke_tags) %>%
-  kable(caption="Aantal individuen (unieke tags) op verschillende antennes en locaties")
+  pivot_wider(names_from = exp, values_from = unieke_tags) %>%
+  kable(caption="Number of individuals (unique tags) at different antennas and locations")
 ```
 
-## Aankomsttijd op verschillende locaties
+## Arrival time at different antennas
 
 ```{r}
 comp_dir %>% 
-  group_by(proef,node,tag_code) %>%
+  group_by(exp,node,tag_code) %>%
   summarise(eerste_detectie=min(min_det)) %>%
   ungroup() %>%
   pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
-  dplyr::select(tag_code,vdz_onder,vdz_boven,`tank boven`) %>%
-  kable(caption="Tijdstip eerste detectie per vis op onder en boven antenne",longtable=TRUE) %>% 
+  dplyr::select(tag_code,antenna_down,antenna_up,`basin up`) %>%
+  kable(caption="Time of first detection per fish on the top and bottom antenna",longtable=TRUE) %>% 
   kable_styling(latex_options="scale_down")
 ```
 
-## Reistijd
+## Travel time
 
 ```{r}
-tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="vdz_boven" & dplyr::lag(comp_dir$node)=="vdz_onder")])
+tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="antenna_up" & dplyr::lag(comp_dir$node)=="antenna_down")])
 
 comp_dir %>% 
-  dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+  dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
   mutate(travel_time=round(travel_time),
          since_open=round(since_open),
          opening=round(opening,digits=2)) %>% 
@@ -280,15 +294,15 @@ comp_dir %>%
   arrange(tag_code,min_det) %>%
   group_by(tag_code) %>%
   dplyr::mutate(loop = dplyr::row_number()) %>%
-  kable(caption="Voor alle boven gedetecteerde vissen worden volgende zaken opgelijst: travel time (in minuten) is de tijd tussen de laatste detectie onder en eerste boven. Er wordt voor elke cyclus (van de onderste naar de bovenste schuif) van elke vis gekeken naar de tijd tussen de laatste detectie op de onderste schuif en de eerste detectie op de bovenste schuif. Dit geeft aan hoe lang de vis zich in de vijzel bevond. Verder wordt de eerste (min det) en laatste (max det) detectie op de bovenste antenne tijdens de betreffende cyclus weergegeven. since open geeft de tijd aan tussen het moment dat de bovenste schuif als open wordt beschouwd en de eerste detectie op de bovenste schuif. opening geeft weer wat de opening van de bovenste schuif was op het moment van de eerste detectie op de bovenste schuif (in centimeters).",longtable=TRUE) %>% 
+  kable(caption="Travel time (min) to move up the fish spiral calculated as the time difference between the last detection at the lower antenna and the first at the upper antenna. The time since the upper valve opened and the first detection at the upper antenna are given. The opening (cm) at which the firt detection at the upper antenna is noted is also given. Some fish went up and down several times. Subsequent trajectories are numbered under loop.",longtable=TRUE) %>% 
   kable_styling(latex_options="scale_down")
 ```
 
-```{r fig.cap = "Reistijd van de onderste naar de bovenste antenne voor vissen die 1, 2 en 3 keer gebruikt zijn voor de experimenten."}
-tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="vdz_boven" & dplyr::lag(comp_dir$node)=="vdz_onder")])
+```{r fig.cap = "Travel time from the lower to the upper antenna for fish used 1, 2 and 3 times for the experiments."}
+tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="antenna_up" & dplyr::lag(comp_dir$node)=="antenna_down")])
 
 b<-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
             dplyr::filter(is.na(travel_time)==FALSE) %>%
             dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
             arrange(tag_code,min_det) %>%
@@ -297,21 +311,21 @@ b<-ggplot(data=comp_dir %>%
             dplyr::filter(loop == 1),
           aes(as.factor(hergebruikt), travel_time),size = 0.5, color = "black") + 
   geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-  ylab("Reistijd van de onderste naar de bovenste antenne (minuten)") + 
-  xlab("Aantal keer gebruikt voor experiment") + 
+  ylab("Travel time from the lower to the upper antenna (minutes)") + 
+  xlab("Number of times used for the experiment") + 
   theme_bw()
 print(b)
 ```
 
-```{r fig.cap = "Reistijd van de onderste naar de bovenste antenne voor verschillende pogingen tijdens een experiment voor vissen die 1, 2 en 3 keer gebruikt zijn voor de experimenten."}
+```{r fig.cap = "Travel time from lower to upper antenna for different loops during an experiment for fish used 1, 2 and 3 times for the experiments."}
 give.n <- function(x){
   return(c(y = median(x)+100, label = length(x))) 
 }
 
-tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="vdz_boven" & dplyr::lag(comp_dir$node)=="vdz_onder")])
+tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="antenna_up" & dplyr::lag(comp_dir$node)=="antenna_down")])
 
 b<-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="vdz_boven") %>% 
+            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
             dplyr::filter(is.na(travel_time)==FALSE) %>%
             dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
             arrange(tag_code,min_det) %>%
@@ -319,8 +333,8 @@ b<-ggplot(data=comp_dir %>%
             dplyr::mutate(loop = dplyr::row_number()),
           aes(as.factor(loop), travel_time),size = 0.5, color = "black") + 
   geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-  ylab("Reistijd van de onderste naar de bovenste antenne (minuten)") + 
-  xlab("Aantal trajecten van de onderste naar de bovenste antenne") + 
+  ylab("Travel time from the lower to the upper antenna (minutes)") + 
+  xlab("Number of moves from the lower to the upper antenna") + 
   theme_bw() + 
   facet_wrap(~ hergebruikt) +
 stat_summary(fun.data = give.n, geom = "text", fun.y = median,
@@ -328,33 +342,33 @@ stat_summary(fun.data = give.n, geom = "text", fun.y = median,
 print(b)
 ```
 
-## Aantal unieke tags per sequentie
+## Number of unique tags per sequence
 
 ```{r}
 comp_dir %>% 
-  group_by(proef,last_sequence) %>%
+  group_by(exp,last_sequence) %>%
   summarise(unieke_tags = n_distinct(tag_code)) %>% 
-  pivot_wider(names_from = proef, values_from = unieke_tags) %>%
-  kable(caption="Aantal individuen (unieke tags) per sequentie")
+  pivot_wider(names_from = exp, values_from = unieke_tags) %>%
+  kable(caption="Number of individuals (unique tags) per sequence")
 ```
 
-## Aankomsttijd op de verschillende antennes tijdens de dag
+## Arrival time at the different antennas during the day
 
 ```{r fig.height=10, fig.width=10,}
 ggplot(comp_dir %>% 
-  dplyr::filter(node %in% c("vdz_onder","vdz_boven")) %>% 
+  dplyr::filter(node %in% c("antenna_down","antenna_up")) %>% 
   mutate(hour_min_det=lubridate::hour(min_det)) %>%
-  group_by(proef,node,hour_min_det) %>%
+  group_by(exp,node,hour_min_det) %>%
   summarise(unieke_tags = n_distinct(tag_code)),
     aes(x=hour_min_det, y=unieke_tags)) + 
     geom_bar(stat = "identity") +
-    facet_wrap(~ proef + node, ncol=2)
+    facet_wrap(~ exp + node, ncol=2)
 ```
 
-## Grafieken schuifopening proef0 (mei 2023)
+## Graphs valve opening exp0 (mei 2023)
 
 ```{r}
-plot_vdz <- function(start, stop, node_input, proef_input, points = FALSE){
+plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE){
   start = as.POSIXct(start,tz = "UTC")
   stop = as.POSIXct(stop,tz = "UTC")
   
@@ -363,118 +377,116 @@ plot_vdz <- function(start, stop, node_input, proef_input, points = FALSE){
   if (points == TRUE){
     g<-g+geom_point(data=gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input & measurement == TRUE),aes(x=date_time,y=opening))
   }
-  g<-g+geom_vline(data=comp_dir %>% dplyr::filter(proef==proef_input & node==node_input),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
-    ylab("opening schuif (cm)")+
-    xlab("datum")
+  g<-g+geom_vline(data=comp_dir %>% dplyr::filter(exp==exp_input & node==node_input),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
+    ylab("opening valve (cm)")+
+    xlab("date")
   print(g)
 }
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="vdz_boven",proef_input="proef0")
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="antenna_up",exp_input="exp0")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="vdz_onder",proef_input="proef0")
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="antenna_down",exp_input="exp0")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="vdz_boven",proef_input="proef0", points = TRUE)
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="antenna_up",exp_input="exp0", points = TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="vdz_onder",proef_input="proef0", points = TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="antenna_down",exp_input="exp0", points = TRUE)
 ```
 
-## Grafieken schuifopening proef1 (mei 2024)
+## Graphs valve opening exp1 (mei 2024)
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="vdz_boven",proef_input="proef1")
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="antenna_up",exp_input="exp1")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="vdz_onder",proef_input="proef1")
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="antenna_down",exp_input="exp1")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_boven",proef_input="proef1", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="antenna_up",exp_input="exp1", points=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="vdz_onder",proef_input="proef1", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="antenna_down",exp_input="exp1", points=TRUE)
 ```
 
-## Grafieken schuifopening proef2 (mei 2024)
+## Graphs valve opening exp2 (mei 2024)
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="vdz_boven",proef_input="proef2")
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="antenna_up",exp_input="exp2")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="vdz_onder",proef_input="proef2")
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="antenna_down",exp_input="exp2")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="vdz_boven",proef_input="proef2")
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="antenna_up",exp_input="exp2")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="vdz_onder",proef_input="proef2")
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="antenna_down",exp_input="exp2")
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de bovenste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de bovenste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_boven",proef_input="proef2", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="antenna_up",exp_input="exp2", points=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="vdz_onder",proef_input="proef2", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="antenna_down",exp_input="exp2", points=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Verloop van de schuifopening van de onderste schuif doorheen de tijd in blauw. De verticale rode lijnen geven de eerste detectie op de onderste schuif per cyclus per vis."}
-plot_vdz(start="2024-05-22 13:00",stop="2024-05-22 15:00",node_input="vdz_onder",proef_input="proef2", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
+plot_vdz(start="2024-05-22 13:00",stop="2024-05-22 15:00",node_input="antenna_down",exp_input="exp2", points=TRUE)
 ```
 
-## Netwerk analyse
+## Network analysis
 
 ```{r}
-plot_network<-function(proef_input,to_include="all"){
-  
-  
+plot_network<-function(exp_input,to_include="all"){
   if (to_include=="all"){
     d=links %>% 
-       dplyr::filter(proef==proef_input) %>%
-       dplyr::select(-proef)
+       dplyr::filter(exp==exp_input) %>%
+       dplyr::select(-exp)
     vertices=nodes %>% 
-       dplyr::filter(proef==proef_input) %>%
-       dplyr::select(-proef)
+       dplyr::filter(exp==exp_input) %>%
+       dplyr::select(-exp)
   } else{
     d=links %>% 
-       dplyr::filter(proef==proef_input & stop!="binnenring" & stop!="buitenring onder") %>%
-       dplyr::select(-proef)
+       dplyr::filter(exp==exp_input & stop!="inner ring" & stop!="outer ring") %>%
+       dplyr::select(-exp)
     vertices=nodes %>% 
-       dplyr::filter(proef==proef_input & node!="binnenring" & node!="buitenring onder") %>%
-       dplyr::select(-proef)
+       dplyr::filter(exp==exp_input & node!="inner ring" & node!="outer ring") %>%
+       dplyr::select(-exp)
   }
     
   network <- graph_from_data_frame(d,vertices,directed=T) 
-  l <- layout_in_circle(network)
+  l <- layout_on_grid(network)
   plot(network, edge.width=E(network)$n/8, vertex.size=V(network)$n, layout = l, edge.curved=0.5, 
        edge.color=E(network)$color,edge.label = d$n,vertex.label = paste(vertices$node,vertices$n,sep="\n"),vertex.label.cex=2,edge.label.cex=2)
 }
 ```
 
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef0."}
-plot_network("proef0")
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp0."}
+plot_network("exp0")
 ```
 
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef1."}
-plot_network("proef1", to_include = "not all")
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp1."}
+plot_network("exp1", to_include = "not all")
 ```
 
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef2."}
-plot_network("proef2")
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp2."}
+plot_network("exp2")
 ```
 
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor proef3."}
-plot_network("proef3", to_include = "not all")
+```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp3."}
+plot_network("exp3", to_include = "not all")
 ```

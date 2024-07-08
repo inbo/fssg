@@ -7,6 +7,26 @@ source("./code/functions/function_clean_hervangst_and_uitzet.R")
 ```
 
 ```{r}
+start.exp0<-lubridate::with_tz(as.POSIXct("25-01-2023 03:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+stop.exp0<-lubridate::with_tz(as.POSIXct("26-05-2023 21:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+start.exp1<-lubridate::with_tz(as.POSIXct("15-05-2024 14:53",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+stop.exp1<-lubridate::with_tz(as.POSIXct("21-05-2024 20:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+start.exp2<-lubridate::with_tz(as.POSIXct("22-05-2024 15:07",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+stop.exp2<-lubridate::with_tz(as.POSIXct("28-05-2024 20:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+start.exp3<-lubridate::with_tz(as.POSIXct("29-05-2024 14:08",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+stop.exp3<-lubridate::with_tz(as.POSIXct("05-06-2024 20:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+
+start.gate0<-lubridate::with_tz(as.POSIXct("25-05-2023 03:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+stop.gate0<-lubridate::with_tz(as.POSIXct("26-05-2023 21:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
+start.gate1<-start.exp1
+stop.gate1<-stop.exp1
+start.gate2<-start.exp2
+stop.gate2<-stop.exp2
+start.gate3<-start.exp3
+stop.gate3<-stop.exp3
+```
+
+```{r}
 # Read in all pit tag data (exp0, exp1, exp2 and exp3)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
@@ -38,9 +58,9 @@ data$event_site_code_value[which(data$event_site_code_value=="vdz_onder")]="ante
 
 data$exp<-NA
 data$exp[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2023")]="exp0"
-data$exp[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2024")]="exp1"
-data$exp[which(data$event_date_time_value>as.POSIXct("22-05-2024 10:00",format="%d-%m-%Y %H:%M",tz="UTC"))]="exp2"
-data$exp[which(data$event_date_time_value>as.POSIXct("28-05-2024 10:00",format="%d-%m-%Y %H:%M",tz="UTC"))]="exp3"
+data$exp[which(data$event_date_time_value>=start.exp1 & data$event_date_time_value<=stop.exp1)]="exp1"
+data$exp[which(data$event_date_time_value>=start.exp2 & data$event_date_time_value<=stop.exp2)]="exp2"
+data$exp[which(data$event_date_time_value>=start.exp3 & data$event_date_time_value<=stop.exp3)]="exp3"
 data$tag_code<-paste0(data$tag_code,"_",data$exp)
 data$type<-"detection"
 
@@ -52,32 +72,32 @@ remove(i,j)
 uitzet_exp1<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 15_05.csv",
                            exp="exp1",
                            type="release",
-                           tijdstip="2024-05-15 12:00:00",
+                           tijdstip=start.exp1,
                            first.numbers="90020900008")
 hervangst_exp1<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 1e proef 21_05.csv",
                            exp="exp1",
                            type="recapture",
-                           tijdstip="2024-05-21 12:00:00",
+                           tijdstip=stop.exp1,
                            first.numbers="90020900008")
 uitzet_exp2<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 22_05.csv",
                            exp="exp2",
                            type="release",
-                           tijdstip="2024-05-22 12:00:00",
+                           tijdstip=start.exp2,
                            first.numbers="90020900008")
 hervangst_exp2<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 2e proef 28_05.csv",
                            exp="exp2",
                            type="recapture",
-                           tijdstip="2024-05-28 12:00:00",
+                           tijdstip=stop.exp2,
                            first.numbers="90020900008")
 uitzet_exp3<-clean_hervangst_and_uitzet(dir="./data/extern/uitzet/Invoer 29_05.csv",
                            exp="exp3",
                            type="release",
-                           tijdstip="2024-05-29 12:00:00",
+                           tijdstip=start.exp3,
                            first.numbers="90020900008")
 hervangst_exp3<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluatie 3e proef 05_06.csv",
                            exp="exp3",
                            type="recapture",
-                           tijdstip="2024-06-05 12:00:00",
+                           tijdstip=stop.exp3,
                            first.numbers="90020900008")
 ```
 
@@ -143,6 +163,18 @@ remove(gate_onder_2024,gate_boven_2024,dir1,dir2,files,file,i)
 ```
 
 ```{r}
+start.gate<-c(start.gate0,start.gate1,start.gate2,start.gate3)
+stop.gate<-c(stop.gate0,stop.gate1,stop.gate2,stop.gate3)
+interval.gate<-data.frame(start.gate, stop.gate)
+
+gate<-interval.gate %>%
+  mutate(date_time = purrr::map2(start.gate, stop.gate, seq, "sec")) %>%
+  tidyr::unnest(date_time) %>%
+  dplyr::select(-start.gate, -stop.gate) %>%
+  left_join(gate, by = 'date_time')
+```
+
+```{r}
 # Read in length and species data of exp0, exp1, exp2 and exp3
 dir1<-"./data/extern/lengte_en_soort/verwerkt/"
 folders<-list.files(path=dir1)
@@ -175,7 +207,7 @@ parent_child_nodes <- addParentChildNodes(parent_child = parent_child,
 buildPaths(parent_child = parent_child_nodes, direction = c("u"))
 ```
 
-```{r}
+```{r include=FALSE}
 nodegraph<-buildNodeGraph(parent_child = parent_child_nodes)
 plot(nodegraph)
 ```
@@ -295,7 +327,8 @@ comp_dir %>%
   group_by(tag_code) %>%
   dplyr::mutate(loop = dplyr::row_number()) %>%
   kable(caption="Travel time (min) to move up the fish spiral calculated as the time difference between the last detection at the lower antenna and the first at the upper antenna. The time since the upper valve opened and the first detection at the upper antenna are given. The opening (cm) at which the firt detection at the upper antenna is noted is also given. Some fish went up and down several times. Subsequent trajectories are numbered under loop.",longtable=TRUE) %>% 
-  kable_styling(latex_options="scale_down")
+  kable_styling(latex_options="scale_down") %>%
+  scroll_box(width = "100%", box_css = "border: 0px;")
 ```
 
 ```{r fig.cap = "Travel time from the lower to the upper antenna for fish used 1, 2 and 3 times for the experiments."}
@@ -385,67 +418,71 @@ plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE){
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="antenna_up",exp_input="exp0")
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0")
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2023-05-01",stop="2023-05-25",node_input="antenna_down",exp_input="exp0")
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_down",exp_input="exp0")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="antenna_up",exp_input="exp0", points = TRUE)
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0", points = TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2023-05-23",stop="2023-05-24",node_input="antenna_down",exp_input="exp0", points = TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_down",exp_input="exp0", points = TRUE)
 ```
 
 ## Graphs valve opening exp1 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="antenna_up",exp_input="exp1")
+plot_vdz(start=start.exp1,stop=stop.exp1,node_input="antenna_up",exp_input="exp1")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2024-05-01",stop="2024-05-25",node_input="antenna_down",exp_input="exp1")
+plot_vdz(start=start.exp1,stop=stop.exp1,node_input="antenna_down",exp_input="exp1")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="antenna_up",exp_input="exp1", points=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="antenna_up",exp_input="exp1", points=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2024-05-15",stop="2024-05-16",node_input="antenna_down",exp_input="exp1", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="antenna_down",exp_input="exp1", points=TRUE)
 ```
 
 ## Graphs valve opening exp2 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="antenna_up",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=stop.exp2,node_input="antenna_up",exp_input="exp2")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2024-05-22",stop="2024-05-29",node_input="antenna_down",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=stop.exp2,node_input="antenna_down",exp_input="exp2")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="antenna_up",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_up",exp_input="exp2")
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2024-05-22",stop="2024-05-23",node_input="antenna_down",exp_input="exp2")
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_down",exp_input="exp2")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="antenna_up",exp_input="exp2", points=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", points=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2024-05-22 12:00",stop="2024-05-22 18:00",node_input="antenna_down",exp_input="exp2", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_down",exp_input="exp2", points=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start="2024-05-22 13:00",stop="2024-05-22 15:00",node_input="antenna_down",exp_input="exp2", points=TRUE)
+```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_down",exp_input="exp2", points=TRUE)
+```
+
+```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_up",exp_input="exp2", points=TRUE)
 ```
 
 ## Network analysis

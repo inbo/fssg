@@ -11,7 +11,7 @@ gate_cleaning<-function(data,jaar){
   gate <- left_join(seq,data[which(duplicated(data$date_time)==FALSE),], by=c("date_time")) 
   gate$opening<-na_interpolation(gate$opening,option ="linear")
   gate$open=FALSE
-  gate$open[which(gate$opening>25)]=TRUE
+  gate$open[which(gate$opening>5)]=TRUE
   gate$open_lag<-dplyr::lag(gate$open)
   open<-which(gate$open!=gate$open_lag & gate$open==TRUE & gate$open_lag==FALSE)
   gate$periode=NA

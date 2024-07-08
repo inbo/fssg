@@ -16,8 +16,7 @@ clean_hervangst_and_uitzet<-function(dir,exp,type,tijdstip,first.numbers){
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank onder')==TRUE)]="basin down"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank boven')==TRUE)]="basin up"
   if (type=="release"){data$event_site_code_value="basin down"}
-  data$event_date_time_value<-as.POSIXct(tijdstip,format="%Y-%m-%d %H:%M:%OS",tz="Europe/Brussels")
-  attr(data$event_date_time_value, "tzone") <- "UTC"
+  data$event_date_time_value<-tijdstip
   data$antenna_id<-"01"
   data$antenna_group_configuration_value<-100
   data$exp<-exp

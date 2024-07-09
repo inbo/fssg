@@ -167,7 +167,8 @@ gate<-interval.gate %>%
   mutate(date_time = purrr::map2(start.gate, stop.gate, seq, "sec")) %>%
   tidyr::unnest(date_time) %>%
   dplyr::select(-start.gate, -stop.gate) %>%
-  left_join(gate, by = 'date_time') 
+  left_join(gate, by = 'date_time') %>%
+  dplyr::filter(is.na(opening)==FALSE)
 
 gate <- gate %>%
   mutate(exp.gate = case_when(date_time>=start.gate0 & date_time<=stop.gate0 ~ "exp0",
@@ -176,11 +177,12 @@ gate <- gate %>%
                               date_time>=start.gate3 & date_time<=stop.gate3 ~ "exp3")) %>%
   arrange(node,exp.gate,date_time) %>%
   group_by(node,exp.gate) %>%
-  mutate(der=opening-dplyr::lag(opening,10))
-
-# p<-peakwindow(gate$date_time[which(gate$node=="antenna_down" & gate$exp.gate=="exp1")],
-#            gate$opening[which(gate$node=="antenna_down" & gate$exp.gate=="exp1")]
-#            )
+  mutate(der=opening-dplyr::lag(opening,10),
+         peaksid=as.factor(peakwindow(date_time,opening)$peakid),
+         trend = case_when(der>0.1 ~ as.factor("increase"),
+                           der<(-0.1) ~ as.factor("decrease"),
+                           der<=0.1 & der>=(-0.1) & opening>10 ~ as.factor("open"),
+                           der<=0.1 & der>=(-0.1) & opening<10 ~ as.factor("closed"))) 
 ```
 
 ```{r}
@@ -410,7 +412,7 @@ ggplot(comp_dir %>%
 ## Graphs valve opening exp0 (mei 2023)
 
 ```{r}
-plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE){
+plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE, peaksid = FALSE, trend = FALSE){
   start = as.POSIXct(start,tz = "UTC")
   stop = as.POSIXct(stop,tz = "UTC")
   
@@ -418,6 +420,12 @@ plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE){
     geom_line()
   if (points == TRUE){
     g<-g+geom_point(data=gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input & measurement == TRUE),aes(x=date_time,y=opening))
+  }
+  if (peaksid == TRUE){
+    g<-g+geom_point(data=gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input & measurement == TRUE),aes(x=date_time,y=opening,color=peaksid))
+  }
+  if (trend == TRUE){
+    g<-g+geom_point(data=gate %>% dplyr::filter(date_time>start & date_time<stop & node==node_input & measurement == TRUE),aes(x=date_time,y=opening,color=trend))
   }
   g<-g+geom_vline(data=comp_dir %>% dplyr::filter(exp==exp_input & node==node_input),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
     ylab("opening valve (cm)")+
@@ -479,7 +487,7 @@ plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_down",exp_
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", points=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", trend=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}

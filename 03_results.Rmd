@@ -175,14 +175,34 @@ gate <- gate %>%
                               date_time>=start.gate1 & date_time<=stop.gate1 ~ "exp1", 
                               date_time>=start.gate2 & date_time<=stop.gate2 ~ "exp2",
                               date_time>=start.gate3 & date_time<=stop.gate3 ~ "exp3")) %>%
-  arrange(node,exp.gate,date_time) %>%
   group_by(node,exp.gate) %>%
-  mutate(der=opening-dplyr::lag(opening,10),
-         peaksid=as.factor(peakwindow(date_time,opening)$peakid),
-         trend = case_when(der>0.1 ~ as.factor("increase"),
-                           der<(-0.1) ~ as.factor("decrease"),
-                           der<=0.1 & der>=(-0.1) & opening>10 ~ as.factor("open"),
-                           der<=0.1 & der>=(-0.1) & opening<10 ~ as.factor("closed"))) 
+  mutate(peaksid = as.factor(peakwindow(date_time, opening)$peakid)) %>%
+  ungroup() %>%
+  arrange(node,exp.gate,date_time) 
+
+gate <- gate[seq(1,nrow(gate),10),] %>% 
+  group_by(node,exp.gate) %>%
+  mutate(der=opening-dplyr::lag(opening,2),
+         trend = case_when(der>0.1 ~ as.factor("opening"),
+                           der<(-0.1) ~ as.factor("closing"),
+                           der<=0.01 & der>=(-0.01) & opening>25 ~ as.factor("open"),
+                           der<=0.01 & der>=(-0.01) & opening<3 ~ as.factor("closed"))) %>%
+  fill(trend, .direction = 'down') %>%
+  ungroup() %>%
+  dplyr::select(-opening,-measurement,-since_open,-der,-peaksid) %>%
+  right_join(gate, by = c('date_time','node','exp.gate')) %>%
+  arrange(node,exp.gate,date_time) %>%
+  fill(trend, .direction = 'up')
+
+gate$periode=NA
+k=1
+switch<-which(gate$trend!=dplyr::lag(gate$trend))
+for (i in switch){
+  gate$periode[i]=k
+  k=k+1
+}
+gate <- gate %>% fill(periode, .direction = 'down')
+gate$periode[which(is.na(gate$periode)==TRUE)]=0
 ```
 
 ```{r}
@@ -409,6 +429,21 @@ ggplot(comp_dir %>%
     facet_wrap(~ exp + node, ncol=2)
 ```
 
+```{r}
+s <- gate %>%
+  group_by(node, exp.gate, trend, periode) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  group_by(node, exp.gate, trend) %>%
+  summarise(sum=sum(n))
+
+peaks <- gate %>%
+  group_by(node, exp.gate, trend) %>%
+  summarise(n=n_distinct(peaksid)) %>%
+  left_join(s,by=c("node","exp.gate","trend")) %>%
+  mutate(time=sum/n)
+```
+
 ## Graphs valve opening exp0 (mei 2023)
 
 ```{r}
@@ -429,7 +464,8 @@ plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE, peaksid
   }
   g<-g+geom_vline(data=comp_dir %>% dplyr::filter(exp==exp_input & node==node_input),aes(xintercept = min_det),colour="red",size=1,alpha=0.3)+
     ylab("opening valve (cm)")+
-    xlab("date")
+    xlab("date") +
+    scale_y_continuous(breaks = round(seq(min(gate$opening), max(gate$opening), by = 1),1))
   print(g)
 }
 ```
@@ -443,7 +479,7 @@ plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_down",exp_input="ex
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0", points = TRUE)
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0", trend = TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
@@ -487,19 +523,19 @@ plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_down",exp_
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", peaksid=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_down",exp_input="exp2", points=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_down",exp_input="exp2", trend=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_down",exp_input="exp2", points=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_down",exp_input="exp2", trend=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_up",exp_input="exp2", points=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_up",exp_input="exp2", trend=TRUE)
 ```
 
 ## Network analysis

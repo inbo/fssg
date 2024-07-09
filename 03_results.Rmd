@@ -110,10 +110,6 @@ tags.to.remove<-c(uitzet$tag_code[which(!uitzet$tag_code %in% hervangst$tag_code
 remove(uitzet_exp1,hervangst_exp1,uitzet_exp2,hervangst_exp2,uitzet_exp3,hervangst_exp3)
 ```
 
-```{r eval=FALSE}
-data<-unique(data$tag_code[which(!data$tag_code %in% uitzet$tag_code)])
-```
-
 ```{r}
 # combine pit data, uitzet en hervangst
 data<-rbind(data,uitzet,hervangst)

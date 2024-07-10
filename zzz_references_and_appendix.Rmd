@@ -6,4 +6,76 @@ INBOmd::references(appendix = TRUE)
 
 # Eerste hoofdstuk van de bijlage
 
-Inhoud van de eerste bijlage
+## Gate statistics
+
+```{r}
+gate %>%
+  group_by(exp.gate, node, trend, periode) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  group_by(node, exp.gate, trend) %>%
+  summarise(median=round(median(n)/60)) %>%
+  arrange(trend) %>%
+  pivot_wider(names_from = trend, values_from = median)  %>%
+  kable(caption="Median duration of different phases (min) per experiment")
+```
+
+## Number of individuals (unique tags) at different antennas and locations
+
+```{r}
+comp_dir %>% 
+  group_by(exp,node) %>%
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  arrange(node) %>% 
+  pivot_wider(names_from = exp, values_from = unieke_tags) %>%
+  kable(caption="Number of individuals (unique tags) at different antennas and locations")
+```
+
+## Statistics concerning the trajectory from the lower basin to the lower antenna
+
+```{r}
+comp_dir %>% 
+  dplyr::filter(node=="antenna_down") %>% 
+  mutate(travel_time=round(travel_time),
+         since_open=round(since_open),
+         opening=round(opening,digits=2)) %>% 
+  group_by(tag_code) %>%
+  dplyr::mutate(loop = dplyr::row_number()) %>%
+  ungroup() %>%
+  arrange(exp,tag_code,loop) %>%
+  dplyr::select(exp,travel_time,min_det,max_det,since_open,opening,trend,loop) %>% 
+  kable(caption="Travel time (min) to move up the fish spiral calculated as the time difference between the last detection at the lower antenna and the first at the upper antenna. The time since the upper valve opened and the first detection at the upper antenna are given. The opening (cm) at which the firt detection at the upper antenna is noted is also given. Some fish went up and down several times. Subsequent trajectories are numbered under loop.",longtable=TRUE) %>% 
+  kable_styling(latex_options="scale_down") %>%
+  scroll_box(width = "100%", box_css = "border: 0px;")
+```
+
+## Statistics concerning the trajectory from the lower to the upper antenna
+
+```{r}
+comp_dir %>% 
+  dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
+  mutate(travel_time=round(travel_time),
+         since_open=round(since_open),
+         opening=round(opening,digits=2)) %>% 
+  group_by(tag_code) %>%
+  dplyr::mutate(loop = dplyr::row_number()) %>%
+  ungroup() %>%
+  arrange(exp,tag_code,loop) %>%
+  dplyr::select(exp,travel_time,min_det,max_det,since_open,opening,trend,loop) %>% 
+  kable(caption="Travel time (min) to move up the fish spiral calculated as the time difference between the last detection at the lower antenna and the first at the upper antenna. The time since the upper valve opened and the first detection at the upper antenna are given. The opening (cm) at which the firt detection at the upper antenna is noted is also given. Some fish went up and down several times. Subsequent trajectories are numbered under loop.",longtable=TRUE) %>% 
+  kable_styling(latex_options="scale_down") %>%
+  scroll_box(width = "100%", box_css = "border: 0px;")
+```
+
+## Arrival time at different antennas
+
+```{r}
+comp_dir %>% 
+  group_by(exp,node,tag_code) %>%
+  summarise(eerste_detectie=min(min_det)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
+  dplyr::select(tag_code,antenna_down,antenna_up,`basin up`) %>%
+  kable(caption="Time of first detection per fish on the top and bottom antenna",longtable=TRUE) %>% 
+  kable_styling(latex_options="scale_down")
+```

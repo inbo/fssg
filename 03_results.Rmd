@@ -285,10 +285,6 @@ remove(comp_obs, hergebruikt)
 ```
 
 ```{r}
-tags_boven=unique(comp_dir$tag_code[which(comp_dir$node=="antenna_up" & dplyr::lag(comp_dir$node)=="antenna_down")])
-```
-
-```{r}
 links <- comp_dir %>% 
             group_by(tag_code) %>%
             mutate(start=node,
@@ -332,22 +328,23 @@ cmpr.reuse<-list(c('1','2'),
 symnum.args <- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, Inf), symbols = c("****", "***", "**", "*", "ns"))
 ```
 
-## Assumptions
+## Assumptions made
 
-Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve, though it cannot be said with certainty that this finding is of a causal nature as the settings of the experiments themselves differed as well.
+Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower antenna significantly quicker. It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the settings of the experiments themselves differed as well.
 
-```{r boxplot.reuse, fig.cap = ""}
-a<-ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
+```{r fig.width=10, fig.height=10, fig.cap = ""}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
             dplyr::filter(is.na(travel_time)==FALSE) %>%
             dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
             arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
+            group_by(tag_code,last_sequence) %>%
             dplyr::mutate(loop = dplyr::row_number()) %>%
             dplyr::filter(loop == 1),
           aes(as.factor(hergebruikt), travel_time),size = 0.5, color = "black") + 
 geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time lower basin to lower valve (min)") + 
+facet_wrap(~last_sequence) +
+ylab("Travel time (min)") + 
 xlab("Number of times used for the experiment") + 
 theme_bw() +
 stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
@@ -355,45 +352,9 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 stat_compare_means(comparisons = cmpr.reuse, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-```{r fig.cap = ""}
-b<-ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()),
-          aes(as.factor(loop), travel_time),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time lower basin to lower valve (min)") + 
-xlab("Number of moves from the lower basin to lower valve") + 
-theme_bw() + 
-facet_wrap(~ hergebruikt) +
-stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
-                  position = position_dodge(width = 0.75))
-```
-
-```{r fig.cap = "Travel time from the lower to the upper antenna for fish for the different experiments."}
-c<-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(hergebruikt), travel_time),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time lower to upper antenna (min)") + 
-xlab("Number of times used for the experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
-                  position = position_dodge(width = 0.75))
-```
-
-```{r fig.cap = "Travel time from lower to upper antenna for different loops during an experiment for fish used 1, 2 and 3 times for the experiments."}
-d<-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
+```{r fig.width=10, fig.height=10, fig.cap = ""}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "antenna_down-antenna_up") %>% 
             dplyr::filter(is.na(travel_time)==FALSE) %>%
             dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
             arrange(tag_code,min_det) %>%
@@ -404,13 +365,17 @@ geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
 ylab("Travel time lower to upper antenna (minutes)") + 
 xlab("Number of moves lower to upper antenna") + 
 theme_bw() + 
-facet_wrap(~ hergebruikt) +
+facet_wrap(~ last_sequence + hergebruikt) +
 stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
                   position = position_dodge(width = 0.75))
 ```
 
-```{r fig.width=10, fig.height=10}
-ggarrange(a,b,c,d)
+```{r eval=FALSE}
+summary(lm(formula = as.numeric(travel_time) ~ last_sequence * as.factor(hergebruikt),
+   data = comp_dir %>%
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(is.na(travel_time)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time)))))
 ```
 
 ## Passage success
@@ -448,7 +413,7 @@ One cycle in exp0 took more than twice as long as the cycles of exp1 to 3. For e
 
 Exp1 to exp3 were more or less similar in the total duration of one cycle (though it seemed to be slightly shorter for exp1) and the distribution among the different phases within a valve. While the lower valve was closed most of the time, the upper valve was open most of the time. For exp1 especially, the time the lower valve was open was only slightly more than half of that of exp2 and exp3. Also the time the upper valve was open was smaller for exp1, but not to the same level as for the lower valve.
 
-```{r}
+```{r fig.width=10, fig.height=10}
 ggplot(data=gate %>%
           group_by(exp.gate, node, trend, periode) %>%
           summarise(n=n()) %>%
@@ -464,66 +429,47 @@ xlab("Experiment") +
 theme_bw() 
 ```
 
-## Statistics concerning the trajectory from the lower basin to the lower antenna
+## Trajectory statistics
 
-When considering all fish the travel time from the lower basin (start of the experiment) to the lower valve (i.e. first detection at lower antenna) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2. This might be partially the result of some of the fish being re-used. Indeed it seems that fish that were re-used for a second experiment moved from the lower basin to the lower antenna significantly quicker (see further). Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time the travel time of exp3 (where many fish were used a third time) stayed more or less the same. 
+When considering all fish, the **travel time from the lower basin** (start of the experiment) **to the lower valve** (i.e. first detection at lower antenna) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2. This might be partially the result of some of the fish being re-used. Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time the travel time of exp3 (where many fish were used a third time) stayed more or less the same. **Travel time of fish moving from the lower antenna to the upper antenna** also seemed to decrease with later experiments, though differences were not significant.
 
-This decreasing trend in travel time for later experiments is also apparent from the number of cycles before entering the lower valve. For both exp2 and exp3 most fish found the lower valve during the second cycle and some fish were even able to find it during the first cycle. For exp1 on the other hand, most fish found the lower valve after only the fourth cycle and none were able to find it after the first cycle. Omitting re-used fish did not affect these results. 
+```{r fig.width=10, fig.height=10}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(exp != "exp0") %>%
+            dplyr::filter(is.na(travel_time)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,last_sequence) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
+geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+facet_wrap(~last_sequence) +
+ylab("Travel time (min)") + 
+xlab("Experiment") + 
+theme_bw() +
+stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
+                  position = position_dodge(width = 0.75)) + 
+stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
+```
+
+This decreasing trend in travel time for later experiments is also apparent from the **number of cycles before fish enter the lower valve**. For both exp2 and exp3 most fish found the lower valve during the second cycle and some fish were even able to find it during the first cycle. For exp1 on the other hand, most fish found the lower valve after only the fourth cycle and none were able to find it after the first cycle. Omitting re-used fish did not affect these results much.
 
 For all experiments there were also fish that took a very long time to move to the lower valve. Indeed, many fish only found the lower valve after more than 20 cycles.
 
-```{r}
-a<-ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
-            dplyr::filter(exp != "exp0") %>%
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time (min)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
-                  position = position_dodge(width = 0.75)) + 
-stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-
-b<-ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
-            dplyr::filter(exp != "exp0") %>%
-            dplyr::filter(hergebruikt == 1) %>%
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time (min)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
-                  position = position_dodge(width = 0.75)) + 
-stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-
-ggarrange(a,b)
-```
-
-```{r}
+```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(peaksid)==FALSE) %>%
             arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
+            group_by(tag_code,last_sequence) %>%
             dplyr::mutate(loop = dplyr::row_number()) %>%
             dplyr::filter(loop == 1),
           aes(x=as.factor(peaksid)),size = 0.5, color = "black") + 
 geom_bar() + 
-facet_wrap(~ exp, scales="free_x") +
+facet_wrap(~ last_sequence + exp, scales=c("free")) +
 ylab("Number of fish entering lower valve") + 
 xlab("Number of cycle since the experiment started") + 
 theme_bw() + 
@@ -532,240 +478,45 @@ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 For exp2 and exp3 fish seem to wait until the valve is completely open before entering, but some fish also seem to enter when the valve is opening and closing. The time the lower valve was found since the valve last started to open decreased significantly from exp1 to exp2 and exp3. Especially for exp1 the time since the valve opened was much higher than for exp2 and exp3. This is somewhat to be expected as fish seem to mainly wait for the valve to be fully opened before entering and the time it takes for the valve to open and close was much larger for exp1 than for exp2 and exp3. However, when accounting for the different durations of the different phases the open phase still seems most important for exp2 and exp3, unlike for exp1 where now not only the opening phase seems to be more important than the open phase, but also the closing phase seems to be relatively important. Since the opening and closing phase are most important for exp1 it is to be expected that the opening of the valve at which they enter the lower valve will be smaller than for exp2 and exp3. Indeed the opening at which fish enter seems to increase significantly from exp1 to exp2 and exp3.
 
-```{r}
-a<-ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
+```{r fig.width=10, fig.height=10}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
             dplyr::filter(is.na(trend)==FALSE) %>%
             arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
+            group_by(tag_code,last_sequence) %>%
             dplyr::mutate(loop = dplyr::row_number()) %>%
             dplyr::filter(loop == 1),
           aes(x=as.factor(exp),fill=trend,colour=trend),size = 0.5, color = "black") + 
 geom_bar() +
+facet_wrap(~last_sequence) +
 ylab("Instances entering") + 
 xlab("Experiment") + 
-theme_bw() 
+theme_bw()
+```
 
-b<-ggplot(data=gate %>%
+```{r fig.width=10, fig.height=10}
+ggplot(data=gate %>%
   group_by(exp.gate, node, trend, periode) %>%
   summarise(n=n()) %>%
   ungroup() %>%
   group_by(node, exp.gate, trend) %>%
   summarise(median=round(median(n)/60)) %>%
   right_join(comp_dir,by=c("node","exp.gate","trend")) %>%
-  dplyr::filter(node == "antenna_down") %>% 
+  dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
   dplyr::filter(is.na(trend)==FALSE) %>%
   arrange(tag_code,min_det) %>%
-  group_by(tag_code) %>%
+  group_by(tag_code,last_sequence) %>%
   dplyr::mutate(loop = dplyr::row_number()) %>%
   dplyr::filter(loop == 1) %>%
-  group_by(exp,trend) %>%
+  group_by(exp,last_sequence,trend) %>%
   summarize(n=n(),mean=mean(median)) %>%
   mutate(per.unit=n/mean),
   aes(x=as.factor(exp),y=per.unit,fill=trend,colour=trend),size = 0.5, color = "black") + 
 geom_bar(stat="identity") +
+facet_wrap(~last_sequence) +
 ylab("Instances entering per minute") + 
 xlab("Experiment") + 
 theme_bw()
-
-ggarrange(a,b,ncol=2,common.legend = TRUE)
-```
-
-```{r}
-ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
-            dplyr::filter(exp != "exp0") %>%
-            dplyr::filter(is.na(since_open)==FALSE) %>%
-            dplyr::filter(!(abs(since_open - median(since_open)) > 1.5*sd(since_open))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), since_open),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Time since open (min)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
-stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-```
-
-```{r}
-ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down") %>% 
-            dplyr::filter(is.na(since_open)==FALSE) %>%
-            dplyr::filter(!(abs(opening - median(opening)) > 1.5*sd(opening))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), opening),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Opening at entrance (cm)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
-stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-```
-
-
-
-## Statistics concerning the trajectory from the lower to the upper antenna
-
-Unlike the travel time from the lower basin to the lower valve, there were no significant differences in travel time from the lower valve to the upper valve between experiments. 
-
-```{r}
-a<-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-            dplyr::filter(exp != "exp0") %>%
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time (min)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
-                  position = position_dodge(width = 0.75)) + 
-stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-
-b<-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-            dplyr::filter(exp != "exp0") %>%
-            dplyr::filter(hergebruikt == 1) %>%
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time (min)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
-                  position = position_dodge(width = 0.75)) + 
-stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-
-ggarrange(a,b)
-```
-
-```{r}
-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-            dplyr::filter(is.na(peaksid)==FALSE) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(x=as.factor(peaksid)),size = 0.5, color = "black") + 
-geom_bar() + 
-facet_wrap(~ exp, scales="free_x") +
-ylab("Number of fish entering upper valve") + 
-xlab("Number of cycle since the experiment started") + 
-theme_bw() + 
-theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) 
-```
-
-```{r}
-a<-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-            dplyr::filter(is.na(trend)==FALSE) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(x=as.factor(exp),fill=trend,colour=trend),size = 0.5, color = "black") + 
-geom_bar() +
-ylab("Instances") + 
-xlab("Experiment") + 
-theme_bw() 
-
-b<-ggplot(data=gate %>%
-  group_by(exp.gate, node, trend, periode) %>%
-  summarise(n=n()) %>%
-  ungroup() %>%
-  group_by(node, exp.gate, trend) %>%
-  summarise(median=round(median(n)/60)) %>%
-  right_join(comp_dir,by=c("node","exp.gate","trend")) %>%
-  dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-  dplyr::filter(is.na(trend)==FALSE) %>%
-  arrange(tag_code,min_det) %>%
-  group_by(tag_code) %>%
-  dplyr::mutate(loop = dplyr::row_number()) %>%
-  dplyr::filter(loop == 1) %>%
-  group_by(exp,trend) %>%
-  summarize(n=n(),mean=mean(median)) %>%
-  mutate(per.unit=n/mean),
-  aes(x=as.factor(exp),y=per.unit,fill=trend,colour=trend),size = 0.5, color = "black") + 
-geom_bar(stat="identity") +
-ylab("Instances") + 
-xlab("Experiment") + 
-theme_bw()
-
-ggarrange(a,b,ncol=2,common.legend = TRUE)
-```
-
-```{r}
-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), since_open),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Time since open (min)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
-stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-```
-
-```{r}
-ggplot(data=comp_dir %>%
-            dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
-            dplyr::filter(is.na(since_open)==FALSE) %>%
-            arrange(tag_code,min_det) %>%
-            group_by(tag_code) %>%
-            dplyr::mutate(loop = dplyr::row_number()) %>%
-            dplyr::filter(loop == 1),
-          aes(as.factor(exp), opening),size = 0.5, color = "black") + 
-geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Opening at entrance (cm)") + 
-xlab("Experiment") + 
-theme_bw() +
-stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
-stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
-```
-
-## Number of unique tags per sequence
-
-```{r}
-comp_dir %>% 
-  arrange(node) %>%
-  group_by(exp,last_sequence) %>%
-  summarise(unieke_tags = n_distinct(tag_code)) %>% 
-  pivot_wider(names_from = exp, values_from = unieke_tags) %>%
-  kable(caption="Number of individuals (unique tags) per sequence")
-```
-
-## Arrival time at the different antennas during the day
-
-```{r fig.height=10, fig.width=10,}
-ggplot(comp_dir %>% 
-  dplyr::filter(node %in% c("antenna_down","antenna_up")) %>% 
-  mutate(hour_min_det=lubridate::hour(min_det)) %>%
-  group_by(exp,node,hour_min_det) %>%
-  summarise(unieke_tags = n_distinct(tag_code)),
-    aes(x=hour_min_det, y=unieke_tags)) + 
-    geom_bar(stat = "identity") +
-    facet_wrap(~ exp + node, ncol=2)
 ```
 
 ## Graphs valve opening exp0 (mei 2023)

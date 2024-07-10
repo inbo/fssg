@@ -4,7 +4,7 @@
 INBOmd::references(appendix = TRUE)
 ```
 
-# Eerste hoofdstuk van de bijlage
+# Additional graphs and tables with all fish used
 
 ## Gate statistics
 
@@ -35,7 +35,7 @@ comp_dir %>%
 
 ```{r}
 comp_dir %>% 
-  dplyr::filter(node=="antenna_down") %>% 
+  dplyr::filter(last_sequence == "basin down-antenna_down") %>% 
   mutate(travel_time=round(travel_time),
          since_open=round(since_open),
          opening=round(opening,digits=2)) %>% 
@@ -53,7 +53,7 @@ comp_dir %>%
 
 ```{r}
 comp_dir %>% 
-  dplyr::filter(tag_code %in% tags_boven & node=="antenna_up") %>% 
+  dplyr::filter(last_sequence == "antenna_down-antenna_up") %>% 
   mutate(travel_time=round(travel_time),
          since_open=round(since_open),
          opening=round(opening,digits=2)) %>% 
@@ -78,4 +78,155 @@ comp_dir %>%
   dplyr::select(tag_code,antenna_down,antenna_up,`basin up`) %>%
   kable(caption="Time of first detection per fish on the top and bottom antenna",longtable=TRUE) %>% 
   kable_styling(latex_options="scale_down")
+```
+
+## Number of unique tags per sequence
+
+```{r}
+comp_dir %>% 
+  arrange(node) %>%
+  group_by(exp,last_sequence) %>%
+  summarise(unieke_tags = n_distinct(tag_code)) %>% 
+  pivot_wider(names_from = exp, values_from = unieke_tags) %>%
+  kable(caption="Number of individuals (unique tags) per sequence")
+```
+
+## Arrival time at the different antennas during the day
+
+```{r fig.height=10, fig.width=10,}
+ggplot(comp_dir %>% 
+  dplyr::filter(node %in% c("antenna_down","antenna_up")) %>% 
+  mutate(hour_min_det=lubridate::hour(min_det)) %>%
+  group_by(exp,node,hour_min_det) %>%
+  summarise(unieke_tags = n_distinct(tag_code)),
+    aes(x=hour_min_det, y=unieke_tags)) + 
+    geom_bar(stat = "identity") +
+    facet_wrap(~ exp + node, ncol=2)
+```
+
+# Replicate graphs and tables but without the re-used fish
+
+```{r fig.width=10, fig.height=10}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(exp != "exp0") %>%
+            dplyr::filter(is.na(travel_time)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
+            dplyr::filter(hergebruikt==1) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,last_sequence) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
+geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+facet_wrap(~last_sequence) +
+ylab("Travel time (min)") + 
+xlab("Experiment") + 
+theme_bw() +
+stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
+                  position = position_dodge(width = 0.75)) + 
+stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
+```
+
+```{r fig.width=10, fig.height=10}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(exp != "exp0") %>%
+            dplyr::filter(is.na(peaksid)==FALSE) %>%
+            dplyr::filter(hergebruikt==1) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,last_sequence) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(x=as.factor(peaksid)),size = 0.5, color = "black") + 
+geom_bar() + 
+facet_wrap(~ last_sequence + exp, scales=c("free")) +
+ylab("Number of fish entering lower valve") + 
+xlab("Number of cycle since the experiment started") + 
+theme_bw() + 
+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) 
+```
+
+```{r fig.width=10, fig.height=10}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(is.na(trend)==FALSE) %>%
+            dplyr::filter(hergebruikt==1) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,last_sequence) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(x=as.factor(exp),fill=trend,colour=trend),size = 0.5, color = "black") + 
+geom_bar() +
+facet_wrap(~last_sequence) +
+ylab("Instances entering") + 
+xlab("Experiment") + 
+theme_bw()
+```
+
+```{r fig.width=10, fig.height=10}
+ggplot(data=gate %>%
+  group_by(exp.gate, node, trend, periode) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  group_by(node, exp.gate, trend) %>%
+  summarise(median=round(median(n)/60)) %>%
+  right_join(comp_dir,by=c("node","exp.gate","trend")) %>%
+  dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+  dplyr::filter(is.na(trend)==FALSE) %>%
+  dplyr::filter(hergebruikt==1) %>%
+  arrange(tag_code,min_det) %>%
+  group_by(tag_code,last_sequence) %>%
+  dplyr::mutate(loop = dplyr::row_number()) %>%
+  dplyr::filter(loop == 1) %>%
+  group_by(exp,last_sequence,trend) %>%
+  summarize(n=n(),mean=mean(median)) %>%
+  mutate(per.unit=n/mean),
+  aes(x=as.factor(exp),y=per.unit,fill=trend,colour=trend),size = 0.5, color = "black") + 
+geom_bar(stat="identity") +
+facet_wrap(~last_sequence) +
+ylab("Instances entering per minute") + 
+xlab("Experiment") + 
+theme_bw()
+```
+
+```{r fig.width=10, fig.height=10}
+ggplot(data=comp_dir %>%
+            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(exp != "exp0") %>%
+            dplyr::filter(is.na(since_open)==FALSE) %>%
+            dplyr::filter(!(abs(since_open - median(since_open)) > 1.5*sd(since_open))) %>%
+            dplyr::filter(hergebruikt==1) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,node) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(as.factor(exp), since_open),size = 0.5, color = "black") + 
+geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+facet_wrap(~node) +
+ylab("Time since open (min)") + 
+xlab("Experiment") + 
+theme_bw() +
+stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
+stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
+```
+
+```{r fig.width=10, fig.height=10}
+ggplot(data=comp_dir %>%
+            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(is.na(since_open)==FALSE) %>%
+            dplyr::filter(!(abs(opening - median(opening)) > 1.5*sd(opening))) %>%
+            dplyr::filter(hergebruikt==1) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,node) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(as.factor(exp), opening),size = 0.5, color = "black") + 
+geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+facet_wrap(~node) +
+ylab("Opening at entrance (cm)") + 
+xlab("Experiment") + 
+theme_bw() +
+stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
+stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```

@@ -1,4 +1,10 @@
-# Results
+# Methods
+
+## Set-up
+
+Only one of the three canals built in the system was used. Prior to the experiments, the lower and upper tanks were slightly modified by installing a metal plate to direct the flow of the lower valve towards the rank. Additionally, possible escape routes from the test tank were closed with a small mesh sized grid. Potential “shelter” areas under the bottom plates of the valve were also closed off.
+
+Two HDX PIT antennae (40 mm \* 50 mm) made of copper coil wrapped around graphite bars and connected to permanent readers were installed, each on the front of the upper or lower valve. They were both tuned to have a narrow detection range of approximately 15 cm maximum so that fish would be detected when they cross the valve only – and thus enter the system. Preliminary testing of the system was conducted, assuring the efficiency and detection range of the PIT telemetry set-up.
 
 ```{r warning=FALSE, include=FALSE}
 source("./code/not_functions/libraries.R")
@@ -39,6 +45,12 @@ interval.gate<-data.frame(start.gate, stop.gate)
 interval<-data.frame(interval.exp,interval.gate)
 rownames(interval)=c("exp0","exp1","exp2","exp3")
 ```
+
+## Fish experiments
+
+For the experiments of 2023 on 5/5/2023, 8/5/2023 and 23/5/2023, a total of 166 individuals of seven different species were used: bleak (4), roach (33), bream (12), gibel carp (6), carp (1), white bream (100) and rudd (10). Fish were not re-used for the different experiments. Recapture data was not available which meant that passage success could only be determined via detections (see further). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
+
+For the experiments of 2024 on 15/5/2023, 22/5/2023 and 29/5/2023 60, 102 and 124 individuals of ide were used. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used). Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions.
 
 ```{r}
 interval %>% kable(caption="Study period description. Start and stop time for the fish experiment and valve data collection are given.")
@@ -117,6 +129,11 @@ hervangst_exp3<-clean_hervangst_and_uitzet(dir="./data/extern/hervangst/Evaluati
                            type="recapture",
                            tijdstip=stop.exp3,
                            first.numbers="90020900008")
+```
+
+```{r include=FALSE}
+length(which(gsub("\\_.*","", uitzet_exp1$tag_code) %in% gsub("\\_.*","", uitzet_exp2$tag_code)))
+length(which(gsub("\\_.*","", c(uitzet_exp1$tag_code,uitzet_exp2$tag_code)) %in% gsub("\\_.*","", uitzet_exp3$tag_code)))
 ```
 
 ```{r}
@@ -277,10 +294,17 @@ comp_dir <- addDirection(compress_obs = comp_obs,
                          parent_child = parent_child_nodes,
                          direction = "u")
 
-comp_dir<-left_join(comp_dir,gate %>% dplyr::select(-measurement),by=join_by(min_det==date_time,node==node))
+comp_dir$det_link<-comp_dir$min_det
+comp_dir$det_link[which(comp_dir$node=="antenna_up")]=comp_dir$max_det[which(comp_dir$node=="antenna_up")]
+
+comp_dir$travel_time_adapted<-comp_dir$travel_time
+comp_dir$travel_time_adapted[which(comp_dir$last_sequence %in% c("antenna_down-antenna_up","antenna_up-antenna_down"))]=comp_dir$travel_time[which(comp_dir$last_sequence %in% c("antenna_down-antenna_up","antenna_up-antenna_down"))]+comp_dir$duration[which(comp_dir$last_sequence %in% c("antenna_down-antenna_up","antenna_up-antenna_down"))]
+
+comp_dir<-left_join(comp_dir,gate %>% dplyr::select(-measurement),by=join_by(det_link==date_time,node==node))
 comp_dir<-left_join(comp_dir,metadata,by=join_by(tag_code2==tag_code))
 comp_dir<-left_join(comp_dir,hergebruikt,by=join_by(tag_code==tag_code))
 comp_dir$node=factor(comp_dir$node, levels=c("basin down","antenna_down","antenna_up","basin up"))
+comp_dir$last_sequence=factor(comp_dir$last_sequence, levels=c("NA-basin down","NA-antenna_down","NA-antenna_up","basin down-antenna_down","antenna_down-basin down","antenna_down-antenna_up","antenna_up-antenna_down","basin down-antenna_up","antenna_up-basin down","antenna_up-basin up","antenna_down-basin up","basin down-basin up"))
 remove(comp_obs, hergebruikt)
 ```
 
@@ -328,20 +352,38 @@ cmpr.reuse<-list(c('1','2'),
 symnum.args <- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, Inf), symbols = c("****", "***", "**", "*", "ns"))
 ```
 
+## Data processing
+
+All the different sites were fish were either released, detected or recaptured are further one referred to as nodes.
+
+Pit tag data was compressed using the default settings of the function compress of the R package PITCleanr. This data compression involves determining the first and last detection of a series of subsequent detections on a node as well as the number of detections during each slot (from first and last detection).
+
+The location where the fish were released was designated as the initial node, with the corresponding timestamp marking the start of each fish's journey. Conversely, the recapture location was identified as the final node, with the corresponding timestamp indicating the end of each fish's journey. All fish were alive and presumed to still have their tags at the time of release. However, some fish were found dead and/or tagless upon recapture. Due to the low detection rate of the antennas, particularly the upper one, we did not attempt to match unidentified fish with tag IDs from the release data. In a system with higher detectability, it might have been feasible to trace unidentified fish back to known but not-recaptured tag IDs with a reasonable degree of certainty. Unfortunately, this was not the case in our system. Fish were only included in the dataset if they were recaptured and identified upon capture. More specifically, detections and observations of fish which were not recaptured, had escaped the system or could not be identified due to tag loss were omitted.
+
+<!-- To prevent artificial inflation of the number of fish entering the experiment, fish found without a tag in the basin below were excluded from the dataset. For instance, an unidentified fish with a new ID (e.g., unknown_4) would also have had a real ID. Including this fish in the data would have resulted in double-counting. However, fish found without a tag in other locations were still included in the dataset, as there was no risk of double-counting once they had moved away from their initial node. -->
+
+The temporal resolution and range of the valve-opening and pressure data was different between experiments. In order to harmonize the temporal resolution between experiments and to easily link fish data with valve and pressure data, linear interpolation was applied to yield a temporal resolution of one second. A valve was considered open when the opening was larger than 28 and 49 cm in the case of the last three experiments of 2024 and the one experiment of 2023, respectively. For all experiments the valve was considered closed when the opening was less than 3 cm. For every second the time since the last opening was determined.
+
+When linking the valve data to the fish data, for passage through the lower and upper valve respectively the first detection and last detection were used. This was done because we were mainly interested in when fish enter (via the lower valve) and leave (via the upper valve) the system.
+
+Time was for all data initially in local Brussels time but was changed to UTC for transparancy.
+
+# Results
+
 ## Assumptions made
 
-Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower antenna significantly quicker. It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the settings of the experiments themselves differed as well.
+Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower antenna significantly quicker (Figure \@ref(fig:assumptions1)). It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the conditions of the experiments themselves might have differed as well. Fish that were used multiple times did not seem to be more or less likely to move up and down the fish spiral multiple times within an experiment (Figure \@ref(fig:assumptions2)).
 
-```{r fig.width=10, fig.height=10, fig.cap = ""}
+```{r assumptions1, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower antenna and from the lower antenna to the upper antenna in function of the number of a times a fish was used in experiments. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
+            dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted))) %>%
             arrange(tag_code,min_det) %>%
             group_by(tag_code,last_sequence) %>%
             dplyr::mutate(loop = dplyr::row_number()) %>%
             dplyr::filter(loop == 1),
-          aes(as.factor(hergebruikt), travel_time),size = 0.5, color = "black") + 
+          aes(as.factor(hergebruikt), travel_time_adapted),size = 0.5, color = "black") + 
 geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
 facet_wrap(~last_sequence) +
 ylab("Travel time (min)") + 
@@ -352,41 +394,42 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 stat_compare_means(comparisons = cmpr.reuse, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-```{r fig.width=10, fig.height=10, fig.cap = ""}
+```{r assumptions2, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower antenna to the upper antenna in function of the number of times a fish moved from the lower antenna to the upper antenna. A distinction is made between fish that have been used once, twice, or three times."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "antenna_down-antenna_up") %>% 
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
+            dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted))) %>%
             arrange(tag_code,min_det) %>%
             group_by(tag_code) %>%
             dplyr::mutate(loop = dplyr::row_number()),
-          aes(as.factor(loop), travel_time),size = 0.5, color = "black") + 
+          aes(as.factor(loop), travel_time_adapted),size = 0.5, color = "black") + 
 geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
 ylab("Travel time lower to upper antenna (minutes)") + 
 xlab("Number of moves lower to upper antenna") + 
 theme_bw() + 
-facet_wrap(~ last_sequence + hergebruikt) +
+facet_wrap(~ hergebruikt) +
 stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
                   position = position_dodge(width = 0.75))
 ```
 
 ```{r eval=FALSE}
-summary(lm(formula = as.numeric(travel_time) ~ last_sequence * as.factor(hergebruikt),
+summary(lm(formula = as.numeric(travel_time_adapted) ~ last_sequence * as.factor(hergebruikt),
    data = comp_dir %>%
             dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time)))))
+            dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+            dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted)))))
 ```
 
 ## Passage success
 
-Passage success is defined as the proportion of fish able to move from the lower basin to the upper basin. Passage success was very different between experiments and was highest for exp1 (0.79) and lowest for exp0 and exp3 (0.47). Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage success. Using both the number of recaptured fish and the detections yielded the highest and most representative passage success as some fish that reached the upper basin might did move back to the lower basin. Without the pit antennae this would not have been recorded. Nevertheless, because of the low detectability the issue remains that fish moving to the upper basin and back to the lower basin might not always have been detected. The passage success determined here, even the one that combines recapture and detections, is therefore an underestimation.
+Passage success is defined as the proportion of fish able to move from one location to the other (Table \@ref(tab:passagesuccess)). **Passage success from the lower basin to the upper basin (and upper antenna) was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47).** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage success. Using both the number of recaptured fish and the detections yielded the highest and most representative passage success as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antennae this would not have been recorded. Nevertheless, because of the low detectability the issue remains that fish moving to the upper basin and back to the lower basin might not always have been detected. The passage success determined here, even the one that combines recapture and detections, is therefore an **underestimation**. Passage success of exp0 is likely to be a strong underestimation due to the lacking recapture data.
 
-Passage success of exp0 is likely to be a strong underestimation due to the lacking recapture data.
+**Passage success from the lower basin to the lower antenna showed a similar pattern with highest values for exp1 and lowest for exp3. However,** although a staggering 98% of all fish of exp1 made it passed the lower antenna, only 79% made it into the upper basin. In comparison, for exp2 these numbers were 72% and 76% respectively, suggesting that for exp2 a much higher proportion of the fish that were able to pass the lower valve, also made it passed the upper valve.
 
 ```{r}
 passage_succes<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
+      dplyr::filter(exp!="exp0") %>%
       mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "boven",
                             .default = "beneden"),
              calculation=berekening_value) %>%
@@ -397,23 +440,83 @@ passage_succes<-function(pattern_value,berekening_value){
       summarise(passage_succes=round(unieke_tags[niveau=="boven"]/unieke_tags[niveau=="beneden"],digits=2)) 
   return(data)
 }
+```
 
-rbind(passage_succes(pattern_value='up',berekening_value="recapture and detections"),
-      passage_succes(pattern_value='basin up',berekening_value="recapture"),
-      passage_succes(pattern_value='antenna_up',berekening_value="detections")) %>% 
-    pivot_wider(names_from = exp, values_from = passage_succes) %>%
-  kable(caption="Passage success calculated in different ways.")
+```{r passagesuccess}
+rbind(passage_succes(pattern_value='up',berekening_value="basin down -> basin up/valve up: recapture and detections"),
+      passage_succes(pattern_value='basin up',berekening_value="basin down -> basin up: recapture"),
+      passage_succes(pattern_value='antenna_up',berekening_value="basin down -> valve up: detections"),
+      passage_succes(pattern_value='antenna_down',berekening_value="basin down -> valve down: detections")) %>% 
+  pivot_wider(names_from = exp, values_from = passage_succes) %>%
+  kable(caption="Passage success calculated in different ways. As there was no recapture data available for the experiments of 2023, the passage success was not determined. If looking at the detections only 35 (21 percent) and 77 (46 percent) were detected at the upper and lower antenna respectively.")
+```
+
+To assess which factors were determinative for a fish making it up the fish spiral a simple logistic model was used with as response whether a fish made it up the fish spiral or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the fish spiral or not.** When using only fish that were only used once, the same results were obtained.
+
+```{r include=FALSE}
+model.data<-comp_dir %>%
+  dplyr::filter(is.na(lengte)==FALSE) %>%
+  mutate(response = case_when(node=="basin up" | node=="antenna_up" ~ 2,
+                              node=="antenna_down" ~ 1,
+                              node=="basin down" ~ 0)) %>%
+  dplyr::select(response,tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
+  arrange(desc(response)) %>%
+  group_by(tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
+  slice(1)
+
+model.data$response<-as.factor(model.data$response)
+model<-stepAIC(nnet::multinom(formula=as.formula(response~lengte*soort*exp), data=model.data))
+summary(model)$coefficients %>% kable(caption="Coefficients of the model")
+z <- summary(model)$coefficients/summary(model)$standard.errors
+p <- (1 - pnorm(abs(z), 0, 1)) * 2 
+p %>% kable(caption="p-values of the model ")
+```
+
+```{r include=FALSE}
+model.data<-comp_dir %>%
+  dplyr::filter(is.na(lengte)==FALSE) %>%
+  dplyr::filter(hergebruikt==1) %>%
+  #dplyr::filter(exp!="exp0") %>%
+  mutate(response = case_when(node=="basin up" | node=="antenna_up" ~ 1,
+                              node=="antenna_down" ~ 0,
+                              node=="basin down" ~ 0)) %>%
+  dplyr::select(response,tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
+  arrange(desc(response)) %>%
+  group_by(tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
+  slice(1)
+
+model.data$response<-as.factor(model.data$response)
+model<-stepAIC(glm(formula=as.formula(response~lengte+soort+exp), data=model.data,family="binomial"),direction="backward")
+
+summary(model)$coefficients %>% kable(caption="Coefficients of the model")
+```
+
+To assess which factors were determinative for the opening of the valve (upper and below) through which fish entered a simple logistic model was used with as response the opening as a percentage (i.e. 0% was fully closed and 100% was fully open) and as explanatory variables the length, weight, experiment number, whether it was the upper or lower valve and their interaction. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained whether the concerned valve was upper or lower, though the factor itself was not significant. This suggests **there was no effect of length, weight, experiment number or which valve was involved on the opening through which a fish entered the lower valve or left the upper valve.** When using only fish that were only used once, the same results were obtained.
+
+```{r include=FALSE}
+model.data<-comp_dir %>%
+  dplyr::filter(is.na(lengte)==FALSE & last_sequence %in% c("antenna_down-antenna_up","basin down-antenna_down") & exp != "exp0")  %>%
+  dplyr::filter(hergebruikt==1) %>%
+  dplyr::select(opening,tag_code,node,exp,lengte,gewicht,hergebruikt) %>%
+  mutate(opening=opening/30) %>%
+  group_by(tag_code,node) %>%
+  slice(1)
+
+model<-stepAIC(glm(formula=as.formula(opening~lengte+exp+node), data=model.data,family="binomial"),trace=FALSE)
+
+summary(model)
+
 ```
 
 ## Gate statistics
 
-The duration of one cycle was similar between the upper and lower valve within a certain experiment. This makes sense as they need to work synchronized. Between experiments there was however a clear difference in the total duration of a cycle and how it was distributed over the different phases (closed, opening, open, and closing).
+The duration of one cycle was similar between the upper and lower valve within a certain experiment (Figure \@ref(fig:phaseduration). This makes sense as they need to work synchronized. Between experiments there was however a clear difference in the total duration of a cycle and how it was distributed over the different phases (closed, opening, open, and closing).
 
 One cycle in exp0 took more than twice as long as the cycles of exp1 to 3. For exp0, the distribution between the different phases of a cycle did not seem to differ much between the two valves and also the open and closed phase had a comparable duration.
 
-Exp1 to exp3 were more or less similar in the total duration of one cycle (though it seemed to be slightly shorter for exp1) and the distribution among the different phases within a valve. While the lower valve was closed most of the time, the upper valve was open most of the time. For exp1 especially, the time the lower valve was open was only slightly more than half of that of exp2 and exp3. Also the time the upper valve was open was smaller for exp1, but not to the same level as for the lower valve.
+Exp1 to exp3 were more or less similar in the total duration of one cycle (though it seemed to be slightly shorter for exp1) and the distribution among the different phases within a valve. While the lower valve was closed most of the time, the upper valve was open most of the time. For exp1 especially, the time the lower valve was open appeared only slightly more than half of that of exp2 and exp3. Also the time the upper valve was open appeared smaller for exp1, but not to the same level as for the lower valve. Important to note is that the temporal resolution of the valve-opening-measurements of exp1 were more than 10 times coarser than for the other experiments (Table \@ref(tab:temporalresolutiongate))), which might cause the opening and closing seem to start earlier and later respectively and the duration of the open phase to appear smaller. One might therefore argue that the operational settings of exp1, exp2 and exp3 were most likely to be the same and any difference between them would be the result of other conditions (e.g. learning behaviour of fish or weather conditions and related differences in oxygen concentration and temperature).
 
-```{r fig.width=10, fig.height=10}
+```{r phaseduration, fig.width=10, fig.height=10, fig.cap="median duration (min) of each phase (closed, opening, open and closing) per experiment."}
 ggplot(data=gate %>%
           group_by(exp.gate, node, trend, periode) %>%
           summarise(n=n()) %>%
@@ -429,21 +532,32 @@ xlab("Experiment") +
 theme_bw() 
 ```
 
+```{r temporalresolutiongate}
+gate %>% 
+  dplyr::filter(measurement == TRUE) %>%
+  arrange(exp.gate,node,date_time) %>%
+  group_by(node,exp.gate) %>%
+  mutate(timedif=date_time-dplyr::lag(date_time)) %>%
+  summarize(mean=as.numeric(round(mean(timedif,na.rm=TRUE),digits=1)),
+            sd=round(sd(timedif,na.rm=TRUE),digits=1)) %>%   
+  kable(caption="Temporal resolution (in seconds) of measurements of the valve opening")
+```
+
 ## Trajectory statistics
 
-When considering all fish, the **travel time from the lower basin** (start of the experiment) **to the lower valve** (i.e. first detection at lower antenna) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2. This might be partially the result of some of the fish being re-used. Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time the travel time of exp3 (where many fish were used a third time) stayed more or less the same. **Travel time of fish moving from the lower antenna to the upper antenna** also seemed to decrease with later experiments, though differences were not significant.
+When considering all fish, the **travel time from the lower basin** (start of the experiment) **to the lower valve** (i.e. first detection at the lower antenna) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2 (Figure \@ref(fig:traveltime) and Table \@ref(tab:fishstats)). This might be partially the result of some of the fish being re-used. Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time, the travel time of exp3 (where many fish were used a third time) stayed more or less the same. **Travel time of fish moving from the lower valve** (i.e. last detection at the lower antenna) **to the upper valve** (i.e. last detection at the upper antenna) **did not seem to differ between experiments.**
 
-```{r fig.width=10, fig.height=10}
+```{r traveltime, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower antenna and from the lower antenna to the upper antenna per experiment. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
             dplyr::filter(exp != "exp0") %>%
-            dplyr::filter(is.na(travel_time)==FALSE) %>%
-            dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
+            dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+            #dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted))) %>%
             arrange(tag_code,min_det) %>%
             group_by(tag_code,last_sequence) %>%
             dplyr::mutate(loop = dplyr::row_number()) %>%
             dplyr::filter(loop == 1),
-          aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
+          aes(as.factor(exp), travel_time_adapted),size = 0.5, color = "black") + 
 geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
 facet_wrap(~last_sequence) +
 ylab("Travel time (min)") + 
@@ -454,11 +568,27 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-This decreasing trend in travel time for later experiments is also apparent from the **number of cycles before fish enter the lower valve**. For both exp2 and exp3 most fish found the lower valve during the second cycle and some fish were even able to find it during the first cycle. For exp1 on the other hand, most fish found the lower valve after only the fourth cycle and none were able to find it after the first cycle. Omitting re-used fish did not affect these results much.
+```{r fishstats}
+comp_dir %>%
+  dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+  dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+  arrange(tag_code,min_det) %>%
+  group_by(tag_code,last_sequence) %>%
+  dplyr::mutate(loop = dplyr::row_number()) %>%
+  dplyr::filter(loop == 1) %>%
+  ungroup() %>%
+  group_by(last_sequence,exp) %>%
+  summarise(travel_time=as.numeric(round(median(travel_time_adapted,na.rm=TRUE),digits=1)),
+            opening=round(median(opening,na.rm=TRUE),digits=1),
+            since_open=round(median(since_open,na.rm=TRUE),digits=1)) %>%
+  kable(caption="Median statistics for different experiments and trajectories. Travel time represents the time (in minutes) from the last detection in one site to the first detection in another, with the exeption of the trajectory from the lower valve (i.e lower antenna) to the upper valve (i.e. upper antenna) where for both the last detection was used. The opening of the valve at which the first (in the case of the lower valve) or the last (in the case of the upper valve) is given in cm. The time of entrance (in the case of the lower valve) or escape (in the case of the upper valve) since the valve started to open is given in minutes.")
+```
+
+This decreasing trend in travel time from the lower basin to the lower valve for later experiments is also apparent from the **number of cycles before fish enter the lower valve** (Figure \@ref(fig:numbercycles)). For both exp2 and exp3 most fish found the lower valve during the second cycle and some fish were even able to find it during the first cycle. For exp1 on the other hand, most fish found the lower valve after only the fourth cycle and none were able to find it after the first cycle. Omitting re-used fish did not affect these results much.
 
 For all experiments there were also fish that took a very long time to move to the lower valve. Indeed, many fish only found the lower valve after more than 20 cycles.
 
-```{r fig.width=10, fig.height=10}
+```{r numbercycles, fig.width=10, fig.height=10, fig.cap="Number of cycles before fish entering the lower valve (lower basin to lower antenna) and leaving the upper valve (lower antenna to upper antenna) per experiment."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
             dplyr::filter(exp != "exp0") %>%
@@ -476,9 +606,11 @@ theme_bw() +
 theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) 
 ```
 
-For exp2 and exp3 fish seem to wait until the valve is completely open before entering, but some fish also seem to enter when the valve is opening and closing. The time the lower valve was found since the valve last started to open decreased significantly from exp1 to exp2 and exp3. Especially for exp1 the time since the valve opened was much higher than for exp2 and exp3. This is somewhat to be expected as fish seem to mainly wait for the valve to be fully opened before entering and the time it takes for the valve to open and close was much larger for exp1 than for exp2 and exp3. However, when accounting for the different durations of the different phases the open phase still seems most important for exp2 and exp3, unlike for exp1 where now not only the opening phase seems to be more important than the open phase, but also the closing phase seems to be relatively important. Since the opening and closing phase are most important for exp1 it is to be expected that the opening of the valve at which they enter the lower valve will be smaller than for exp2 and exp3. Indeed the opening at which fish enter seems to increase significantly from exp1 to exp2 and exp3.
+**For exp2 and exp3, fish seem to wait until the lower valve is completely open** before entering, but some fish also seem to enter when the valve is opening and closing (Figure \@ref(fig:phaseentered)). The time the lower valve was entered since the valve last started to open decreased significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:timesinceopening)). Especially for exp1 the time since the valve opened was much higher than for exp2 and exp3. This is somewhat to be expected as fish seem to mainly wait for the valve to be fully opened before entering and the time it takes for the valve to open and close seemed much larger for exp1 than for exp2 and exp3 (although, as mentioned earlier, this might be the result of the much lower temporal resolution of the valve-opening-measurements of exp1). However, when accounting for the different durations of the different phases the open phase still seems most important for exp2 and exp3, unlike for exp1 where now not only the opening phase seems to be more important than the open phase, but also the closing phase seems to be relatively important (Figure \@ref(fig:phaseenterednormalized)). Since the opening and closing phase are most important for exp1 it is to be expected that the opening of the valve at which they seem to enter the lower valve will be smaller than for exp2 and exp3. Indeed the opening at which fish enter seems to decrease significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:opening))).
 
-```{r fig.width=10, fig.height=10}
+Regarding the upper valve, fish also seem to mainly wait until it is completely open (Figure \@ref(fig:phaseentered)), but compared to the lower valve, a relatively large number seem also to leave when the valve is opening or closing. It is striking how some fish seem to pass the upper valve when it is closed. This might be the result of the detection range of the antenna being too large (detecting animals outside the fish spiral) or too low (not being able to detect animals at the moment they leave). Given the low observed detectability of the upper antenna, it is most likely that the detection range is too low.
+
+```{r phaseentered, fig.width=10, fig.height=10, fig.cap="Number of fish entering the lower valve or leaving the upper valve per phase and per experiment."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
             dplyr::filter(is.na(trend)==FALSE) %>%
@@ -494,7 +626,7 @@ xlab("Experiment") +
 theme_bw()
 ```
 
-```{r fig.width=10, fig.height=10}
+```{r phaseenterednormalized, fig.width=10, fig.height=10, fig.cap="Number of fish entering the lower valve or leaving the upper valve per phase and per experiment. To account for the different durations of each phase, the number was normalized against the duration of each phase (i.e. one fish being assigned to a short phase had more impact in the barplot than one fish assigned to a long phase)."}
 ggplot(data=gate %>%
   group_by(exp.gate, node, trend, periode) %>%
   summarise(n=n()) %>%
@@ -519,124 +651,85 @@ xlab("Experiment") +
 theme_bw()
 ```
 
-## Graphs valve opening exp0 (mei 2023)
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0")
+```{r timesinceopening, fig.width=10, fig.height=10, fig.cap="Time since opening (min) at which fish enter or leave the lower and upper valve respectively per experiment."}
+ggplot(data=comp_dir %>%
+            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(exp != "exp0") %>%
+            dplyr::filter(is.na(since_open)==FALSE) %>%
+            #dplyr::filter(!(abs(since_open - median(since_open)) > 1.5*sd(since_open))) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,node) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(as.factor(exp), since_open),size = 0.5, color = "black") + 
+geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+facet_wrap(~node) +
+ylab("Time since open (min)") + 
+xlab("Experiment") + 
+theme_bw() +
+stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
+stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_down",exp_input="exp0")
+```{r opening, fig.width=10, fig.height=10, fig.cap="Opening (cm) at which fish enter or leave the lower and upper valve respectively per experiment."}
+ggplot(data=comp_dir %>%
+            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(is.na(since_open)==FALSE) %>%
+            #dplyr::filter(!(abs(opening - median(opening)) > 1.5*sd(opening))) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,node) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+          aes(as.factor(exp), opening),size = 0.5, color = "black") + 
+geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
+facet_wrap(~node) +
+ylab("Opening (cm)") + 
+xlab("Experiment") + 
+theme_bw() +
+stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
+stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0", trend = TRUE)
+## Graphs valve opening
+
+In the following graphs the working of the lower and upper valve are depicted. As mentioned earlier the cycle duration and phase distribution of exp0 (Figure \@ref(fig:gate0valvelower) and Figure \@ref(fig:gate0valveupper)) are completely different from those of exp1 (Figure \@ref(fig:gate1valvelower) and Figure \@ref(fig:gate1valveupper)), exp2 (Figure \@ref(fig:gate2valvelower) and Figure \@ref(fig:gate2valveupper)) and exp3 (Figure \@ref(fig:gate3valvelower) and Figure \@ref(fig:gate3valveupper)). The seemingly different cycle duration and phase distribution of exp1 versus exp2 and exp3 is most likely the result of the much lower temporal resolution of the valve-measurement-data of the former.
+
+### Graphs valve opening exp0 (may 2023)
+
+```{r gate0valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
+plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="antenna_down",exp_input="exp0", trend = TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_down",exp_input="exp0", points = TRUE)
+```{r gate0valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
+plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="antenna_up",exp_input="exp0", trend = TRUE)
 ```
 
-## Graphs valve opening exp1 (mei 2024)
+### Graphs valve opening exp1 (may 2024)
 
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=stop.exp1,node_input="antenna_up",exp_input="exp1")
+```{r gate1valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="antenna_down",exp_input="exp1", trend=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start=start.exp1,stop=stop.exp1,node_input="antenna_down",exp_input="exp1")
+```{r gate1valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="antenna_up",exp_input="exp1", trend=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="antenna_up",exp_input="exp1", points=TRUE)
-```
+### Graphs valve opening exp2 (may 2024)
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="antenna_down",exp_input="exp1", points=TRUE)
-```
-
-## Graphs valve opening exp2 (mei 2024)
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=stop.exp2,node_input="antenna_up",exp_input="exp2")
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=stop.exp2,node_input="antenna_down",exp_input="exp2")
-```
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_up",exp_input="exp2")
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_down",exp_input="exp2")
-```
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", trend=TRUE)
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+```{r gate2valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
 plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_down",exp_input="exp2", trend=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_down",exp_input="exp2", trend=TRUE)
+```{r gate2valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", trend=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_up",exp_input="exp2", trend=TRUE)
-```
+### Graphs valve opening exp3 (may 2024)
 
-## Graphs valve opening exp3 (mei 2024)
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=stop.exp3,node_input="antenna_up",exp_input="exp3")
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=stop.exp3,node_input="antenna_down",exp_input="exp3")
-```
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="antenna_up",exp_input="exp3")
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="antenna_down",exp_input="exp3")
-```
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="antenna_up",exp_input="exp3", trend=TRUE)
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
+```{r gate3valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
 plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="antenna_down",exp_input="exp3", trend=TRUE)
 ```
 
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="antenna_down",exp_input="exp3", trend=TRUE)
-```
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="antenna_up",exp_input="exp3", trend=TRUE)
-```
-
-## Network analysis
-
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp0."}
-plot_network("exp0")
-```
-
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp1."}
-plot_network("exp1", to_include = "not all")
-```
-
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp2."}
-plot_network("exp2")
-```
-
-```{r fig.width=10, fig.height=10, fig.cap="Netwerkanalyse voor exp3."}
-plot_network("exp3", to_include = "not all")
+```{r gate3valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
+plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="antenna_up",exp_input="exp3", trend=TRUE)
 ```

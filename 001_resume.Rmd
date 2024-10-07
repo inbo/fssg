@@ -2,6 +2,6 @@
 
 # Résumé français {-}
 
-Ajoutez éventuellement une traduction du résumé ici.
+Malgré les mêmes paramètres opérationnels de la spirale du poisson tout au long des expériences de 2024, le succès du passage variait considérablement puisqu'il se situait entre 0.47 et 0.79. La longueur, le poids et l'espèce (lorsque l'expérience de 2023 avec différentes espèces a été incluse) n'ont eu aucun effet sur la capacité des poissons à utiliser avec succès la spirale à poissons ni sur le temps qu'il leur a fallu pour remonter la spirale. spirale de poisson. Les poissons attendaient généralement que les vannes soient complètement ouvertes avant d'entrer et de sortir de la spirale à poissons. Cependant, pour la valve supérieure, une quantité relativement importante de poissons semblait quitter la spirale lorsque la valve s'ouvrait ou se fermait.
 
 \efrench

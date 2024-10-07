@@ -1,6 +1,7 @@
 \benglish
 
-# English abstract {-}
+# English abstract {.unnumbered}
 
-Insert a translation of the summary here.
+Despite the same operational settings of the fish spiral throughout the experiments of 2024, passage success varied substantially as it ranged between 0.47 and 0.79. The length, weight and species (when the experiment of 2023 with different species was included) did not have any effect on whether fish were able to successfully use the fish spiral nor did it have an effect on the time it took fish to move up the fish spiral. Fish generally waited until the valves were completely open before entering and leaving the fish spiral. However, for the upper valve a relatively large amount of fish did seem to leave the fish spiral when the valve was opening or closing.
+
 \eenglish

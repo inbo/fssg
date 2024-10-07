@@ -1,5 +1,5 @@
 ---
-title: "Visveiligheid van de Vandezande pompinstallatie"
+title: "Evaluation of the Fish Spiral Sluice Gate as a fish migration facility under experimental conditions"
 author:
   - name:
       given: "Stijn"
@@ -78,34 +78,33 @@ rightsholder: Instituut voor Natuur- en Bosonderzoek (INBO)
 bibliography: references.bib
 link-citations: TRUE
 site: bookdown::bookdown_site
+always_allow_html: true
 output:
   INBOmd::gitbook: default
   INBOmd::pdf_report: default
   INBOmd::epub_book: default
+  bookdown::word_document2: default
 # Don't run the format below.
 # Only required for RStudio to recognise the project as a bookdown project.
 # Hence don't use 'Build all formats'.
   bookdown::dontrun: default
 ---
 
-# Dankwoord {-}
+<!-- # Dankwoord {-} -->
 
-De tekst voor het optionele dankwoord.
+<!-- De tekst voor het optionele dankwoord. -->
 
-# Voorwoord {-}
+<!-- # Voorwoord {-} -->
 
-De tekst voor het optionele voorwoord.
+<!-- De tekst voor het optionele voorwoord. -->
 
 # Samenvatting {-}
 
-<!-- description: start -->
-De tekst voor de verplichte samenvatting.
-Hou het [Heerlijk Helder](https://overheid.vlaanderen.be/communicatie/heerlijk-helder).
-<!-- description: end -->
+Ondanks dezelfde operationele instellingen van de visspiraal tijdens de experimenten van 2024, varieerde het passagesucces aanzienlijk, variërend tussen 0.47 en 0.79. De lengte, het gewicht en de soort (wanneer het experiment van 2023 met verschillende soorten werd meegerekend) hadden geen enkel effect op de vraag of vissen de visspiraal succesvol konden gebruiken, noch op de tijd die de vissen nodig hadden om omhoog te gaan in de visspiraal. Vissen wachtten over het algemeen tot de kleppen volledig open waren voordat ze de visspiraal binnengingen en verlieten. Bij de bovenste klep leek echter een relatief grote hoeveelheid vis de visspiraal te verlaten bij het openen of sluiten van de klep.
 
-# Aanbevelingen voor beheer en/of beleid {-}
+<!-- # Aanbevelingen voor beheer en/of beleid {-} -->
 
-Verplicht wanneer relevant.
+<!-- Verplicht wanneer relevant. -->
 
 ```{r setup, include = FALSE}
 library(knitr)

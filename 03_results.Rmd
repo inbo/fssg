@@ -1,5 +1,9 @@
 # Methods
 
+```{r}
+source("./code/not_functions/libraries.R")
+```
+
 ## Description of the FSSG
 
 The 'Fischwendelschleuse' or FSSG is a fish passage with an adjustable attracting current aimed for all fish species (Fig. \@ref(fig:operation)). This system enables continuous sluice operation and should also accommodate bottom-dwelling fish. It features an individually doped multi-chamber lock system with adjustable current options in both the inflow and outflow chambers. Connections to the water, both above and below the surface, are made using a guide flow opening in line with guideline specifications for optimal findability. The lock doors are dimensioned to match the slot sizes of vertical-slot fish passes.
@@ -57,7 +61,6 @@ include_graphics(path = "./media/front.pdf")
 Two HDX PIT antennae (40 mm \* 50 mm) made of copper coil wrapped around graphite bars and connected to permanent readers were installed, each on the front of the upper or lower valve. They were both tuned to have a narrow detection range of approximately 15 cm maximum so that fish would be detected when they cross the valve only – and thus enter the system. Preliminary testing of the system was conducted, assuring the efficiency and detection range of the PIT telemetry set-up.
 
 ```{r warning=FALSE, include=FALSE}
-source("./code/not_functions/libraries.R")
 source("./code/functions/function_gate_cleaning.R")
 source("./code/functions/function_clean_hervangst_and_uitzet.R")
 source("./code/functions/function_give_n.R")
@@ -432,7 +435,7 @@ Time was for all data initially in local Brussels time but was changed to UTC fo
 
 # Results
 
-## Assumptions made
+## Experimental limitations and associated assumptions
 
 Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower valve significantly quicker (Figure \@ref(fig:assumptions1)). It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the conditions of the experiments themselves might have differed as well. Fish that were used multiple times did not seem to be more or less likely to move up and down the fish spiral multiple times within an experiment (Figure \@ref(fig:assumptions2)).
 
@@ -498,39 +501,112 @@ comp_dir %>%
   
 ```
 
-## Passage efficiency and entrance efficiency
+Detection probability at the lower antenna for exp1, exp2 and exp3 were 100%, 83% and 83%, respectively. Detection probability at the upper antenna for exp1, exp2 and exp3 were 6%, 28% and 39%, respectively.
 
-Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of fish detected on the lower antenna. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.63)** (Table \@ref(tab:passagesuccess))**.** However, although a staggering 98% of all fish of exp1 made it passed the lower valve, only 79% made it into the upper basin. In comparison, for exp2 these numbers were 72% and 76% respectively, suggesting that for exp2 a much higher proportion of the fish that were able to enter via the lower valve, also made it passed the upper valve.
+```{r dpupperantenna}
+noemer<-comp_dir %>% 
+      dplyr::filter(exp!="exp0" & node %in% c("upper valve","upper basin")) %>%
+      group_by(exp) %>%
+      summarise(noemer = n_distinct(tag_code))
+  
+  teller<-comp_dir %>% 
+      dplyr::filter(exp!="exp0" & last_sequence %in% c("lower basin-upper valve","lower basin-upper basin")) %>%
+      group_by(exp) %>%
+      summarise(teller = n_distinct(tag_code)) 
+  
+dp<-left_join(noemer,teller,by="exp")
+dp[is.na(dp)] = 0
+dp<-dp%>%mutate(dp=(noemer-teller)/noemer)
+```
 
-Passage efficiency is typically defined as the percentage of entering fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of fish able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper valve. Important to note here is that because of the imperfect detection probability of the antenna, we considered all fish detected at the upper antenna, and not only the ones that were detected on the lower antenna (i.e., the entered fish), for the passage efficiency. Eventhough fish would have needed to pass the lower antenna to reach the upper antenna, they might not necessarily be detected by the upper antenna. **Passage efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antenna this would not have been recorded. Nevertheless, because of the low detectability the issue remains that fish moving to the upper basin and back to the lower basin might not always have been detected. The passage efficiency determined here, even the one that combines recapture and detections, is therefore an **underestimation**.
+```{r dplowerantenna}
+noemer<-comp_dir %>% 
+      dplyr::filter(exp!="exp0" & node %in% c("upper basin")) %>%
+      group_by(exp) %>%
+      summarise(noemer = n_distinct(tag_code))
+  
+  teller<-comp_dir %>% 
+      dplyr::filter(exp!="exp0" & last_sequence %in% c("lower basin-upper basin","lower valve-upper basin")) %>%
+      group_by(exp) %>%
+      summarise(teller = n_distinct(tag_code)) 
+  
+dp<-left_join(noemer,teller,by="exp")
+dp[is.na(dp)] = 0
+dp<-dp%>%mutate(dp=(noemer-teller)/noemer)
+```
 
-Passage efficiency and entrance efficiency of exp0 are not provided here but in the appendix as they are likely to be strongly underestimated due to the lacking recapture data.
+## Entrance efficiency, passage efficiency and overall efficiency
 
 Before fish can successfully enter and pass the FSSG they need to be able to find the entrance (i.e., attraction efficiency). Unfortunately, the current experimental set-up does not allow for an assessment of the attraction efficiency as the area in which fish were released was too narrow to be representative for most real-life situations [@triano2022].
 
+Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of tagged fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of released fish detected on either the lower antenna, upper antenna or recaptured in the upper basin. Since all tagged fish are considered to be attracted to the FSSG due to the narrowness of the lower basin and proximity of the entrance of the FSSG, all tagged fish were considered for the entrance efficiency. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.70)** (Table \@ref(tab:passagesuccess))**.** Because of the imperfect detection probability of the lower antenna (exp1: 100%, exp2: 83% and exp3: 83%) and upper antenna (exp1: 6%, exp2: 28% and exp3: 39%) fish might have passed through the antennas without being detected which might result in these estimates being underestimations. However, because of the combined opportunities of detection at two antennas and the opportunity to recapture fish at the upper basin, **these estimates can be considered reliable.**
+
+Passage efficiency is defined as the percentage of entered fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of entered fish that were able to move through the exit of the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and/or recpatured in the upper basin over the fish that are known to have entered the FSSG (i.e., they were detected on at least one antenna or recaptured in the upper basin). **Passage efficiency was more similar between experiments than the entrance efficiency and was highest for exp2 (0.84) and lowest for exp3 (0.68)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antenna this would not have been recorded. Nevertheless, because of the very low detectability (exp1: 6%, exp2: 28% and exp3: 39%) the issue remains that fish moving to the upper basin and back to the lower basin or the area between the lower and upper valve, might not always have been detected. The passage efficiency determined here, even the one that combines recapture and detections, is therefore **more likely to be an underestimation than overestimation**.
+
+Overall efficiency is defined as the percentage of all approaching fish that are attracted to, enter and pass through the exit of the FSSG [@baker2019]. In this study, the overall efficiency is considered the proportion of all tagged fish that were able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and or recaptured in the upper basin over the total number of tagged fish. As for the entrance efficiency, **the overall efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47). It should be stressed that in this study all tagged fish were considered attracted fish. If failure to attract would have been accounted for (which was not possible for this study), it is likely that this overall efficiency could be considerably lower.**
+
+Before fish can successfully enter and pass the FSSG they need to be able to find the entrance (i.e., attraction efficiency). Unfortunately, the current experimental set-up does not allow for an assessment of the attraction efficiency as the area in which fish were released was too narrow to be representative for most real-life situations [@triano2022].
+
+Passage efficiency and entrance efficiency of exp0 are not provided here but in the appendix as they are likely to be strongly underestimated due to the lacking recapture data.
+
 ```{r}
-passage_succes<-function(pattern_value,berekening_value){
+entrance_efficiency<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
       dplyr::filter(exp!="exp0") %>%
-      mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "boven",
-                            .default = "beneden"),
+      mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "noemer", #the lower basin is the reference and therefore the pattern
+                            .default = "teller"), #everything else is what we are interested in
              calculation=berekening_value) %>%
       group_by(exp, niveau, calculation) %>%
       summarise(unieke_tags = n_distinct(tag_code)) %>%
       ungroup() %>%
       group_by(exp, calculation) %>%
-      summarise(passage_succes=round(unieke_tags[niveau=="boven"]/unieke_tags[niveau=="beneden"],digits=2)) 
+      summarise(efficiency=round(unieke_tags[niveau=="teller"]/unieke_tags[niveau=="noemer"],digits=2)) 
+  return(data)
+}
+
+passage_efficiency<-function(pattern_value,berekening_value){
+  noemer<-comp_dir %>% # the pattern and the lower valve are the reference
+      dplyr::filter(exp!="exp0" & node!="lower basin" & (sapply(node, grepl, pattern = pattern_value) | node=="lower valve")) %>%
+      group_by(exp) %>%
+      summarise(unieke_tags = n_distinct(tag_code))
+  
+  teller<-comp_dir %>% 
+      dplyr::filter(exp!="exp0" & node!="lower basin" & sapply(node, grepl, pattern = pattern_value)==TRUE) %>% #the pattern is what we are interested in
+      mutate(calculation=berekening_value) %>%
+      group_by(exp, calculation) %>%
+      summarise(unieke_tags = n_distinct(tag_code)) %>%
+      ungroup() %>%
+      mutate(efficiency=round(unieke_tags/noemer$unieke_tags,digits=2)) %>%
+      dplyr::select(-unieke_tags)
+
+  return(teller)
+}
+
+overall_efficiency<-function(pattern_value,berekening_value){
+  data<-comp_dir %>% 
+      dplyr::filter(exp!="exp0") %>%
+      mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "teller", #the pattern is what we are interested in
+                            .default = "noemer"), #the reference is the lower basin
+             calculation=berekening_value) %>%
+      group_by(exp, niveau, calculation) %>%
+      summarise(unieke_tags = n_distinct(tag_code)) %>%
+      ungroup() %>%
+      group_by(exp, calculation) %>%
+      summarise(efficiency=round(unieke_tags[niveau=="teller"]/unieke_tags[niveau=="noemer"],digits=2)) 
   return(data)
 }
 ```
 
 ```{r passagesuccess}
-rbind(passage_succes(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
-      passage_succes(pattern_value='upper basin',berekening_value="passage efficiency: recapture"),
-      passage_succes(pattern_value='upper valve',berekening_value="passage efficiency: detections"),
-      passage_succes(pattern_value='lower valve',berekening_value="entrance efficiency: detections")) %>% 
-  pivot_wider(names_from = exp, values_from = passage_succes) %>%
-  kable(caption="Passage efficiency and entrance efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the passage efficiency and entrance efficiency were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty). If looking at the detections only 35 (21 percent) and 77 (46 percent) were detected at the upper and lower valve respectively.")
+rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance efficiency: recapture and detections"),
+      passage_efficiency(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
+      passage_efficiency(pattern_value='upper basin',berekening_value="passage efficiency: recapture"),
+      passage_efficiency(pattern_value='upper valve',berekening_value="passage efficiency: detections"),
+      overall_efficiency(pattern_value='up',berekening_value="overall efficiency: recapture and detections"),
+      overall_efficiency(pattern_value='upper basin',berekening_value="overall efficiency: recapture"),
+      overall_efficiency(pattern_value='upper valve',berekening_value="overall efficiency: detections")) %>% 
+  pivot_wider(names_from = exp, values_from = efficiency) %>%
+  kable(caption="Entrance efficiency, passage efficiency and overall efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the estimates were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty).")
 ```
 
 To assess which factors were determinative for a fish making it up the fish spiral or not, a simple logistic model was used with as response whether a fish made it up the fish spiral or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the fish spiral or not.** When using only fish that were only used once, the same results were obtained.

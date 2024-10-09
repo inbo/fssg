@@ -174,29 +174,67 @@ ggplot(comp_dir %>%
 # Replicate graphs and tables but without the re-used fish
 
 ```{r}
-passage_succes<-function(pattern_value,berekening_value){
+entrance_efficiency<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
-      dplyr::filter(exp!="exp0") %>%
       dplyr::filter(hergebruikt==1) %>%
-      mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "boven",
-                            .default = "beneden"),
+      dplyr::filter(exp!="exp0") %>%
+      mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "noemer", #the lower basin is the reference and therefore the pattern
+                            .default = "teller"), #everything else is what we are interested in
              calculation=berekening_value) %>%
       group_by(exp, niveau, calculation) %>%
       summarise(unieke_tags = n_distinct(tag_code)) %>%
       ungroup() %>%
       group_by(exp, calculation) %>%
-      summarise(passage_succes=round(unieke_tags[niveau=="boven"]/unieke_tags[niveau=="beneden"],digits=2)) 
+      summarise(efficiency=round(unieke_tags[niveau=="teller"]/unieke_tags[niveau=="noemer"],digits=2)) 
   return(data)
 }
 
-rbind(passage_succes(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
-      passage_succes(pattern_value='upper basin',berekening_value="passage efficiency: recapture"),
-      passage_succes(pattern_value='upper valve',berekening_value="passage efficiency: detections"),
-      passage_succes(pattern_value='lower valve',berekening_value="attraction efficiency: detections")
-      ) %>% 
-    pivot_wider(names_from = exp, values_from = passage_succes) %>%
-  #mutate(exp0=case_when(exp0>1~NA,.default=exp0)) %>%
-  kable(caption="Passage efficiency and attraction efficiency calculated in different ways.")
+passage_efficiency<-function(pattern_value,berekening_value){
+  noemer<-comp_dir %>% # the pattern and the lower valve are the reference
+      dplyr::filter(exp!="exp0" & node!="lower basin" & (sapply(node, grepl, pattern = pattern_value) | node=="lower valve")) %>%
+      dplyr::filter(hergebruikt==1) %>%
+      group_by(exp) %>%
+      summarise(unieke_tags = n_distinct(tag_code))
+  
+  teller<-comp_dir %>% 
+      dplyr::filter(exp!="exp0" & node!="lower basin" & sapply(node, grepl, pattern = pattern_value)==TRUE) %>% #the pattern is what we are interested in
+      dplyr::filter(hergebruikt==1) %>%
+      mutate(calculation=berekening_value) %>%
+      group_by(exp, calculation) %>%
+      summarise(unieke_tags = n_distinct(tag_code)) %>%
+      ungroup() %>%
+      mutate(efficiency=round(unieke_tags/noemer$unieke_tags,digits=2)) %>%
+      dplyr::select(-unieke_tags)
+
+  return(teller)
+}
+
+overall_efficiency<-function(pattern_value,berekening_value){
+  data<-comp_dir %>% 
+      dplyr::filter(exp!="exp0") %>%
+      dplyr::filter(hergebruikt==1) %>%
+      mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "teller", #the pattern is what we are interested in
+                            .default = "noemer"), #the reference is the lower basin
+             calculation=berekening_value) %>%
+      group_by(exp, niveau, calculation) %>%
+      summarise(unieke_tags = n_distinct(tag_code)) %>%
+      ungroup() %>%
+      group_by(exp, calculation) %>%
+      summarise(efficiency=round(unieke_tags[niveau=="teller"]/unieke_tags[niveau=="noemer"],digits=2)) 
+  return(data)
+}
+```
+
+```{r passagesuccess}
+rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance efficiency: recapture and detections"),
+      passage_efficiency(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
+      passage_efficiency(pattern_value='upper basin',berekening_value="passage efficiency: recapture"),
+      passage_efficiency(pattern_value='upper valve',berekening_value="passage efficiency: detections"),
+      overall_efficiency(pattern_value='up',berekening_value="overall efficiency: recapture and detections"),
+      overall_efficiency(pattern_value='upper basin',berekening_value="overall efficiency: recapture"),
+      overall_efficiency(pattern_value='upper valve',berekening_value="overall efficiency: detections")) %>% 
+  pivot_wider(names_from = exp, values_from = efficiency) %>%
+  kable(caption="Entrance efficiency, passage efficiency and overall efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the estimates were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty).")
 ```
 
 ```{r fig.width=10, fig.height=10}

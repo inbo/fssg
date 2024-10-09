@@ -1,8 +1,58 @@
 # Methods
 
+## Description of the FSSG
+
+The 'Fischwendelschleuse' or FSSG is a fish passage with an adjustable attracting current aimed for all fish species (Fig. \@ref(fig:operation)). This system enables continuous sluice operation and should also accommodate bottom-dwelling fish. It features an individually doped multi-chamber lock system with adjustable current options in both the inflow and outflow chambers. Connections to the water, both above and below the surface, are made using a guide flow opening in line with guideline specifications for optimal findability. The lock doors are dimensioned to match the slot sizes of vertical-slot fish passes.
+
+```{r operation, fig.cap = "Operating principle of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
+include_graphics(path = "./media/operation.pdf")
+```
+
+The fish pass is designed to be as natural as possible via a natural substrate base and upright built (i.e., not rotating) (Fig. \@ref(fig:natuurlijk)). The lock control is adaptable for each lock chamber to suit different target fish species and can be temporarily adjusted for individual fish using a monitoring system. The fish spiral lock is compact, suitable for fall heights of 1 to 10 meters, and requires minimal construction. It has few moving parts and simple controls. Currently, the fish spiral lock is being designed with diameters of 2 to 5 meters and flow rates of 50 to 500 liters per second. An additional attracting flow of approximately 500 to 2500 liters per second can be realized for both inflow and outflow.
+
+```{r natuurlijk, fig.cap = "The entire fish pass is designed to be as natural as possible via a natural substrate base (left) and upright built (right).", fig.show = "hold", fig.align = "center", out.width = "50%"}
+include_graphics(path = c("./media/substraat.jpg", "./media/verticaal.png"))
+```
+
+### Underwater connection via the outflow chamber and guide flow opening
+
+The fish spiral lock is installed underwater within a custom-designed outflow chamber, which also serves as its foundation (Fig. \@ref(fig:inlet)). This chamber guides fish either ascending to the lock doors or descending to the guide flow opening. To mimic a natural environment, the outflow chamber is filled with base substrate. The system is fine-tuned to the specific water conditions and any operational settings nearby structures such as sluices or hydropower installations might have. This is achieved by designing the underwater guide flow opening with guide walls and bottom connections, and optimizing attracting flow and direction. All these adjustments comply with the fish pass guidelines, similar to vertical slot fish passes.
+
+```{r inlet, fig.cap = "Inlet of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
+include_graphics(path = "./media/inlet.pdf")
+```
+
+A monitoring system near the guide flow opening identifies individual fish, classifies them by species, and adjusts the lock control and attracting flow accordingly. This system also enables statistical recording of fish species and functional monitoring of the fish spiral lock.
+
+### Upstream connection via the inflow chamber and guide flow opening
+
+A watertight inflow chamber is installed upstream of the fish spiral lock, its height designed to accommodate the normal fluctuations in surface water levels (Fig. \@ref(fig:outlet)). This inflow chamber facilitates the targeted movement of fish, guiding those willing to descend to all lock doors and those ascending to the guide flow opening. To mimic a natural environment, the chamber is filled with base substrate. The guide flow opening can be integrated into the main flow with a base connection and guide wall, enabling a high attracting flow into the inflow chamber. This design ensures the fish spiral lock's suitability for fish descent while maintaining low flow velocities in front of the guide flow opening to prevent the unintentional drifting of ascending fish into the driving water.
+
+```{r outlet, fig.cap = "Outlet of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
+include_graphics(path = "./media/outlet.pdf")
+```
+
+In the area of the guide flow opening, a monitoring system records individual fish, assigns them to species, and adjusts the lock control and attracting flow accordingly. This system also allows for the statistical recording of fish species and the functional monitoring of the fish spiral lock.
+
+### Continuous multi-chamber lock system
+
+Due to its design, the function of the multi-chamber lock system (Fig. \@ref(fig:locks)) in the fish spiral lock cannot be divided into distinct successive phases. Typically, lock systems operate in phases such as swimming in, lifting or lowering, and floating out. In the fish spiral lock, these phases can occur simultaneously within the lock chambers, enabling continuous locking without unfavourable dwell times for the fish. The upper and lower water entries into the fish spiral lock are through vertically operated, slow-moving lock doors. The adjustable lock current openings in these doors allow them to be perceived as swim-in openings even when closed. When the lock door is opened, it creates a flow rate and speed that meet fish pass guidelines, ensuring clear perception as an ascent or descent route. The duration the valves are open or closed, as well as the time it takes to open and close the valves, can be individually set for each lock chamber. The chambers are completely filled with water, eliminating any gradations or waterfalls. The spiral sole is designed to be non-slip with a substrate thickness of 10 to 30 cm. The dimensions of the lock chambers are in line with the specifications of vertical slot fish pass guidelines.
+
+```{r locks, fig.cap = "Valves of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
+include_graphics(path = "./media/locks.pdf")
+```
+
+Counter-currents are noticeable for fish on the outer diameter, with flow speeds of approximately 0.3 m/s. In the central tube area, the flow speed is low and can be increased with minimal energy. The selectable spiral gradient allows ground-dwelling creatures, such as crabs, to easily navigate through. The lock chamber can be considered a large habitat with reliable bird protection. The central tube enables access via a ladder during lock operation and provides natural lighting. Exposure windows are uniformly sized, and lock doors can be manually opened. Additionally, artificial lighting using LED strips is provided. The central tube is flood-proof and closed at the top with a translucent dome. Waterproof maintenance accesses are installed at the top of the lock system for cleaning and filling with base substrate. Electrical or hydraulically automated devices for the lock doors are also located here, along with a safety railing to prevent falls.
+
+In the event of flooding, all lock doors close simultaneously to minimize contamination with flotsam and sediment. This can also be done during low water phases to avoid additional water losses. If the outside temperature drops below -10 degrees, the spiral lock must be taken out of operation to prevent ice damage. The fish spiral lock is emptied in a controlled manner for this purpose.
+
 ## Set-up
 
-Only one of the three canals built in the system was used. Prior to the experiments, the lower and upper tanks were slightly modified by installing a metal plate to direct the flow of the lower valve towards the rank. Additionally, possible escape routes from the test tank were closed with a small mesh sized grid. Potential “shelter” areas under the bottom plates of the valve were also closed off.
+Only one of the three canals built in the system was used. Prior to the experiments (Fig. \@ref(fig:front)), the lower and upper tanks were slightly modified by installing a metal plate to direct the flow of the lower valve towards the rank. Additionally, possible escape routes from the test tank were closed with a small mesh sized grid. Potential “shelter” areas under the bottom plates of the valve were also closed off.
+
+```{r front, fig.cap = "Front view of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
+include_graphics(path = "./media/front.pdf")
+```
 
 Two HDX PIT antennae (40 mm \* 50 mm) made of copper coil wrapped around graphite bars and connected to permanent readers were installed, each on the front of the upper or lower valve. They were both tuned to have a narrow detection range of approximately 15 cm maximum so that fish would be detected when they cross the valve only – and thus enter the system. Preliminary testing of the system was conducted, assuring the efficiency and detection range of the PIT telemetry set-up.
 
@@ -444,7 +494,7 @@ comp_dir %>%
     dplyr::mutate(loop = dplyr::row_number()) %>%
     group_by(exp,loop) %>%
     summarise(unieke_tags=n_distinct(tag_code)) %>%
-    pivot_wider(names_from = loop, values_from = unieke_tags) %>% kable(caption="Number of fish going through the system (from the lower antenna to the upper antenna) one to six times.")
+    pivot_wider(names_from = loop, values_from = unieke_tags) %>% kable(caption="Number of fish going through the system (from the lower antenna to the upper antenna) multiple times, ranging from one to six times.") %>% add_header_above(header=c(" " = 1,"Number of loops through the system"=6))
   
 ```
 

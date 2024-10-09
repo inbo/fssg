@@ -48,9 +48,14 @@ rownames(interval)=c("exp0","exp1","exp2","exp3")
 
 ## Fish experiments
 
-For the experiments of 2023 on 5/5/2023, 8/5/2023 and 23/5/2023, a total of 166 individuals of seven different species were used: bleak (4), roach (33), bream (12), gibel carp (6), carp (1), white bream (100) and rudd (10). Fish were not re-used for the different experiments. Recapture data was not available which meant that passage success could only be determined via detections (see further). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
+For the experiments of 2023 (exp0) on 5/5/2023 (47 tagged individuals), 8/5/2023 (70 tagged individuals) and 23/5/2023 (49 tagged individuals), a total of 166 individuals of seven different species were used: bleak (*Alburnus alburnus*: 4 individuals), roach (*Rutilus rutilus*: 33 individuals), bream (*Abramis brama*: 12 individuals), gibel carp (*Carassius gibelio*: 6 individuals), carp (*Cyprinus carpio*: 1 individual), white bream (*Blicca bjoerkna*: 100 individuals) and rudd (*Scardinius erythrophthalmus*: 10 individuals). Fish were not re-used for the different experiments. Recapture data was not available which meant that passage efficiency could not be determined accurately. To determine passage efficiency in a sound way at least two measures per fish were needed: Whether a fish entered the system (and moment of entrance preferably) and whether a fish was recaptured (the moment of recapture is less insightful than the moment of entrance as it is the moment that a fish enters a new site of the system (or node, see further) that is of importance). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
 
-For the experiments of 2024 on 15/5/2023, 22/5/2023 and 29/5/2023 60, 102 and 124 individuals of ide were used. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used). Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions.
+```{r overzichtexp0}
+options(knitr.kable.NA = '')
+read.csv("./data/intern/overzichtexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Overview of the number of tagged fish per species and per data during the 2023 experiment.")
+```
+
+For the experiments of 2024 on 15/5/2023 (exp1), 22/5/2023 (exp2) and 29/5/2023 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used). Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions.
 
 ```{r}
 interval %>% kable(caption="Study period description. Start and stop time for the fish experiment and valve data collection are given.")
@@ -143,6 +148,13 @@ hervangst<-rbind(hervangst_exp1,hervangst_exp2,hervangst_exp3)
 tags.to.remove<-c(uitzet$tag_code[which(!uitzet$tag_code %in% hervangst$tag_code)], hervangst$tag_code[which(!hervangst$tag_code %in% uitzet$tag_code)], unique(hervangst$tag_code[which(hervangst$event_site_code_value %in% c("outer ring", "inner ring"))]))
 
 remove(uitzet_exp1,hervangst_exp1,uitzet_exp2,hervangst_exp2,uitzet_exp3,hervangst_exp3)
+
+remove.tags.data<-data %>% 
+  dplyr::filter(tag_code %in% tags.to.remove) %>%
+  group_by(tag_code) %>%
+  dplyr::filter(row_number()==1) %>%
+  group_by(exp) %>%
+  summarise(n=n())
 ```
 
 ```{r}
@@ -358,11 +370,11 @@ All the different sites were fish were either released, detected or recaptured a
 
 Pit tag data was compressed using the default settings of the function compress of the R package PITCleanr. This data compression involves determining the first and last detection of a series of subsequent detections on a node as well as the number of detections during each slot (from first and last detection).
 
-The location where the fish were released was designated as the initial node, with the corresponding timestamp marking the start of each fish's journey. Conversely, the recapture location was identified as the final node, with the corresponding timestamp indicating the end of each fish's journey. All fish were alive and presumed to still have their tags at the time of release. However, some fish were found dead and/or tagless upon recapture. Due to the low detection rate of the antennas, particularly the upper one, we did not attempt to match unidentified fish with tag IDs from the release data. In a system with higher detectability, it might have been feasible to trace unidentified fish back to known but not-recaptured tag IDs with a reasonable degree of certainty. Unfortunately, this was not the case in our system. Fish were only included in the dataset if they were recaptured and identified upon capture. More specifically, detections and observations of fish which were not recaptured, had escaped the system or could not be identified due to tag loss were omitted.
+The location where the fish were released (i.e., the lower tank) was designated as the initial node, with the corresponding timestamp marking the start of each fish's journey. Conversely, the recapture location was identified as the final node, with the corresponding timestamp indicating the end of each fish's journey. All fish were alive and presumed to still have their tags at the time of release. However, some fish were found dead and/or tagless upon recapture. Due to the low detection rate of the antennas, particularly the upper one, we did not attempt to match unidentified fish with tag IDs from the release data. In a system with higher detectability, it might have been feasible to trace unidentified fish back to known but not-recaptured tag IDs with a reasonable degree of certainty. Unfortunately, this was not the case in our system. For the experiments of 2024, for which recapture data was available, fish were only included in the dataset if they were recaptured and identified upon capture. More specifically, detections and observations of fish which were not recaptured, had escaped the system or could not be identified due to tag loss were omitted. For exp1, six fish were found without a tag and 13 fish were not recaptured (six of them because of the absence of a tag). For exp2, three fish were not recaptured. For exp3, one fish was found without a tag and eight fish were not recaptured (one of them because of the absence of a tag). Since for the experiments of 2023 no recapture data was available, all data were used though it should be noted that this comes with a level of unquantifiable uncertainty.
 
 <!-- To prevent artificial inflation of the number of fish entering the experiment, fish found without a tag in the basin below were excluded from the dataset. For instance, an unidentified fish with a new ID (e.g., unknown_4) would also have had a real ID. Including this fish in the data would have resulted in double-counting. However, fish found without a tag in other locations were still included in the dataset, as there was no risk of double-counting once they had moved away from their initial node. -->
 
-The temporal resolution and range of the valve-opening and pressure data was different between experiments. In order to harmonize the temporal resolution between experiments and to easily link fish data with valve and pressure data, linear interpolation was applied to yield a temporal resolution of one second. A valve was considered open when the opening was larger than 28 and 49 cm in the case of the last three experiments of 2024 and the one experiment of 2023, respectively. For all experiments the valve was considered closed when the opening was less than 3 cm. For every second the time since the last opening was determined.
+The temporal resolution and range of the valve-opening and pressure data was different between experiments. In order to harmonize the temporal resolution between experiments and to easily link fish data with valve and pressure data, linear interpolation was applied to yield a temporal resolution of one second. A valve was considered open when the opening was larger than 28 and 49 cm in the case of the experiments of 2024 and 2023, respectively. For all experiments the valve was considered closed when the opening was less than 3 cm. For every second the time since the last opening was determined.
 
 When linking the valve data to the fish data, for passage through the lower and upper valve respectively the first detection and last detection were used. This was done because we were mainly interested in when fish enter (via the lower valve) and leave (via the upper valve) the system.
 
@@ -420,11 +432,31 @@ summary(lm(formula = as.numeric(travel_time_adapted) ~ last_sequence * as.factor
             dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted)))))
 ```
 
-## Passage success
+Although most fish went through the system (from the lower valve or antenna to the upper valve or antenna) only once, some went through the system several times (Table \@ref(tab:loop)). Especially for exp0 a relatively large amount went two (12 individuals) to three times (3 individuals) through the system. For exp3, one fish went up to six times through the system.
 
-Passage success is defined as the proportion of fish able to move from one location to the other (Table \@ref(tab:passagesuccess)). **Passage success from the lower basin to the upper basin (and upper antenna) was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47).** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage success. Using both the number of recaptured fish and the detections yielded the highest and most representative passage success as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antennae this would not have been recorded. Nevertheless, because of the low detectability the issue remains that fish moving to the upper basin and back to the lower basin might not always have been detected. The passage success determined here, even the one that combines recapture and detections, is therefore an **underestimation**. Passage success of exp0 is likely to be a strong underestimation due to the lacking recapture data.
+```{r loop}
+options(knitr.kable.NA = 0)
+comp_dir %>%
+    dplyr::filter(last_sequence == "antenna_down-antenna_up") %>% 
+    dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+    arrange(tag_code,min_det) %>%
+    group_by(tag_code) %>%
+    dplyr::mutate(loop = dplyr::row_number()) %>%
+    group_by(exp,loop) %>%
+    summarise(unieke_tags=n_distinct(tag_code)) %>%
+    pivot_wider(names_from = loop, values_from = unieke_tags) %>% kable(caption="Number of fish going through the system (from the lower antenna to the upper antenna) one to six times.")
+  
+```
 
-**Passage success from the lower basin to the lower antenna showed a similar pattern with highest values for exp1 and lowest for exp3. However,** although a staggering 98% of all fish of exp1 made it passed the lower antenna, only 79% made it into the upper basin. In comparison, for exp2 these numbers were 72% and 76% respectively, suggesting that for exp2 a much higher proportion of the fish that were able to pass the lower valve, also made it passed the upper valve.
+## Passage efficiency and entrance efficiency
+
+Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of fish detected on the lower antenna. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.63)** (Table \@ref(tab:passagesuccess))**.** However, although a staggering 98% of all fish of exp1 made it passed the lower antenna, only 79% made it into the upper basin. In comparison, for exp2 these numbers were 72% and 76% respectively, suggesting that for exp2 a much higher proportion of the fish that were able to enter via the lower valve, also made it passed the upper valve.
+
+Passage efficiency is typically defined as the percentage of entering fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of fish able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper valve. Important to note here is that because of the imperfect detection probability of the antenna, we considered all fish detected at the upper antenna, and not only the ones that were detected on the lower antenna (i.e., the entered fish), for the passage efficiency. Eventhough fish would have needed to pass the lower antenna to reach the upper antenna, they might not necessarily be detected by the upper antenna. **Passage efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antennae this would not have been recorded. Nevertheless, because of the low detectability the issue remains that fish moving to the upper basin and back to the lower basin might not always have been detected. The passage efficiency determined here, even the one that combines recapture and detections, is therefore an **underestimation**.
+
+Passage efficiency and entrance efficiency of exp0 are not provided here but in the appendix as they are likely to be strongly underestimated due to the lacking recapture data.
+
+Before fish can successfully enter and pass the FSSG they need to be able to find the entrance (i.e., attraction efficiency). Unfortunately, the current experimental set-up does not allow for an assessment of the attraction efficiency as the area in which fish were released was too narrow to be representative for most real-life situations [@triano2022].
 
 ```{r}
 passage_succes<-function(pattern_value,berekening_value){
@@ -443,15 +475,15 @@ passage_succes<-function(pattern_value,berekening_value){
 ```
 
 ```{r passagesuccess}
-rbind(passage_succes(pattern_value='up',berekening_value="basin down -> basin up/valve up: recapture and detections"),
-      passage_succes(pattern_value='basin up',berekening_value="basin down -> basin up: recapture"),
-      passage_succes(pattern_value='antenna_up',berekening_value="basin down -> valve up: detections"),
-      passage_succes(pattern_value='antenna_down',berekening_value="basin down -> valve down: detections")) %>% 
+rbind(passage_succes(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
+      passage_succes(pattern_value='basin up',berekening_value="passage efficiency: recapture"),
+      passage_succes(pattern_value='antenna_up',berekening_value="passage efficiency: detections"),
+      passage_succes(pattern_value='antenna_down',berekening_value="entrance efficiency: detections")) %>% 
   pivot_wider(names_from = exp, values_from = passage_succes) %>%
-  kable(caption="Passage success calculated in different ways. As there was no recapture data available for the experiments of 2023, the passage success was not determined. If looking at the detections only 35 (21 percent) and 77 (46 percent) were detected at the upper and lower antenna respectively.")
+  kable(caption="Passage efficiency and entrance efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the passage efficiency and entrance efficiency were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty). If looking at the detections only 35 (21 percent) and 77 (46 percent) were detected at the upper and lower antenna respectively.")
 ```
 
-To assess which factors were determinative for a fish making it up the fish spiral a simple logistic model was used with as response whether a fish made it up the fish spiral or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the fish spiral or not.** When using only fish that were only used once, the same results were obtained.
+To assess which factors were determinative for a fish making it up the fish spiral or not, a simple logistic model was used with as response whether a fish made it up the fish spiral or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the fish spiral or not.** When using only fish that were only used once, the same results were obtained.
 
 ```{r include=FALSE}
 model.data<-comp_dir %>%
@@ -601,7 +633,7 @@ ggplot(data=comp_dir %>%
 geom_bar() + 
 facet_wrap(~ last_sequence + exp, scales=c("free")) +
 ylab("Number of fish entering lower valve") + 
-xlab("Number of cycle since the experiment started") + 
+xlab("Number of cycles since the experiment started") + 
 theme_bw() + 
 theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) 
 ```

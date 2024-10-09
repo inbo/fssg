@@ -138,8 +138,8 @@ data$antenna_group_configuration_value=100
 data<-data[startsWith(data$tag_code,"9")==TRUE,]
 data<-data[-which(data$tag_code %in% c("900_2280000_228000535717","900_2280\xc9D\xe2LI","900_228000535Y")),]
 data$tag_code<-gsub("_","",data$tag_code)
-data$event_site_code_value[which(data$event_site_code_value=="vdz_boven")]="antenna_up"
-data$event_site_code_value[which(data$event_site_code_value=="vdz_onder")]="antenna_down"
+data$event_site_code_value[which(data$event_site_code_value=="vdz_boven")]="upper valve"
+data$event_site_code_value[which(data$event_site_code_value=="vdz_onder")]="lower valve"
 
 data$exp<-NA
 data$exp[which(format(as.Date(data$event_date_time_value, format="%d/%m/%Y"),"%Y")=="2023")]="exp0"
@@ -220,9 +220,9 @@ gate_onder_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet
 gate_boven_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 2)[,c(2,3)]
   
 gate_onder_2023<-gate_cleaning(gate_onder_2023,"2023")
-gate_onder_2023$node<-"antenna_down"
+gate_onder_2023$node<-"lower valve"
 gate_boven_2023<-gate_cleaning(gate_boven_2023,"2023")
-gate_boven_2023$node<-"antenna_up"
+gate_boven_2023$node<-"upper valve"
 
 gate<-rbind(gate_onder_2023,gate_boven_2023)
 remove(gate_onder_2023,gate_boven_2023)
@@ -247,9 +247,9 @@ for (i in 1:length(files)){
 }
 
 gate_onder_2024<-gate_cleaning(gate_onder_2024,"2024")
-gate_onder_2024$node<-"antenna_down"
+gate_onder_2024$node<-"lower valve"
 gate_boven_2024<-gate_cleaning(gate_boven_2024,"2024")
-gate_boven_2024$node<-"antenna_up"
+gate_boven_2024$node<-"upper valve"
 
 gate<-rbind(gate,gate_onder_2024,gate_boven_2024)
 remove(gate_onder_2024,gate_boven_2024,dir1,dir2,files,file,i)
@@ -357,16 +357,16 @@ comp_dir <- addDirection(compress_obs = comp_obs,
                          direction = "u")
 
 comp_dir$det_link<-comp_dir$min_det
-comp_dir$det_link[which(comp_dir$node=="antenna_up")]=comp_dir$max_det[which(comp_dir$node=="antenna_up")]
+comp_dir$det_link[which(comp_dir$node=="upper valve")]=comp_dir$max_det[which(comp_dir$node=="upper valve")]
 
 comp_dir$travel_time_adapted<-comp_dir$travel_time
-comp_dir$travel_time_adapted[which(comp_dir$last_sequence %in% c("antenna_down-antenna_up","antenna_up-antenna_down"))]=comp_dir$travel_time[which(comp_dir$last_sequence %in% c("antenna_down-antenna_up","antenna_up-antenna_down"))]+comp_dir$duration[which(comp_dir$last_sequence %in% c("antenna_down-antenna_up","antenna_up-antenna_down"))]
+comp_dir$travel_time_adapted[which(comp_dir$last_sequence %in% c("lower valve-upper valve","upper valve-lower valve"))]=comp_dir$travel_time[which(comp_dir$last_sequence %in% c("lower valve-upper valve","upper valve-lower valve"))]+comp_dir$duration[which(comp_dir$last_sequence %in% c("lower valve-upper valve","upper valve-lower valve"))]
 
 comp_dir<-left_join(comp_dir,gate %>% dplyr::select(-measurement),by=join_by(det_link==date_time,node==node))
 comp_dir<-left_join(comp_dir,metadata,by=join_by(tag_code2==tag_code))
 comp_dir<-left_join(comp_dir,hergebruikt,by=join_by(tag_code==tag_code))
-comp_dir$node=factor(comp_dir$node, levels=c("basin down","antenna_down","antenna_up","basin up"))
-comp_dir$last_sequence=factor(comp_dir$last_sequence, levels=c("NA-basin down","NA-antenna_down","NA-antenna_up","basin down-antenna_down","antenna_down-basin down","antenna_down-antenna_up","antenna_up-antenna_down","basin down-antenna_up","antenna_up-basin down","antenna_up-basin up","antenna_down-basin up","basin down-basin up"))
+comp_dir$node=factor(comp_dir$node, levels=c("lower basin","lower valve","upper valve","upper basin"))
+comp_dir$last_sequence=factor(comp_dir$last_sequence, levels=c("NA-lower basin","NA-lower valve","NA-upper valve","lower basin-lower valve","lower valve-lower basin","lower valve-upper valve","upper valve-lower valve","lower basin-upper valve","upper valve-lower basin","upper valve-upper basin","lower valve-upper basin","lower basin-upper basin"))
 remove(comp_obs, hergebruikt)
 ```
 
@@ -382,9 +382,9 @@ links <- comp_dir %>%
             ungroup() %>%
             group_by(exp,start,stop) %>%
             summarize(n=n_distinct(tag_code)) %>%
-            mutate(color = case_when(start == "basin down" & stop == "antenna_down" ~ "green",
-                                     start == "antenna_down" & stop == "antenna_up" ~ "green",
-                                     start == "antenna_up" & stop == "basin up" ~ "green",
+            mutate(color = case_when(start == "lower basin" & stop == "lower valve" ~ "green",
+                                     start == "lower valve" & stop == "upper valve" ~ "green",
+                                     start == "upper valve" & stop == "upper basin" ~ "green",
                                      .default = "red")) %>%
             ungroup()
 
@@ -438,7 +438,7 @@ Fish which were used for multiple experiments seemed to have a significantly low
 
 ```{r assumptions1, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower antenna and from the lower antenna to the upper antenna in function of the number of a times a fish was used in experiments. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
             dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted))) %>%
             arrange(tag_code,min_det) %>%
@@ -458,7 +458,7 @@ stat_compare_means(comparisons = cmpr.reuse, method = "wilcox.test", symnum.args
 
 ```{r assumptions2, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower antenna to the upper antenna in function of the number of times a fish moved from the lower antenna to the upper antenna. A distinction is made between fish that have been used once, twice, or three times."}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
             dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted))) %>%
             arrange(tag_code,min_det) %>%
@@ -477,7 +477,7 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 ```{r eval=FALSE}
 summary(lm(formula = as.numeric(travel_time_adapted) ~ last_sequence * as.factor(hergebruikt),
    data = comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
             dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted)))))
 ```
@@ -487,7 +487,7 @@ Although most fish went through the system (from the lower valve or antenna to t
 ```{r loop}
 options(knitr.kable.NA = 0)
 comp_dir %>%
-    dplyr::filter(last_sequence == "antenna_down-antenna_up") %>% 
+    dplyr::filter(last_sequence == "lower valve-upper valve") %>% 
     dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
     arrange(tag_code,min_det) %>%
     group_by(tag_code) %>%
@@ -526,9 +526,9 @@ passage_succes<-function(pattern_value,berekening_value){
 
 ```{r passagesuccess}
 rbind(passage_succes(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
-      passage_succes(pattern_value='basin up',berekening_value="passage efficiency: recapture"),
-      passage_succes(pattern_value='antenna_up',berekening_value="passage efficiency: detections"),
-      passage_succes(pattern_value='antenna_down',berekening_value="entrance efficiency: detections")) %>% 
+      passage_succes(pattern_value='upper basin',berekening_value="passage efficiency: recapture"),
+      passage_succes(pattern_value='upper valve',berekening_value="passage efficiency: detections"),
+      passage_succes(pattern_value='lower valve',berekening_value="entrance efficiency: detections")) %>% 
   pivot_wider(names_from = exp, values_from = passage_succes) %>%
   kable(caption="Passage efficiency and entrance efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the passage efficiency and entrance efficiency were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty). If looking at the detections only 35 (21 percent) and 77 (46 percent) were detected at the upper and lower antenna respectively.")
 ```
@@ -538,9 +538,9 @@ To assess which factors were determinative for a fish making it up the fish spir
 ```{r include=FALSE}
 model.data<-comp_dir %>%
   dplyr::filter(is.na(lengte)==FALSE) %>%
-  mutate(response = case_when(node=="basin up" | node=="antenna_up" ~ 2,
-                              node=="antenna_down" ~ 1,
-                              node=="basin down" ~ 0)) %>%
+  mutate(response = case_when(node=="upper basin" | node=="upper valve" ~ 2,
+                              node=="lower valve" ~ 1,
+                              node=="lower basin" ~ 0)) %>%
   dplyr::select(response,tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
   arrange(desc(response)) %>%
   group_by(tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
@@ -559,9 +559,9 @@ model.data<-comp_dir %>%
   dplyr::filter(is.na(lengte)==FALSE) %>%
   dplyr::filter(hergebruikt==1) %>%
   #dplyr::filter(exp!="exp0") %>%
-  mutate(response = case_when(node=="basin up" | node=="antenna_up" ~ 1,
-                              node=="antenna_down" ~ 0,
-                              node=="basin down" ~ 0)) %>%
+  mutate(response = case_when(node=="upper basin" | node=="upper valve" ~ 1,
+                              node=="lower valve" ~ 0,
+                              node=="lower basin" ~ 0)) %>%
   dplyr::select(response,tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
   arrange(desc(response)) %>%
   group_by(tag_code,exp,soort,lengte,gewicht,hergebruikt) %>%
@@ -577,7 +577,7 @@ To assess which factors were determinative for the opening of the valve (upper a
 
 ```{r include=FALSE}
 model.data<-comp_dir %>%
-  dplyr::filter(is.na(lengte)==FALSE & last_sequence %in% c("antenna_down-antenna_up","basin down-antenna_down") & exp != "exp0")  %>%
+  dplyr::filter(is.na(lengte)==FALSE & last_sequence %in% c("lower valve-upper valve","lower basin-lower valve") & exp != "exp0")  %>%
   dplyr::filter(hergebruikt==1) %>%
   dplyr::select(opening,tag_code,node,exp,lengte,gewicht,hergebruikt) %>%
   mutate(opening=opening/30) %>%
@@ -631,7 +631,7 @@ When considering all fish, the **travel time from the lower basin** (start of th
 
 ```{r traveltime, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower antenna and from the lower antenna to the upper antenna per experiment. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
             #dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted))) %>%
@@ -653,7 +653,7 @@ stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args =
 ```{r fishstats}
 comp_dir %>%
   dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
-  dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+  dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
   arrange(tag_code,min_det) %>%
   group_by(tag_code,last_sequence) %>%
   dplyr::mutate(loop = dplyr::row_number()) %>%
@@ -672,7 +672,7 @@ For all experiments there were also fish that took a very long time to move to t
 
 ```{r numbercycles, fig.width=10, fig.height=10, fig.cap="Number of cycles before fish entering the lower valve (lower basin to lower antenna) and leaving the upper valve (lower antenna to upper antenna) per experiment."}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(peaksid)==FALSE) %>%
             arrange(tag_code,min_det) %>%
@@ -694,7 +694,7 @@ Regarding the upper valve, fish also seem to mainly wait until it is completely 
 
 ```{r phaseentered, fig.width=10, fig.height=10, fig.cap="Number of fish entering the lower valve or leaving the upper valve per phase and per experiment."}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(is.na(trend)==FALSE) %>%
             arrange(tag_code,min_det) %>%
             group_by(tag_code,last_sequence) %>%
@@ -716,7 +716,7 @@ ggplot(data=gate %>%
   group_by(node, exp.gate, trend) %>%
   summarise(median=round(median(n)/60)) %>%
   right_join(comp_dir,by=c("node","exp.gate","trend")) %>%
-  dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+  dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
   dplyr::filter(is.na(trend)==FALSE) %>%
   arrange(tag_code,min_det) %>%
   group_by(tag_code,last_sequence) %>%
@@ -735,7 +735,7 @@ theme_bw()
 
 ```{r timesinceopening, fig.width=10, fig.height=10, fig.cap="Time since opening (min) at which fish enter or leave the lower and upper valve respectively per experiment."}
 ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(node == "lower valve" | node == "upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(since_open)==FALSE) %>%
             #dplyr::filter(!(abs(since_open - median(since_open)) > 1.5*sd(since_open))) %>%
@@ -755,7 +755,7 @@ stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args =
 
 ```{r opening, fig.width=10, fig.height=10, fig.cap="Opening (cm) at which fish enter or leave the lower and upper valve respectively per experiment."}
 ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(node == "lower valve" | node == "upper valve") %>% 
             dplyr::filter(is.na(since_open)==FALSE) %>%
             #dplyr::filter(!(abs(opening - median(opening)) > 1.5*sd(opening))) %>%
             arrange(tag_code,min_det) %>%
@@ -779,39 +779,39 @@ In the following graphs the working of the lower and upper valve are depicted. A
 ### Graphs valve opening exp0 (may 2023)
 
 ```{r gate0valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="antenna_down",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="lower valve",exp_input="exp0", trend = TRUE)
 ```
 
 ```{r gate0valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="antenna_up",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="upper valve",exp_input="exp0", trend = TRUE)
 ```
 
 ### Graphs valve opening exp1 (may 2024)
 
 ```{r gate1valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="antenna_down",exp_input="exp1", trend=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="lower valve",exp_input="exp1", trend=TRUE)
 ```
 
 ```{r gate1valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="antenna_up",exp_input="exp1", trend=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="upper valve",exp_input="exp1", trend=TRUE)
 ```
 
 ### Graphs valve opening exp2 (may 2024)
 
 ```{r gate2valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_down",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="lower valve",exp_input="exp2", trend=TRUE)
 ```
 
 ```{r gate2valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="antenna_up",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="upper valve",exp_input="exp2", trend=TRUE)
 ```
 
 ### Graphs valve opening exp3 (may 2024)
 
 ```{r gate3valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="antenna_down",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="lower valve",exp_input="exp3", trend=TRUE)
 ```
 
 ```{r gate3valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="antenna_up",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="upper valve",exp_input="exp3", trend=TRUE)
 ```

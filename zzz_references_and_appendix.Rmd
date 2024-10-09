@@ -102,7 +102,7 @@ comp_dir %>%
 
 ```{r}
 comp_dir %>% 
-  dplyr::filter(last_sequence == "basin down-antenna_down") %>% 
+  dplyr::filter(last_sequence == "lower basin-lower valve") %>% 
   mutate(travel_time=round(travel_time),
          since_open=round(since_open),
          opening=round(opening,digits=2)) %>% 
@@ -120,7 +120,7 @@ comp_dir %>%
 
 ```{r}
 comp_dir %>% 
-  dplyr::filter(last_sequence == "antenna_down-antenna_up") %>% 
+  dplyr::filter(last_sequence == "lower valve-upper valve") %>% 
   mutate(travel_time=round(travel_time),
          since_open=round(since_open),
          opening=round(opening,digits=2)) %>% 
@@ -142,7 +142,7 @@ comp_dir %>%
   summarise(eerste_detectie=min(min_det)) %>%
   ungroup() %>%
   pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
-  dplyr::select(tag_code,antenna_down,antenna_up,`basin up`) %>%
+  dplyr::select(tag_code,`lower valve`,`upper valve`,`upper basin`) %>%
   kable(caption="Time of first detection per fish on the top and bottom antenna",longtable=TRUE) %>% 
   kable_styling(latex_options="scale_down")
 ```
@@ -162,7 +162,7 @@ comp_dir %>%
 
 ```{r fig.height=10, fig.width=10,}
 ggplot(comp_dir %>% 
-  dplyr::filter(node %in% c("antenna_down","antenna_up")) %>% 
+  dplyr::filter(node %in% c("lower valve","upper valve")) %>% 
   mutate(hour_min_det=lubridate::hour(min_det)) %>%
   group_by(exp,node,hour_min_det) %>%
   summarise(unieke_tags = n_distinct(tag_code)),
@@ -190,9 +190,9 @@ passage_succes<-function(pattern_value,berekening_value){
 }
 
 rbind(passage_succes(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
-      passage_succes(pattern_value='basin up',berekening_value="passage efficiency: recapture"),
-      passage_succes(pattern_value='antenna_up',berekening_value="passage efficiency: detections"),
-      passage_succes(pattern_value='antenna_down',berekening_value="attraction efficiency: detections")
+      passage_succes(pattern_value='upper basin',berekening_value="passage efficiency: recapture"),
+      passage_succes(pattern_value='upper valve',berekening_value="passage efficiency: detections"),
+      passage_succes(pattern_value='lower valve',berekening_value="attraction efficiency: detections")
       ) %>% 
     pivot_wider(names_from = exp, values_from = passage_succes) %>%
   #mutate(exp0=case_when(exp0>1~NA,.default=exp0)) %>%
@@ -201,7 +201,7 @@ rbind(passage_succes(pattern_value='up',berekening_value="passage efficiency: re
 
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(travel_time)==FALSE) %>%
             #dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
@@ -223,7 +223,7 @@ stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args =
 
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(peaksid)==FALSE) %>%
             dplyr::filter(hergebruikt==1) %>%
@@ -242,7 +242,7 @@ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
-            dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(is.na(trend)==FALSE) %>%
             dplyr::filter(hergebruikt==1) %>%
             arrange(tag_code,min_det) %>%
@@ -265,7 +265,7 @@ ggplot(data=gate %>%
   group_by(node, exp.gate, trend) %>%
   summarise(median=round(median(n)/60)) %>%
   right_join(comp_dir,by=c("node","exp.gate","trend")) %>%
-  dplyr::filter(last_sequence == "basin down-antenna_down" | last_sequence == "antenna_down-antenna_up") %>% 
+  dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
   dplyr::filter(is.na(trend)==FALSE) %>%
   dplyr::filter(hergebruikt==1) %>%
   arrange(tag_code,min_det) %>%
@@ -285,7 +285,7 @@ theme_bw()
 
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(node == "lower valve" | node == "upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(since_open)==FALSE) %>%
             #dplyr::filter(!(abs(since_open - median(since_open)) > 1.5*sd(since_open))) %>%
@@ -306,7 +306,7 @@ stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args =
 
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
-            dplyr::filter(node == "antenna_down" | node == "antenna_up") %>% 
+            dplyr::filter(node == "lower valve" | node == "upper valve") %>% 
             dplyr::filter(is.na(since_open)==FALSE) %>%
             #dplyr::filter(!(abs(opening - median(opening)) > 1.5*sd(opening))) %>%
             dplyr::filter(hergebruikt==1) %>%
@@ -329,89 +329,89 @@ stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = sym
 ## Graphs valve opening exp0 (mei 2023)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0")
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_down",exp_input="exp0")
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_up",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0", trend = TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="antenna_down",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0", trend = TRUE)
 ```
 
 ## Graphs valve opening exp1 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=stop.exp1,node_input="antenna_up",exp_input="exp1")
+plot_vdz(start=start.exp1,stop=stop.exp1,node_input="upper valve",exp_input="exp1")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start=start.exp1,stop=stop.exp1,node_input="antenna_down",exp_input="exp1")
+plot_vdz(start=start.exp1,stop=stop.exp1,node_input="lower valve",exp_input="exp1")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="antenna_up",exp_input="exp1", points=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="upper valve",exp_input="exp1", points=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="antenna_down",exp_input="exp1", points=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="lower valve",exp_input="exp1", points=TRUE)
 ```
 
 ## Graphs valve opening exp2 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=stop.exp2,node_input="antenna_up",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=stop.exp2,node_input="upper valve",exp_input="exp2")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=stop.exp2,node_input="antenna_down",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=stop.exp2,node_input="lower valve",exp_input="exp2")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_up",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="upper valve",exp_input="exp2")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="antenna_down",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="lower valve",exp_input="exp2")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_down",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="lower valve",exp_input="exp2", trend=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="antenna_up",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="upper valve",exp_input="exp2", trend=TRUE)
 ```
 
 ## Graphs valve opening exp3 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=stop.exp3,node_input="antenna_up",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=stop.exp3,node_input="upper valve",exp_input="exp3")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=stop.exp3,node_input="antenna_down",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=stop.exp3,node_input="lower valve",exp_input="exp3")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="antenna_up",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="upper valve",exp_input="exp3")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="antenna_down",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="lower valve",exp_input="exp3")
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="antenna_down",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="lower valve",exp_input="exp3", trend=TRUE)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="antenna_up",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="upper valve",exp_input="exp3", trend=TRUE)
 ```
 
 # Network analysis

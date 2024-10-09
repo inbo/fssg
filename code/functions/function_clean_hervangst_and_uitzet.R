@@ -12,10 +12,10 @@ clean_hervangst_and_uitzet<-function(dir,exp,type,tijdstip,first.numbers){
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'buitenring onder')==TRUE)]="outer ring"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'buitenring beneden')==TRUE)]="outer ring"
   data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'binnenring')==TRUE)]="inner ring"
-  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank beneden')==TRUE)]="basin down"
-  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank onder')==TRUE)]="basin down"
-  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank boven')==TRUE)]="basin up"
-  if (type=="release"){data$event_site_code_value="basin down"}
+  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank beneden')==TRUE)]="lower basin"
+  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank onder')==TRUE)]="lower basin"
+  data$event_site_code_value[which(sapply(data$opmerkingen, grepl, pattern = 'tank boven')==TRUE)]="upper basin"
+  if (type=="release"){data$event_site_code_value="lower basin"}
   data$event_date_time_value<-tijdstip
   data$antenna_id<-"01"
   data$antenna_group_configuration_value<-100
@@ -24,6 +24,6 @@ clean_hervangst_and_uitzet<-function(dir,exp,type,tijdstip,first.numbers){
   data <- data %>% dplyr::select(-opmerkingen,-toestand)
   data$type<-type
   data$event_site_code_value[which(is.na(data$event_site_code_value)==TRUE)]="escaped"
-  if (type=="recapture"){data<-data[-which(sapply(data$event_site_code_value, grepl, pattern = 'basin down')==TRUE & sapply(data$tag_code, grepl, pattern = 'unknown')==TRUE),]}
+  if (type=="recapture"){data<-data[-which(sapply(data$event_site_code_value, grepl, pattern = 'lower basin')==TRUE & sapply(data$tag_code, grepl, pattern = 'unknown')==TRUE),]}
   return(data)
 }

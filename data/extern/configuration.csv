@@ -1,7 +1,7 @@
 site_code;antenna_id;config_id;node;latitude;longitude;start_date;end_date
-basin down;1;100;basin down;;;;
-antenna_down;1;100;antenna_down;;;;
-antenna_up;1;100;antenna_up;;;;
-basin up;1;100;basin up;;;;
+lower basin;1;100;lower basin;;;;
+lower valve;1;100;lower valve;;;;
+upper valve;1;100;upper valve;;;;
+upper basin;1;100;upper basin;;;;
 outer ring;1;100;outer ring;;;;
 inner ring;1;100;inner ring;;;;

@@ -58,17 +58,17 @@ read.csv("./data/intern/wq2023.csv",sep=";", check.names = F) %>% rename_with(~g
 
 ```{r passagesuccessexp0}
 options(knitr.kable.NA = '')
-read.csv("./data/intern/passagesuccessexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper antenna. Number and percentage (between brackets) of the detected individuals and species are given.")
+read.csv("./data/intern/passagesuccessexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper valve. Number and percentage (between brackets) of the detected individuals and species are given.")
 ```
 
 ```{r passagesuccessexp0species}
 options(knitr.kable.NA = '')
-read.csv("./data/intern/passagesuccessexp0species.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper antenna for the different species. Number and percentage (between brackets) of the detected individuals are given.")
+read.csv("./data/intern/passagesuccessexp0species.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper valve for the different species. Number and percentage (between brackets) of the detected individuals are given.")
 ```
 
 ```{r movementpathexp0}
 options(knitr.kable.NA = '')
-read.csv("./data/intern/movementpathexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper antenna for the different species. Number and percentage (between brackets) of the detected individuals are given.") %>% kableExtra::landscape()
+read.csv("./data/intern/movementpathexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper valve for the different species. Number and percentage (between brackets) of the detected individuals are given.") %>% kableExtra::landscape()
 ```
 
 # Additional graphs and tables with all fish used
@@ -87,7 +87,7 @@ gate %>%
   kable(caption="Median duration of different phases (min) per experiment")
 ```
 
-## Number of individuals (unique tags) at different antennas and locations
+## Number of individuals (unique tags) at the different nodes
 
 ```{r}
 comp_dir %>% 
@@ -95,10 +95,10 @@ comp_dir %>%
   summarise(unieke_tags = n_distinct(tag_code)) %>% 
   arrange(node) %>% 
   pivot_wider(names_from = exp, values_from = unieke_tags) %>%
-  kable(caption="Number of individuals (unique tags) at different antennas and locations")
+  kable(caption="Number of individuals (unique tags) at different nodes")
 ```
 
-## Statistics concerning the trajectory from the lower basin to the lower antenna
+## Statistics concerning the trajectory from the lower basin to the lower valve
 
 ```{r}
 comp_dir %>% 
@@ -116,7 +116,7 @@ comp_dir %>%
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```
 
-## Statistics concerning the trajectory from the lower to the upper antenna
+## Statistics concerning the trajectory from the lower to the upper valve
 
 ```{r}
 comp_dir %>% 
@@ -143,7 +143,7 @@ comp_dir %>%
   ungroup() %>%
   pivot_wider(names_from = node, values_from = eerste_detectie) %>% 
   dplyr::select(tag_code,`lower valve`,`upper valve`,`upper basin`) %>%
-  kable(caption="Time of first detection per fish on the top and bottom antenna",longtable=TRUE) %>% 
+  kable(caption="Time of first detection per fish on the lower and upper antenna",longtable=TRUE) %>% 
   kable_styling(latex_options="scale_down")
 ```
 

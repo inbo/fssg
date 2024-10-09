@@ -434,9 +434,9 @@ Time was for all data initially in local Brussels time but was changed to UTC fo
 
 ## Assumptions made
 
-Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower antenna significantly quicker (Figure \@ref(fig:assumptions1)). It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the conditions of the experiments themselves might have differed as well. Fish that were used multiple times did not seem to be more or less likely to move up and down the fish spiral multiple times within an experiment (Figure \@ref(fig:assumptions2)).
+Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower valve significantly quicker (Figure \@ref(fig:assumptions1)). It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the conditions of the experiments themselves might have differed as well. Fish that were used multiple times did not seem to be more or less likely to move up and down the fish spiral multiple times within an experiment (Figure \@ref(fig:assumptions2)).
 
-```{r assumptions1, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower antenna and from the lower antenna to the upper antenna in function of the number of a times a fish was used in experiments. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
+```{r assumptions1, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower valve and from the lower valve to the upper valve in function of the number of a times a fish was used in experiments. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
@@ -456,7 +456,7 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 stat_compare_means(comparisons = cmpr.reuse, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-```{r assumptions2, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower antenna to the upper antenna in function of the number of times a fish moved from the lower antenna to the upper antenna. A distinction is made between fish that have been used once, twice, or three times."}
+```{r assumptions2, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower valve to the upper valve in function of the number of times a fish moved from the lower valve to the upper valve. A distinction is made between fish that have been used once, twice, or three times."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
@@ -466,8 +466,8 @@ ggplot(data=comp_dir %>%
             dplyr::mutate(loop = dplyr::row_number()),
           aes(as.factor(loop), travel_time_adapted),size = 0.5, color = "black") + 
 geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-ylab("Travel time lower to upper antenna (minutes)") + 
-xlab("Number of moves lower to upper antenna") + 
+ylab("Travel time lower to upper valve (minutes)") + 
+xlab("Number of moves lower to upper valve") + 
 theme_bw() + 
 facet_wrap(~ hergebruikt) +
 stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
@@ -482,7 +482,7 @@ summary(lm(formula = as.numeric(travel_time_adapted) ~ last_sequence * as.factor
             dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted)))))
 ```
 
-Although most fish went through the system (from the lower valve or antenna to the upper valve or antenna) only once, some went through the system several times (Table \@ref(tab:loop)). Especially for exp0 a relatively large amount went two (12 individuals) to three times (3 individuals) through the system. For exp3, one fish went up to six times through the system.
+Although most fish went through the system (from the lower valve to the upper valve) only once, some went through the system several times (Table \@ref(tab:loop)). Especially for exp0 a relatively large amount went two (12 individuals) to three times (3 individuals) through the system. For exp3, one fish went up to six times through the system.
 
 ```{r loop}
 options(knitr.kable.NA = 0)
@@ -494,15 +494,15 @@ comp_dir %>%
     dplyr::mutate(loop = dplyr::row_number()) %>%
     group_by(exp,loop) %>%
     summarise(unieke_tags=n_distinct(tag_code)) %>%
-    pivot_wider(names_from = loop, values_from = unieke_tags) %>% kable(caption="Number of fish going through the system (from the lower antenna to the upper antenna) multiple times, ranging from one to six times.") %>% add_header_above(header=c(" " = 1,"Number of loops through the system"=6))
+    pivot_wider(names_from = loop, values_from = unieke_tags) %>% kable(caption="Number of fish going through the system (from the lower valve to the upper valve) multiple times, ranging from one to six times.") %>% add_header_above(header=c(" " = 1,"Number of loops through the system"=6))
   
 ```
 
 ## Passage efficiency and entrance efficiency
 
-Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of fish detected on the lower antenna. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.63)** (Table \@ref(tab:passagesuccess))**.** However, although a staggering 98% of all fish of exp1 made it passed the lower antenna, only 79% made it into the upper basin. In comparison, for exp2 these numbers were 72% and 76% respectively, suggesting that for exp2 a much higher proportion of the fish that were able to enter via the lower valve, also made it passed the upper valve.
+Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of fish detected on the lower antenna. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.63)** (Table \@ref(tab:passagesuccess))**.** However, although a staggering 98% of all fish of exp1 made it passed the lower valve, only 79% made it into the upper basin. In comparison, for exp2 these numbers were 72% and 76% respectively, suggesting that for exp2 a much higher proportion of the fish that were able to enter via the lower valve, also made it passed the upper valve.
 
-Passage efficiency is typically defined as the percentage of entering fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of fish able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper valve. Important to note here is that because of the imperfect detection probability of the antenna, we considered all fish detected at the upper antenna, and not only the ones that were detected on the lower antenna (i.e., the entered fish), for the passage efficiency. Eventhough fish would have needed to pass the lower antenna to reach the upper antenna, they might not necessarily be detected by the upper antenna. **Passage efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antennae this would not have been recorded. Nevertheless, because of the low detectability the issue remains that fish moving to the upper basin and back to the lower basin might not always have been detected. The passage efficiency determined here, even the one that combines recapture and detections, is therefore an **underestimation**.
+Passage efficiency is typically defined as the percentage of entering fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of fish able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper valve. Important to note here is that because of the imperfect detection probability of the antenna, we considered all fish detected at the upper antenna, and not only the ones that were detected on the lower antenna (i.e., the entered fish), for the passage efficiency. Eventhough fish would have needed to pass the lower antenna to reach the upper antenna, they might not necessarily be detected by the upper antenna. **Passage efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antenna this would not have been recorded. Nevertheless, because of the low detectability the issue remains that fish moving to the upper basin and back to the lower basin might not always have been detected. The passage efficiency determined here, even the one that combines recapture and detections, is therefore an **underestimation**.
 
 Passage efficiency and entrance efficiency of exp0 are not provided here but in the appendix as they are likely to be strongly underestimated due to the lacking recapture data.
 
@@ -530,7 +530,7 @@ rbind(passage_succes(pattern_value='up',berekening_value="passage efficiency: re
       passage_succes(pattern_value='upper valve',berekening_value="passage efficiency: detections"),
       passage_succes(pattern_value='lower valve',berekening_value="entrance efficiency: detections")) %>% 
   pivot_wider(names_from = exp, values_from = passage_succes) %>%
-  kable(caption="Passage efficiency and entrance efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the passage efficiency and entrance efficiency were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty). If looking at the detections only 35 (21 percent) and 77 (46 percent) were detected at the upper and lower antenna respectively.")
+  kable(caption="Passage efficiency and entrance efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the passage efficiency and entrance efficiency were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty). If looking at the detections only 35 (21 percent) and 77 (46 percent) were detected at the upper and lower valve respectively.")
 ```
 
 To assess which factors were determinative for a fish making it up the fish spiral or not, a simple logistic model was used with as response whether a fish made it up the fish spiral or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the fish spiral or not.** When using only fish that were only used once, the same results were obtained.
@@ -629,7 +629,7 @@ gate %>%
 
 When considering all fish, the **travel time from the lower basin** (start of the experiment) **to the lower valve** (i.e. first detection at the lower antenna) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2 (Figure \@ref(fig:traveltime) and Table \@ref(tab:fishstats)). This might be partially the result of some of the fish being re-used. Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time, the travel time of exp3 (where many fish were used a third time) stayed more or less the same. **Travel time of fish moving from the lower valve** (i.e. last detection at the lower antenna) **to the upper valve** (i.e. last detection at the upper antenna) **did not seem to differ between experiments.**
 
-```{r traveltime, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower antenna and from the lower antenna to the upper antenna per experiment. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
+```{r traveltime, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower valve and from the lower valve to the upper valve per experiment. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%
@@ -670,7 +670,7 @@ This decreasing trend in travel time from the lower basin to the lower valve for
 
 For all experiments there were also fish that took a very long time to move to the lower valve. Indeed, many fish only found the lower valve after more than 20 cycles.
 
-```{r numbercycles, fig.width=10, fig.height=10, fig.cap="Number of cycles before fish entering the lower valve (lower basin to lower antenna) and leaving the upper valve (lower antenna to upper antenna) per experiment."}
+```{r numbercycles, fig.width=10, fig.height=10, fig.cap="Number of cycles before fish entering the lower valve (lower basin to lower valve) and leaving the upper valve (lower valve to upper valve) per experiment."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
             dplyr::filter(exp != "exp0") %>%

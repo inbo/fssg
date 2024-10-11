@@ -1,7 +1,0 @@
-\bfrench
-
-# Résumé français {.unnumbered}
-
-Bien que les paramètres opérationnels du FSSG aient été fixés tout au long des expériences de 2024, le succès du passage variait considérablement puisqu'il se situait entre 0,47 et 0,79. Il est très difficile de déterminer la cause sous-jacente de cette différence, car ces valeurs de réussite de passage ne sont pas des valeurs exactes, mais des sous-estimations et des conditions locales potentiellement interférentes pourraient avoir été présentes mais n'ont été mesurées que sporadiquement (par exemple, qualité de l'eau). De plus, des poissons ont été réutilisés pour les différentes expériences et leur familiarité avec le système pourrait avoir eu un effet (même si les résultats disponibles n'indiquent aucun effet). La longueur, le poids et l'espèce n'avaient aucun effet sur la capacité des poissons à utiliser avec succès la spirale du poisson, ni sur le temps qu'il leur fallait pour remonter la spirale du poisson. Seul un nombre limité de poissons est passé par le FSSG à plusieurs reprises. Les poissons attendent généralement que les valves soient complètement ouvertes avant d'entrer et de sortir de la spirale à poisson, bien que pour la valve supérieure, une quantité relativement importante de poissons semblent également quitter la spirale à poisson lorsque la valve s'ouvre ou se ferme.
-
-\efrench

@@ -9,6 +9,12 @@ author:
     affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
     corresponding: true
   - name:
+      given: "Arc'hantael"
+      family: "Labrière"
+    email: "archantael.labriere@kau.se"
+    orcid: "?"
+    affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
+  - name:
       given: "Lore"
       family: "Vandamme"
     email: "lore.vandamme@inbo.be"
@@ -63,8 +69,8 @@ reviewer:
     email: "stijn.bruneel@inbo.be"
     orcid: "0000-0002-8226-8080"
     affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
-lang: nl
-style: INBO
+lang: en
+style: Flanders
 client:
   - Vandezande
 floatbarrier: subsubsection
@@ -97,10 +103,6 @@ output:
 <!-- # Voorwoord {-} -->
 
 <!-- De tekst voor het optionele voorwoord. -->
-
-# Samenvatting {-}
-
-Ondanks dat de operationele instellingen van de FSSG tijdens de experimenten van 2024 waren vastgelegd, varieerde het doorgangssucces aanzienlijk, variërend tussen 0,47 en 0,79. Het is erg moeilijk om de onderliggende oorzaak achter dit verschil te bepalen, aangezien deze succeswaarden voor de passage geen exacte waarden zijn, maar onderschattingen en lokale, potentieel interfererende omstandigheden aanwezig kunnen zijn geweest, maar slechts sporadisch zijn gemeten (bijvoorbeeld de waterkwaliteit). Bovendien werden vissen hergebruikt voor de verschillende experimenten en zou hun bekendheid met het systeem een effect kunnen hebben gehad (hoewel de beschikbare resultaten geen enkel effect aangeven). De lengte, het gewicht en de soort hadden geen enkel effect op de vraag of vissen de visspiraal met succes konden gebruiken, noch op de tijd die de vissen nodig hadden om de visspiraal op te gaan. Slechts een beperkt aantal vissen is meerdere keren door de FSSG gegaan. Vissen wachten over het algemeen tot de kleppen volledig open zijn voordat ze de visspiraal in en uit gaan, hoewel bij de bovenste klep ook relatief veel vissen de visspiraal lijken te verlaten wanneer de klep open of dicht gaat.
 
 <!-- # Aanbevelingen voor beheer en/of beleid {-} -->
 

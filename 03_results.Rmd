@@ -101,7 +101,7 @@ rownames(interval)=c("exp0","exp1","exp2","exp3")
 
 ## Fish experiments
 
-For the experiments of 2023 (exp0) on 5/5/2023 (47 tagged individuals), 8/5/2023 (70 tagged individuals) and 23/5/2023 (49 tagged individuals), a total of 166 individuals of seven different species were used: bleak (*Alburnus alburnus*: 4 individuals), roach (*Rutilus rutilus*: 33 individuals), bream (*Abramis brama*: 12 individuals), gibel carp (*Carassius gibelio*: 6 individuals), carp (*Cyprinus carpio*: 1 individual), white bream (*Blicca bjoerkna*: 100 individuals) and rudd (*Scardinius erythrophthalmus*: 10 individuals). Wild fish, that were caught in the river Yzer, were used  Fish were not re-used for the different experiments. Recapture data was not available which meant that passage efficiency could not be determined accurately. To determine passage efficiency in a sound way at least two measures per fish were needed: Whether a fish entered the system (and moment of entrance preferably) and whether a fish was recaptured (the moment of recapture is less insightful than the moment of entrance as it is the moment that a fish enters a new site of the system (or node, see further) that is of importance). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
+For the experiments of 2023 (exp0) on 5/5/2023 (47 tagged individuals), 8/5/2023 (70 tagged individuals) and 23/5/2023 (49 tagged individuals), a total of 166 individuals of seven different species were used: bleak (*Alburnus alburnus*: 4 individuals), roach (*Rutilus rutilus*: 33 individuals), bream (*Abramis brama*: 12 individuals), gibel carp (*Carassius gibelio*: 6 individuals), carp (*Cyprinus carpio*: 1 individual), white bream (*Blicca bjoerkna*: 100 individuals) and rudd (*Scardinius erythrophthalmus*: 10 individuals). Wild fish, that were caught in the river Yzer, were used Fish were not re-used for the different experiments. Recapture data was not available which meant that passage efficiency could not be determined accurately. To determine passage efficiency in a sound way at least two measures per fish were needed: Whether a fish entered the system (and moment of entrance preferably) and whether a fish was recaptured (the moment of recapture is less insightful than the moment of entrance as it is the moment that a fish enters a new site of the system (or node, see further) that is of importance). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
 
 ```{r overzichtexp0}
 options(knitr.kable.NA = '')
@@ -431,7 +431,18 @@ The temporal resolution and range of the valve-opening and pressure data was dif
 
 When linking the valve data to the fish data, for passage through the lower and upper valve respectively the first detection and last detection were used. This was done because we were mainly interested in when fish enter (via the lower valve) and leave (via the upper valve) the system.
 
-Time was for all data initially in local Brussels time but was changed to UTC for transparancy.
+Time was for all data initially in local Brussels time but was changed to UTC for transparency.
+
+| Metric                | Definition                                                                     | Calculation                                                                                                                                 |
+|-----------------------|--------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Entrance time         | Time between release and entrance                                              | Time between release and first detection at the lower antenna                                                                               |
+| Passage time          | Time between entrance and exit                                                 | Time between last detection at the lower antenna and last detection at the upper antenna                                                    |
+| Attraction efficiency | Proportion of tagged fish able to locate the entrance of the FSSG              | /                                                                                                                                           |
+| Entrance efficiency   | Proportion of tagged fish able to enter the FSSG                               | Proportion of released fish detected on either the lower antenna, upper antenna or recaptured in the upper basin                            |
+| Passage efficiency    | Proportion of entered fish that were able to move through the exit of the FSSG | Proportion of fish that are detected on the upper antenna and/or recaptured in the upper basin over the fish that are known to have entered |
+| Overall efficiency    | Proportion of tagged fish able to move through the FSSG                        | Proportion of fish that are detected on the upper antenna and or recaptured in the upper basin over the total number of tagged fish.        |
+
+: Overview of the used metrics with their according definition and how they were calculated.
 
 # Results
 

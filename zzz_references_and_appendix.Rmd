@@ -225,7 +225,7 @@ overall_efficiency<-function(pattern_value,berekening_value){
 }
 ```
 
-```{r passagesuccess}
+```{r}
 rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance efficiency: recapture and detections"),
       passage_efficiency(pattern_value='up',berekening_value="passage efficiency: recapture and detections"),
       passage_efficiency(pattern_value='upper basin',berekening_value="passage efficiency: recapture"),
@@ -236,6 +236,11 @@ rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance
   pivot_wider(names_from = exp, values_from = efficiency) %>%
   kable(caption="Entrance efficiency, passage efficiency and overall efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the estimates were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty).")
 ```
+
+```{r}
+my_labeller<-as_labeller(c("lower basin-lower valve"="entrance time","lower valve-upper valve"="passage time"))
+```
+
 
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
@@ -250,7 +255,7 @@ ggplot(data=comp_dir %>%
             dplyr::filter(loop == 1),
           aes(as.factor(exp), travel_time),size = 0.5, color = "black") + 
 geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-facet_wrap(~last_sequence) +
+facet_wrap(~last_sequence,labeller = my_labeller) +
 ylab("Travel time (min)") + 
 xlab("Experiment") + 
 theme_bw() +
@@ -289,7 +294,7 @@ ggplot(data=comp_dir %>%
             dplyr::filter(loop == 1),
           aes(x=as.factor(exp),fill=trend,colour=trend),size = 0.5, color = "black") + 
 geom_bar() +
-facet_wrap(~last_sequence) +
+facet_wrap(~last_sequence,labeller = my_labeller) +
 ylab("Instances entering") + 
 xlab("Experiment") + 
 theme_bw()
@@ -315,7 +320,7 @@ ggplot(data=gate %>%
   mutate(per.unit=n/mean),
   aes(x=as.factor(exp),y=per.unit,fill=trend,colour=trend),size = 0.5, color = "black") + 
 geom_bar(stat="identity") +
-facet_wrap(~last_sequence) +
+facet_wrap(~last_sequence,labeller = my_labeller) +
 ylab("Instances entering per minute") + 
 xlab("Experiment") + 
 theme_bw()

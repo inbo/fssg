@@ -12,7 +12,7 @@ The 'Fischwendelschleuse' or FSSG is a fish passage with an adjustable attractin
 include_graphics(path = "./media/operation.pdf")
 ```
 
-The fish pass is designed to be as natural as possible via a natural substrate base and upright built (i.e., not rotating) (Fig. \@ref(fig:natuurlijk)). The lock control is adaptable for each lock chamber to suit different target fish species and can be temporarily adjusted for individual fish using a monitoring system. The fish spiral lock is compact, suitable for fall heights of 1 to 10 meters, and requires minimal construction. It has few moving parts and simple controls. Currently, the fish spiral lock is being designed with diameters of 2 to 5 meters and flow rates of 50 to 500 liters per second. An additional attracting flow of approximately 500 to 2500 liters per second can be realized for both inflow and outflow.
+The fish pass is designed to be as natural as possible via a natural substrate base and upright built (i.e., not rotating) (Fig. \@ref(fig:natuurlijk)). The lock control is adaptable for each lock chamber to suit different target fish species and can be temporarily adjusted for individual fish using a monitoring system. The FSSG lock is compact, suitable for fall heights of 1 to 10 meters, and requires minimal construction. It has few moving parts and simple controls. Currently, the FSSG lock is being designed with diameters of 2 to 5 meters and flow rates of 50 to 500 liters per second. An additional attracting flow of approximately 500 to 2500 liters per second can be realized for both inflow and outflow.
 
 ```{r natuurlijk, fig.cap = "The entire fish pass is designed to be as natural as possible via a natural substrate base (left) and upright built (right).", fig.show = "hold", fig.align = "center", out.width = "50%"}
 include_graphics(path = c("./media/substraat.jpg", "./media/verticaal.png"))
@@ -20,27 +20,27 @@ include_graphics(path = c("./media/substraat.jpg", "./media/verticaal.png"))
 
 ### Underwater connection via the outflow chamber and guide flow opening
 
-The fish spiral lock is installed underwater within a custom-designed outflow chamber, which also serves as its foundation (Fig. \@ref(fig:inlet)). This chamber guides fish either ascending to the lock doors or descending to the guide flow opening. To mimic a natural environment, the outflow chamber is filled with base substrate. The system is fine-tuned to the specific water conditions and any operational settings nearby structures such as sluices or hydropower installations might have. This is achieved by designing the underwater guide flow opening with guide walls and bottom connections, and optimizing attracting flow and direction. All these adjustments comply with the fish pass guidelines, similar to vertical slot fish passes.
+The FSSG lock is installed underwater within a custom-designed outflow chamber, which also serves as its foundation (Fig. \@ref(fig:inlet)). This chamber guides fish either ascending to the lock doors or descending to the guide flow opening. To mimic a natural environment, the outflow chamber is filled with base substrate. The system is fine-tuned to the specific water conditions and any operational settings nearby structures such as sluices or hydropower installations might have. This is achieved by designing the underwater guide flow opening with guide walls and bottom connections, and optimizing attracting flow and direction. All these adjustments comply with the fish pass guidelines, similar to vertical slot fish passes.
 
 ```{r inlet, fig.cap = "Inlet of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/inlet.pdf")
 ```
 
-A monitoring system near the guide flow opening identifies individual fish, classifies them by species, and adjusts the lock control and attracting flow accordingly. This system also enables statistical recording of fish species and functional monitoring of the fish spiral lock.
+A monitoring system near the guide flow opening identifies individual fish, classifies them by species, and adjusts the lock control and attracting flow accordingly. This system also enables statistical recording of fish species and functional monitoring of the FSSG lock.
 
 ### Upstream connection via the inflow chamber and guide flow opening
 
-A watertight inflow chamber is installed upstream of the fish spiral lock, its height designed to accommodate the normal fluctuations in surface water levels (Fig. \@ref(fig:outlet)). This inflow chamber facilitates the targeted movement of fish, guiding those willing to descend to all lock doors and those ascending to the guide flow opening. To mimic a natural environment, the chamber is filled with base substrate. The guide flow opening can be integrated into the main flow with a base connection and guide wall, enabling a high attracting flow into the inflow chamber. This design ensures the fish spiral lock's suitability for fish descent while maintaining low flow velocities in front of the guide flow opening to prevent the unintentional drifting of ascending fish into the driving water.
+A watertight inflow chamber is installed upstream of the FSSG lock, its height designed to accommodate the normal fluctuations in surface water levels (Fig. \@ref(fig:outlet)). This inflow chamber facilitates the targeted movement of fish, guiding those willing to descend to all lock doors and those ascending to the guide flow opening. To mimic a natural environment, the chamber is filled with base substrate. The guide flow opening can be integrated into the main flow with a base connection and guide wall, enabling a high attracting flow into the inflow chamber. This design ensures the FSSG lock's suitability for fish descent while maintaining low flow velocities in front of the guide flow opening to prevent the unintentional drifting of ascending fish into the driving water.
 
 ```{r outlet, fig.cap = "Outlet of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/outlet.pdf")
 ```
 
-In the area of the guide flow opening, a monitoring system records individual fish, assigns them to species, and adjusts the lock control and attracting flow accordingly. This system also allows for the statistical recording of fish species and the functional monitoring of the fish spiral lock.
+In the area of the guide flow opening, a monitoring system records individual fish, assigns them to species, and adjusts the lock control and attracting flow accordingly. This system also allows for the statistical recording of fish species and the functional monitoring of the FSSG lock.
 
 ### Continuous multi-chamber lock system
 
-Due to its design, the function of the multi-chamber lock system (Fig. \@ref(fig:locks)) in the fish spiral lock cannot be divided into distinct successive phases. Typically, lock systems operate in phases such as swimming in, lifting or lowering, and floating out. In the fish spiral lock, these phases can occur simultaneously within the lock chambers, enabling continuous locking without unfavourable dwell times for the fish. The upper and lower water entries into the fish spiral lock are through vertically operated, slow-moving lock doors. The adjustable lock current openings in these doors allow them to be perceived as swim-in openings even when closed. When the lock door is opened, it creates a flow rate and speed that meet fish pass guidelines, ensuring clear perception as an ascent or descent route. The duration the valves are open or closed, as well as the time it takes to open and close the valves, can be individually set for each lock chamber. The chambers are completely filled with water, eliminating any gradations or waterfalls. The spiral sole is designed to be non-slip with a substrate thickness of 10 to 30 cm. The dimensions of the lock chambers are in line with the specifications of vertical slot fish pass guidelines.
+Due to its design, the function of the multi-chamber lock system (Fig. \@ref(fig:locks)) in the FSSG lock cannot be divided into distinct successive phases. Typically, lock systems operate in phases such as swimming in, lifting or lowering, and floating out. In the FSSG lock, these phases can occur simultaneously within the lock chambers, enabling continuous locking without unfavourable dwell times for the fish. The upper and lower water entries into the FSSG lock are through vertically operated, slow-moving lock doors. The adjustable lock current openings in these doors allow them to be perceived as swim-in openings even when closed. When the lock door is opened, it creates a flow rate and speed that meet fish pass guidelines, ensuring clear perception as an ascent or descent route. The duration the valves are open or closed, as well as the time it takes to open and close the valves, can be individually set for each lock chamber. The chambers are completely filled with water, eliminating any gradations or waterfalls. The spiral sole is designed to be non-slip with a substrate thickness of 10 to 30 cm. The dimensions of the lock chambers are in line with the specifications of vertical slot fish pass guidelines.
 
 ```{r locks, fig.cap = "Valves of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/locks.pdf")
@@ -48,7 +48,7 @@ include_graphics(path = "./media/locks.pdf")
 
 Counter-currents are noticeable for fish on the outer diameter, with flow speeds of approximately 0.3 m/s. In the central tube area, the flow speed is low and can be increased with minimal energy. The selectable spiral gradient allows ground-dwelling creatures, such as crabs, to easily navigate through. The lock chamber can be considered a large habitat with reliable bird protection. The central tube enables access via a ladder during lock operation and provides natural lighting. Exposure windows are uniformly sized, and lock doors can be manually opened. Additionally, artificial lighting using LED strips is provided. The central tube is flood-proof and closed at the top with a translucent dome. Waterproof maintenance accesses are installed at the top of the lock system for cleaning and filling with base substrate. Electrical or hydraulically automated devices for the lock doors are also located here, along with a safety railing to prevent falls.
 
-In the event of flooding, all lock doors close simultaneously to minimize contamination with flotsam and sediment. This can also be done during low water phases to avoid additional water losses. If the outside temperature drops below -10 degrees, the spiral lock must be taken out of operation to prevent ice damage. The fish spiral lock is emptied in a controlled manner for this purpose.
+In the event of flooding, all lock doors close simultaneously to minimize contamination with flotsam and sediment. This can also be done during low water phases to avoid additional water losses. If the outside temperature drops below -10 degrees, the spiral lock must be taken out of operation to prevent ice damage. The FSSG lock is emptied in a controlled manner for this purpose.
 
 ## Set-up
 
@@ -101,14 +101,14 @@ rownames(interval)=c("exp0","exp1","exp2","exp3")
 
 ## Fish experiments
 
-For the experiments of 2023 (exp0) on 5/5/2023 (47 tagged individuals), 8/5/2023 (70 tagged individuals) and 23/5/2023 (49 tagged individuals), a total of 166 individuals of seven different species were used: bleak (*Alburnus alburnus*: 4 individuals), roach (*Rutilus rutilus*: 33 individuals), bream (*Abramis brama*: 12 individuals), gibel carp (*Carassius gibelio*: 6 individuals), carp (*Cyprinus carpio*: 1 individual), white bream (*Blicca bjoerkna*: 100 individuals) and rudd (*Scardinius erythrophthalmus*: 10 individuals). Fish were not re-used for the different experiments. Recapture data was not available which meant that passage efficiency could not be determined accurately. To determine passage efficiency in a sound way at least two measures per fish were needed: Whether a fish entered the system (and moment of entrance preferably) and whether a fish was recaptured (the moment of recapture is less insightful than the moment of entrance as it is the moment that a fish enters a new site of the system (or node, see further) that is of importance). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
+For the experiments of 2023 (exp0) on 5/5/2023 (47 tagged individuals), 8/5/2023 (70 tagged individuals) and 23/5/2023 (49 tagged individuals), a total of 166 individuals of seven different species were used: bleak (*Alburnus alburnus*: 4 individuals), roach (*Rutilus rutilus*: 33 individuals), bream (*Abramis brama*: 12 individuals), gibel carp (*Carassius gibelio*: 6 individuals), carp (*Cyprinus carpio*: 1 individual), white bream (*Blicca bjoerkna*: 100 individuals) and rudd (*Scardinius erythrophthalmus*: 10 individuals). Wild fish, that were caught in the river Yzer, were used  Fish were not re-used for the different experiments. Recapture data was not available which meant that passage efficiency could not be determined accurately. To determine passage efficiency in a sound way at least two measures per fish were needed: Whether a fish entered the system (and moment of entrance preferably) and whether a fish was recaptured (the moment of recapture is less insightful than the moment of entrance as it is the moment that a fish enters a new site of the system (or node, see further) that is of importance). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
 
 ```{r overzichtexp0}
 options(knitr.kable.NA = '')
 read.csv("./data/intern/overzichtexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Overview of the number of tagged fish per species and per data during the 2023 experiment.")
 ```
 
-For the experiments of 2024 on 15/5/2023 (exp1), 22/5/2023 (exp2) and 29/5/2023 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used). Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions.
+For the experiments of 2024 on 15/5/2023 (exp1), 22/5/2023 (exp2) and 29/5/2023 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. These fish were bought from a fish farm which utilizes fish culture ponds. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used). Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions.
 
 ```{r}
 interval %>% kable(caption="Study period description. Start and stop time for the fish experiment and valve data collection are given.")
@@ -437,7 +437,7 @@ Time was for all data initially in local Brussels time but was changed to UTC fo
 
 ## Experimental limitations and associated assumptions
 
-Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower valve significantly quicker (Figure \@ref(fig:assumptions1)). It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the conditions of the experiments themselves might have differed as well. Fish that were used multiple times did not seem to be more or less likely to move up and down the fish spiral multiple times within an experiment (Figure \@ref(fig:assumptions2)).
+Fish which were used for multiple experiments seemed to have a significantly lower travel time from the lower basin to the lower valve. More specifically, it seems that fish that were re-used for a second experiment moved from the lower basin to the lower valve significantly quicker (Figure \@ref(fig:assumptions1)). It cannot be said with certainty that this finding, fish being familiar to the system moving more quickly through it, is of a causal nature as the conditions of the experiments themselves might have differed as well. Fish that were used multiple times did not seem to be more or less likely to move up and down the FSSG multiple times within an experiment (Figure \@ref(fig:assumptions2)).
 
 ```{r assumptions1, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower valve and from the lower valve to the upper valve in function of the number of a times a fish was used in experiments. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
@@ -497,7 +497,7 @@ comp_dir %>%
     dplyr::mutate(loop = dplyr::row_number()) %>%
     group_by(exp,loop) %>%
     summarise(unieke_tags=n_distinct(tag_code)) %>%
-    pivot_wider(names_from = loop, values_from = unieke_tags) %>% kable(caption="Number of fish going through the system (from the lower valve to the upper valve) multiple times, ranging from one to six times.") %>% add_header_above(header=c(" " = 1,"Number of loops through the system"=6))
+    pivot_wider(names_from = loop, values_from = unieke_tags) %>% kable(caption="Number of fish going through the system (from the lower valve to the upper valve) multiple times, ranging from one to six times.") %>% add_header_above(header=c(" " = 1,"Number of loops"=6))
   
 ```
 
@@ -541,11 +541,9 @@ Before fish can successfully enter and pass the FSSG they need to be able to fin
 
 Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of tagged fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of released fish detected on either the lower antenna, upper antenna or recaptured in the upper basin. Since all tagged fish are considered to be attracted to the FSSG due to the narrowness of the lower basin and proximity of the entrance of the FSSG, all tagged fish were considered for the entrance efficiency. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.70)** (Table \@ref(tab:passagesuccess))**.** Because of the imperfect detection probability of the lower antenna (exp1: 100%, exp2: 83% and exp3: 83%) and upper antenna (exp1: 6%, exp2: 28% and exp3: 39%) fish might have passed through the antennas without being detected which might result in these estimates being underestimations. However, because of the combined opportunities of detection at two antennas and the opportunity to recapture fish at the upper basin, **these estimates can be considered reliable.**
 
-Passage efficiency is defined as the percentage of entered fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of entered fish that were able to move through the exit of the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and/or recpatured in the upper basin over the fish that are known to have entered the FSSG (i.e., they were detected on at least one antenna or recaptured in the upper basin). **Passage efficiency was more similar between experiments than the entrance efficiency and was highest for exp2 (0.84) and lowest for exp3 (0.68)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antenna this would not have been recorded. Nevertheless, because of the very low detectability (exp1: 6%, exp2: 28% and exp3: 39%) the issue remains that fish moving to the upper basin and back to the lower basin or the area between the lower and upper valve, might not always have been detected. The passage efficiency determined here, even the one that combines recapture and detections, is therefore **more likely to be an underestimation than overestimation**.
+Passage efficiency is defined as the percentage of entered fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of entered fish that were able to move through the exit of the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and/or recaptured in the upper basin over the fish that are known to have entered the FSSG (i.e., they were detected on at least one antenna or recaptured in the upper basin). **Passage efficiency was more similar between experiments than the entrance efficiency and was highest for exp2 (0.84) and lowest for exp3 (0.68)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antenna this would not have been recorded. Nevertheless, because of the very low detectability (exp1: 6%, exp2: 28% and exp3: 39%) the issue remains that fish moving to the upper basin and back to the lower basin or the area between the lower and upper valve, might not always have been detected. The passage efficiency determined here, even the one that combines recapture and detections, is therefore **more likely to be an underestimation than overestimation**.
 
-Overall efficiency is defined as the percentage of all approaching fish that are attracted to, enter and pass through the exit of the FSSG [@baker2019]. In this study, the overall efficiency is considered the proportion of all tagged fish that were able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and or recaptured in the upper basin over the total number of tagged fish. As for the entrance efficiency, **the overall efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47). It should be stressed that in this study all tagged fish were considered attracted fish. If failure to attract would have been accounted for (which was not possible for this study), it is likely that this overall efficiency could be considerably lower.**
-
-Before fish can successfully enter and pass the FSSG they need to be able to find the entrance (i.e., attraction efficiency). Unfortunately, the current experimental set-up does not allow for an assessment of the attraction efficiency as the area in which fish were released was too narrow to be representative for most real-life situations [@triano2022].
+Overall efficiency is defined as the percentage of all approaching fish that are attracted to, enter and pass through the exit of the FSSG [@baker2019]. In this study, the overall efficiency is considered the proportion of all tagged fish that were able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and or recaptured in the upper basin over the total number of tagged fish. As for the entrance efficiency, **the overall efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47). It should be stressed that in this study all tagged fish were considered attracted fish. If failure to attract would have been accounted for (which was not possible for this study), it is likely that this overall efficiency would be considerably lower.**
 
 Passage efficiency and entrance efficiency of exp0 are not provided here but in the appendix as they are likely to be strongly underestimated due to the lacking recapture data.
 
@@ -606,10 +604,11 @@ rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance
       overall_efficiency(pattern_value='upper basin',berekening_value="overall efficiency: recapture"),
       overall_efficiency(pattern_value='upper valve',berekening_value="overall efficiency: detections")) %>% 
   pivot_wider(names_from = exp, values_from = efficiency) %>%
-  kable(caption="Entrance efficiency, passage efficiency and overall efficiency calculated in different ways. As there was no recapture data available for the experiments of 2023, the estimates were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty).")
+  kable(caption="Entrance efficiency, passage efficiency and overall efficiency calculated in different ways. The most reliable estimates are marked in red. As there was no recapture data available for the experiments of 2023, the estimates were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty).") %>% kable_styling() %>%
+  row_spec(c(1,2,5), bold = T, color = "white", background = "red")
 ```
 
-To assess which factors were determinative for a fish making it up the fish spiral or not, a simple logistic model was used with as response whether a fish made it up the fish spiral or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the fish spiral or not.** When using only fish that were only used once, the same results were obtained.
+To assess which factors were determinative for a fish making it up the FSSG or not, a simple logistic model was used with as response whether a fish made it up the FSSG or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the FSSG or not.** When using only fish that were only used once, the same results were obtained.
 
 ```{r include=FALSE}
 model.data<-comp_dir %>%
@@ -703,7 +702,11 @@ gate %>%
 
 ## Trajectory statistics
 
-When considering all fish, the **travel time from the lower basin** (start of the experiment) **to the lower valve** (i.e. first detection at the lower antenna) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2 (Figure \@ref(fig:traveltime) and Table \@ref(tab:fishstats)). This might be partially the result of some of the fish being re-used. Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time, the travel time of exp3 (where many fish were used a third time) stayed more or less the same. **Travel time of fish moving from the lower valve** (i.e. last detection at the lower antenna) **to the upper valve** (i.e. last detection at the upper antenna) **did not seem to differ between experiments.**
+When considering all fish, the **entrance time** (i.e., the travel time from the lower basin (start of the experiment) to the lower valve (i.e. first detection at the lower antenna)) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2 (Figure \@ref(fig:traveltime) and Table \@ref(tab:fishstats)). This might be partially the result of some of the fish being re-used. Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time, the travel time of exp3 (where many fish were used a third time) stayed more or less the same. **Passage time** (i.e., the travel time of fish moving from the lower valve (i.e. last detection at the lower antenna) to the upper valve (i.e. last detection at the upper antenna)) did not seem to differ between experiments. It should be noted however that though a significant difference was found between experiments for the entrance time and not for the passage time, the number of fish that were detected moving from the lower basin to the lower valve was much higher than the amount of fish that were detected moving from the lower valve to the upper valve. This affects the statistical power and allows for smaller differences in the entrance time to be identified as significant. When comparing the medians and averages, the differences between experiments appear much more pronounced for the passage time.
+
+```{r}
+my_labeller<-as_labeller(c("lower basin-lower valve"="entrance time","lower valve-upper valve"="passage time"))
+```
 
 ```{r traveltime, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower valve and from the lower valve to the upper valve per experiment. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
@@ -717,7 +720,7 @@ ggplot(data=comp_dir %>%
             dplyr::filter(loop == 1),
           aes(as.factor(exp), travel_time_adapted),size = 0.5, color = "black") + 
 geom_boxplot(linetype = 1, position = position_dodge(0.5)) +
-facet_wrap(~last_sequence) +
+facet_wrap(~last_sequence,labeller = my_labeller) +
 ylab("Travel time (min)") + 
 xlab("Experiment") + 
 theme_bw() +
@@ -726,9 +729,39 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
+Travel time from the lower basin to the lower valve was considerably lower than the travel time for the lower to the upper valve (Fig. \@ref(fig:cumT)). **50% of all fish that went from the lower basin to the lower valve did so in 100 (exp2) to 200 minutes (exp1), while for the trajectory from the lower to the upper valve the travel time ranged between 225 (exp1 and exp2) and 1200 minutes (exp3)** (Fig. \@ref(fig:cumTzoom))**.** After 24 hours (or 1440 minutes), approximately 85% of the entering fish had entered the FSSG. After 24 hours, approximately 50 to 85% of the passing fish had passed the FSSG.
+
+```{r cumT, fig.cap="Cumulative distribution function of the travel time from the lower basin to the lower valve, and from the lower valve to the upper valve. The y-axis depicts the proportion of fish that after a certain amount of time (x-axis) have completed the trajectory."}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
+            dplyr::filter(exp != "exp0") %>%
+            dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,last_sequence) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+       aes(travel_time_adapted,colour=exp)) + stat_ecdf(geom = "step") +
+facet_wrap(~last_sequence,labeller = my_labeller) + xlab("Travel time (min)") + ylab("F(Travel time)")  + theme_bw()
+```
+
+```{r cumTzoom, fig.cap="Zoomed in (until 1000 minutes) cumulative distribution function of the travel time from the lower basin to the lower valve, and from the lower valve to the upper valve. The y-axis depicts the proportion of fish that after a certain amount of time (x-axis) have completed the trajectory."}
+ggplot(data=comp_dir %>%
+            dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
+            dplyr::filter(exp != "exp0") %>%
+            dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+            arrange(tag_code,min_det) %>%
+            group_by(tag_code,last_sequence) %>%
+            dplyr::mutate(loop = dplyr::row_number()) %>%
+            dplyr::filter(loop == 1),
+       aes(travel_time_adapted,colour=exp)) + stat_ecdf(geom = "step") +
+facet_wrap(~last_sequence,labeller = my_labeller) + xlab("Travel time (min)") + ylab("F(Travel time)") +
+  coord_cartesian(xlim=c(0,1000)) + theme_bw()
+```
+
 ```{r fishstats}
 comp_dir %>%
   dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
+  dplyr::filter(exp != "exp0") %>%
   dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
   arrange(tag_code,min_det) %>%
   group_by(tag_code,last_sequence) %>%
@@ -739,6 +772,9 @@ comp_dir %>%
   summarise(travel_time=as.numeric(round(median(travel_time_adapted,na.rm=TRUE),digits=1)),
             opening=round(median(opening,na.rm=TRUE),digits=1),
             since_open=round(median(since_open,na.rm=TRUE),digits=1)) %>%
+  mutate(last_sequence=case_when(last_sequence=="lower basin-lower valve" ~ "entrance time",
+                          last_sequence=="lower valve-upper valve" ~ "passage time")) %>%
+  dplyr::rename("metric"="last_sequence") %>%
   kable(caption="Median statistics for different experiments and trajectories. Travel time represents the time (in minutes) from the last detection in one site to the first detection in another, with the exeption of the trajectory from the lower valve (i.e lower antenna) to the upper valve (i.e. upper antenna) where for both the last detection was used. The opening of the valve at which the first (in the case of the lower valve) or the last (in the case of the upper valve) is given in cm. The time of entrance (in the case of the lower valve) or escape (in the case of the upper valve) since the valve started to open is given in minutes.")
 ```
 
@@ -766,7 +802,7 @@ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 **For exp2 and exp3, fish seem to wait until the lower valve is completely open** before entering, but some fish also seem to enter when the valve is opening and closing (Figure \@ref(fig:phaseentered)). The time the lower valve was entered since the valve last started to open decreased significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:timesinceopening)). Especially for exp1 the time since the valve opened was much higher than for exp2 and exp3. This is somewhat to be expected as fish seem to mainly wait for the valve to be fully opened before entering and the time it takes for the valve to open and close seemed much larger for exp1 than for exp2 and exp3 (although, as mentioned earlier, this might be the result of the much lower temporal resolution of the valve-opening-measurements of exp1). However, when accounting for the different durations of the different phases the open phase still seems most important for exp2 and exp3, unlike for exp1 where now not only the opening phase seems to be more important than the open phase, but also the closing phase seems to be relatively important (Figure \@ref(fig:phaseenterednormalized)). Since the opening and closing phase are most important for exp1 it is to be expected that the opening of the valve at which they seem to enter the lower valve will be smaller than for exp2 and exp3. Indeed the opening at which fish enter seems to decrease significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:opening))).
 
-Regarding the upper valve, fish also seem to mainly wait until it is completely open (Figure \@ref(fig:phaseentered)), but compared to the lower valve, a relatively large number seem also to leave when the valve is opening or closing. It is striking how some fish seem to pass the upper valve when it is closed. This might be the result of the detection range of the antenna being too large (detecting animals outside the fish spiral) or too low (not being able to detect animals at the moment they leave). Given the low observed detectability of the upper antenna, it is most likely that the detection range is too low.
+Regarding the upper valve, fish also seem to mainly wait until it is completely open (Figure \@ref(fig:phaseentered)), but compared to the lower valve, a relatively large number seem also to leave when the valve is opening or closing. It is striking how some fish seem to pass the upper valve when it is closed. This might be the result of the detection range of the antenna being too large (detecting animals outside the FSSG) or too low (not being able to detect animals at the moment they leave). Given the low observed detectability of the upper antenna, it is most likely that the detection range is too low.
 
 ```{r phaseentered, fig.width=10, fig.height=10, fig.cap="Number of fish entering the lower valve or leaving the upper valve per phase and per experiment."}
 ggplot(data=comp_dir %>%
@@ -778,7 +814,7 @@ ggplot(data=comp_dir %>%
             dplyr::filter(loop == 1),
           aes(x=as.factor(exp),fill=trend,colour=trend),size = 0.5, color = "black") + 
 geom_bar() +
-facet_wrap(~last_sequence) +
+facet_wrap(~last_sequence,labeller = my_labeller) +
 ylab("Instances entering") + 
 xlab("Experiment") + 
 theme_bw()
@@ -803,7 +839,7 @@ ggplot(data=gate %>%
   mutate(per.unit=n/mean),
   aes(x=as.factor(exp),y=per.unit,fill=trend,colour=trend),size = 0.5, color = "black") + 
 geom_bar(stat="identity") +
-facet_wrap(~last_sequence) +
+facet_wrap(~last_sequence,labeller = my_labeller) +
 ylab("Instances entering per minute") + 
 xlab("Experiment") + 
 theme_bw()

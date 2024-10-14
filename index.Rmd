@@ -96,9 +96,9 @@ output:
   bookdown::dontrun: default
 ---
 
-<!-- # Dankwoord {-} -->
+# Acknowledgements
 
-<!-- De tekst voor het optionele dankwoord. -->
+We would like to thank Dries Vandezande (Vandezande), Maik Schroeter (ESE Group) and the local Vandezande technical team for their aid during the project.
 
 <!-- # Voorwoord {-} -->
 

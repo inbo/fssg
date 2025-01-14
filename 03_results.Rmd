@@ -6,13 +6,13 @@ source("./code/not_functions/libraries.R")
 
 ## Description of the FSSG
 
-The 'Fischwendelschleuse' or FSSG is a fish passage with an adjustable attracting current aimed for all fish species (Fig. \@ref(fig:operation)). This system enables continuous sluice operation and should also accommodate bottom-dwelling fish. It features an individually doped multi-chamber lock system with adjustable current options in both the inflow and outflow chambers. Connections to the water, both above and below the surface, are made using a guide flow opening in line with guideline specifications for optimal findability. The lock doors are dimensioned to match the slot sizes of vertical-slot fish passes.
+The FSSG or Fish Spiral Sluice Gate or 'Fischwendelschleuse' is a fish passage with an adjustable attracting current aimed for all fish species (Fig. \@ref(fig:operation)). This system enables continuous sluice operation and should also accommodate bottom-dwelling fish. It features an individually doped multi-chamber lock system with adjustable current options in both the inflow and outflow chambers.
 
 ```{r operation, fig.cap = "Operating principle of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/operation.pdf")
 ```
 
-The fish pass is designed to be as natural as possible via a natural substrate base and upright built (i.e., not rotating) (Fig. \@ref(fig:natuurlijk)). The lock control is adaptable for each lock chamber to suit different target fish species and can be temporarily adjusted for individual fish using a monitoring system. The FSSG lock is compact, suitable for fall heights of 1 to 10 meters, and requires minimal construction. It has few moving parts and simple controls. Currently, the FSSG lock is being designed with diameters of 2 to 5 meters and flow rates of 50 to 500 liters per second. An additional attracting flow of approximately 500 to 2500 liters per second can be realized for both inflow and outflow.
+The fish pass is designed to be as natural as possible via a natural substrate base and upright built (i.e., not rotating) (Fig. \@ref(fig:natuurlijk)). The lock control is adaptable for each lock chamber to suit different target fish species. The FSSG lock is compact, suitable for fall heights of 1 to 10 meters. It has few moving parts and simple controls. Currently, the FSSG lock is being designed with diameters of 2 to 5 meters and flow rates of 50 to 500 liters per second. An additional attracting flow of approximately 500 to 2500 liters per second can be realized for both inflow and outflow.
 
 ```{r natuurlijk, fig.cap = "The entire fish pass is designed to be as natural as possible via a natural substrate base (left) and upright built (right).", fig.show = "hold", fig.align = "center", out.width = "50%"}
 include_graphics(path = c("./media/substraat.jpg", "./media/verticaal.png"))
@@ -20,45 +20,39 @@ include_graphics(path = c("./media/substraat.jpg", "./media/verticaal.png"))
 
 ### Underwater connection via the outflow chamber and guide flow opening
 
-The FSSG lock is installed underwater within a custom-designed outflow chamber, which also serves as its foundation (Fig. \@ref(fig:inlet)). This chamber guides fish either ascending to the lock doors or descending to the guide flow opening. To mimic a natural environment, the outflow chamber is filled with base substrate. The system is fine-tuned to the specific water conditions and any operational settings nearby structures such as sluices or hydropower installations might have. This is achieved by designing the underwater guide flow opening with guide walls and bottom connections, and optimizing attracting flow and direction. All these adjustments comply with the fish pass guidelines, similar to vertical slot fish passes.
+The FSSG lock is installed underwater within a custom-designed outflow chamber, which also serves as its foundation (Fig. \@ref(fig:inlet)). This chamber guides fish either ascending to the lock doors or descending to the guide flow opening. To mimic a natural environment, the outflow chamber is filled with base substrate.
 
 ```{r inlet, fig.cap = "Inlet of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/inlet.pdf")
 ```
 
-A monitoring system near the guide flow opening identifies individual fish, classifies them by species, and adjusts the lock control and attracting flow accordingly. This system also enables statistical recording of fish species and functional monitoring of the FSSG lock.
-
 ### Upstream connection via the inflow chamber and guide flow opening
 
-A watertight inflow chamber is installed upstream of the FSSG lock, its height designed to accommodate the normal fluctuations in surface water levels (Fig. \@ref(fig:outlet)). This inflow chamber facilitates the targeted movement of fish, guiding those willing to descend to all lock doors and those ascending to the guide flow opening. To mimic a natural environment, the chamber is filled with base substrate. The guide flow opening can be integrated into the main flow with a base connection and guide wall, enabling a high attracting flow into the inflow chamber. This design ensures the FSSG lock's suitability for fish descent while maintaining low flow velocities in front of the guide flow opening to prevent the unintentional drifting of ascending fish into the driving water.
+A watertight inflow chamber is installed upstream of the FSSG lock, its height designed to accommodate the normal fluctuations in surface water levels (Fig. \@ref(fig:outlet)). This inflow chamber facilitates the targeted movement of fish, guiding those willing to descend to all lock doors and those ascending to the guide flow opening. To mimic a natural environment, the chamber is filled with base substrate.
 
 ```{r outlet, fig.cap = "Outlet of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/outlet.pdf")
 ```
 
-In the area of the guide flow opening, a monitoring system records individual fish, assigns them to species, and adjusts the lock control and attracting flow accordingly. This system also allows for the statistical recording of fish species and the functional monitoring of the FSSG lock.
-
 ### Continuous multi-chamber lock system
 
-Due to its design, the function of the multi-chamber lock system (Fig. \@ref(fig:locks)) in the FSSG lock cannot be divided into distinct successive phases. Typically, lock systems operate in phases such as swimming in, lifting or lowering, and floating out. In the FSSG lock, these phases can occur simultaneously within the lock chambers, enabling continuous locking without unfavourable dwell times for the fish. The upper and lower water entries into the FSSG lock are through vertically operated, slow-moving lock doors. The adjustable lock current openings in these doors allow them to be perceived as swim-in openings even when closed. When the lock door is opened, it creates a flow rate and speed that meet fish pass guidelines, ensuring clear perception as an ascent or descent route. The duration the valves are open or closed, as well as the time it takes to open and close the valves, can be individually set for each lock chamber. The chambers are completely filled with water, eliminating any gradations or waterfalls. The spiral sole is designed to be non-slip with a substrate thickness of 10 to 30 cm. The dimensions of the lock chambers are in line with the specifications of vertical slot fish pass guidelines.
+Due to its design, the function of the multi-chamber lock system (Fig. \@ref(fig:locks)) in the FSSG lock cannot be divided into distinct successive phases. Typically, lock systems operate in phases such as swimming in, lifting or lowering, and floating out. In the FSSG lock, these phases can occur simultaneously within the lock chambers, enabling continuous locking without unfavourable dwell times for the fish. The upper and lower water entries into the FSSG lock are through vertically operated, slow-moving lock doors.
 
 ```{r locks, fig.cap = "Valves of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/locks.pdf")
 ```
 
-Counter-currents are noticeable for fish on the outer diameter, with flow speeds of approximately 0.3 m/s. In the central tube area, the flow speed is low and can be increased with minimal energy. The selectable spiral gradient allows ground-dwelling creatures, such as crabs, to easily navigate through. The lock chamber can be considered a large habitat with reliable bird protection. The central tube enables access via a ladder during lock operation and provides natural lighting. Exposure windows are uniformly sized, and lock doors can be manually opened. Additionally, artificial lighting using LED strips is provided. The central tube is flood-proof and closed at the top with a translucent dome. Waterproof maintenance accesses are installed at the top of the lock system for cleaning and filling with base substrate. Electrical or hydraulically automated devices for the lock doors are also located here, along with a safety railing to prevent falls.
-
-In the event of flooding, all lock doors close simultaneously to minimize contamination with flotsam and sediment. This can also be done during low water phases to avoid additional water losses. If the outside temperature drops below -10 degrees, the spiral lock must be taken out of operation to prevent ice damage. The FSSG lock is emptied in a controlled manner for this purpose.
+Artificial lighting using LED strips is provided. The central tube is flood-proof and closed at the top with a translucent dome. Waterproof maintenance accesses are installed at the top of the lock system for cleaning and filling with base substrate. Electrical or hydraulically automated devices for the lock doors are also located here, along with a safety railing to prevent falls.
 
 ## Set-up
 
-Only one of the three canals built in the system was used. Prior to the experiments (Fig. \@ref(fig:front)), the lower and upper tanks were slightly modified by installing a metal plate to direct the flow of the lower valve towards the rank. Additionally, possible escape routes from the test tank were closed with a small mesh sized grid. Potential “shelter” areas under the bottom plates of the valve were also closed off.
+Only one of the three canals built in the system was used in the experimental set-up. Prior to the experiments (Fig. \@ref(fig:front)), the lower and upper tanks were slightly modified by installing a metal plate to direct the flow of the lower valve towards the rank. Additionally, possible escape routes from the test tank were closed with a small mesh sized grid. Potential “shelter” areas under the bottom plates of the valve were also closed off.
 
 ```{r front, fig.cap = "Front view of the FSSG.", fig.show = "hold", fig.align = "center", out.width = "100%"}
 include_graphics(path = "./media/front.pdf")
 ```
 
-Two HDX PIT antennae (30 cm \* 40 cm) made of two loops of insluated 4 mm wired welding cble, fixed on a PVC pipe and connected to antenna tuners and permanent readers, were installed, each on the front of the upper or lower valve. They were both tuned to have a narrow detection range of approximately 15 cm maximum so that fish would be detected when they cross the valve only – and thus enter the system. Preliminary testing of the system was conducted, assuring the efficiency and detection range of the PIT telemetry set-up.
+Two HDX PIT antennae (30 cm \* 40 cm) made of two loops of insulated 4 mm wired welding cable, fixed on a PVC pipe and connected to antenna tuners and permanent OREGON RFID readers, were installed, each on the front of the upper or lower valve. They were both tuned to have a narrow detection range of approximately 15 cm so that fish would be detected when they cross the valve only – and thus enter the system. Preliminary testing of the system was conducted, assuring the efficiency and detection range of the PIT telemetry set-up.
 
 ```{r warning=FALSE, include=FALSE}
 source("./code/functions/function_gate_cleaning.R")
@@ -433,21 +427,14 @@ When linking the valve data to the fish data, for passage through the lower and 
 
 Time was for all data initially in local Brussels time but was changed to UTC for transparency.
 
-+-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Metric                | Definition                                                                     | Calculation                                                                                                                                 |
-+=======================+================================================================================+=============================================================================================================================================+
+|-----------------------|--------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | Entrance time         | Time between release and entrance                                              | Time between release and first detection at the lower antenna                                                                               |
-+-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Passage time          | Time between entrance and exit                                                 | Time between last detection at the lower antenna and last detection at the upper antenna                                                    |
-+-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Attraction efficiency | Proportion of tagged fish able to locate the entrance of the FSSG              | /                                                                                                                                           |
-+-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Entrance efficiency   | Proportion of tagged fish able to enter the FSSG                               | Proportion of released fish detected on either the lower antenna, upper antenna or recaptured in the upper basin                            |
-+-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Passage efficiency    | Proportion of entered fish that were able to move through the exit of the FSSG | Proportion of fish that are detected on the upper antenna and/or recaptured in the upper basin over the fish that are known to have entered |
-+-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Overall efficiency    | Proportion of tagged fish able to move through the FSSG                        | Proportion of fish that are detected on the upper antenna and or recaptured in the upper basin over the total number of tagged fish.        |
-+-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 
 : Overview of the used metrics with their according definition and how they were calculated.
 
@@ -697,7 +684,7 @@ summary(model)
 
 ```
 
-## Gate statistics
+## Statistics of the FSSG during the experiments
 
 The duration of one cycle was similar between the upper and lower valve within a certain experiment (Figure \@ref(fig:phaseduration). This makes sense as they need to work synchronized. Between experiments there was however a clear difference in the total duration of a cycle and how it was distributed over the different phases (closed, opening, open, and closing).
 
@@ -732,7 +719,7 @@ gate %>%
   kable(caption="Temporal resolution (in seconds) of measurements of the valve opening")
 ```
 
-## Trajectory statistics
+## Statistics of the fish movement in the FSSG
 
 When considering all fish, the **entrance time** (i.e., the travel time from the lower basin (start of the experiment) to the lower valve (i.e. first detection at the lower antenna)) seemed to become lower from exp1 to exp2 to exp3 and was even significantly lower for exp3 than for exp1 and exp2 (Figure \@ref(fig:traveltime) and Table \@ref(tab:fishstats)). This might be partially the result of some of the fish being re-used. Leaving out these fish resulted in a higher travel time for exp1 and exp2, but as there was no significant effect of using fish a third time, the travel time of exp3 (where many fish were used a third time) stayed more or less the same. **Passage time** (i.e., the travel time of fish moving from the lower valve (i.e. last detection at the lower antenna) to the upper valve (i.e. last detection at the upper antenna)) did not seem to differ between experiments. It should be noted however that though a significant difference was found between experiments for the entrance time and not for the passage time, the number of fish that were detected moving from the lower basin to the lower valve was much higher than the amount of fish that were detected moving from the lower valve to the upper valve. This affects the statistical power and allows for smaller differences in the entrance time to be identified as significant. When comparing the medians and averages, the differences between experiments appear much more pronounced for the passage time.
 
@@ -761,7 +748,7 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-Travel time from the lower basin to the lower valve was considerably lower than the travel time for the lower to the upper valve (Fig. \@ref(fig:cumT)). **50% of all fish that went from the lower basin to the lower valve did so in 100 (exp2) to 200 minutes (exp1), while for the trajectory from the lower to the upper valve the travel time ranged between 225 (exp1 and exp2) and 1200 minutes (exp3)** (Fig. \@ref(fig:cumTzoom))**.** After 24 hours (or 1440 minutes), approximately 85% of the entering fish had entered the FSSG. After 24 hours, approximately 50 to 85% of the passing fish had passed the FSSG.
+Travel time from the lower basin to the lower valve was considerably lower than the travel time for the lower to the upper valve (Fig. \@ref(fig:cumT)). **50% of all tagged fish had an entrance time of 100 (exp2) to 200 minutes (exp1), while the entered fish had a passage time of 225 (exp1 and exp2) to 1200 minutes (exp3)** (Fig. \@ref(fig:cumTzoom))**.** After 24 hours (or 1440 minutes), approximately 85% of the entering fish had entered the FSSG. After 24 hours, approximately 50 to 85% of the passing fish had passed the FSSG.
 
 ```{r cumT, fig.cap="Cumulative distribution function of the travel time from the lower basin to the lower valve, and from the lower valve to the upper valve. The y-axis depicts the proportion of fish that after a certain amount of time (x-axis) have completed the trajectory."}
 ggplot(data=comp_dir %>%

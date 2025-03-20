@@ -4,11 +4,13 @@
 INBOmd::references(appendix = TRUE)
 ```
 
-# Fyke experiments of 2023
+# Appendix
+
+## Pilot fyke net experiment
 
 A fyke net (two funnel throats, two chambers, total length 3.75 m, mesh size from entrance to end = 16 mm, 12mm, 9 mm) was installed in the upper tank, upstream of the upper valve (Fig. \@ref(fig:fuik)). A total of 466 fish from eight species (perch, bleak, roach, bream, white bream, carp, gibel carp and rudd) were introduced to the lower tank on five different days.
 
-```{r fuik, fig.cap = "Fyke placement in the upper tank, upstream of the upper valve. Picture taken by Johan Coeck.", fig.show = "hold", fig.align = "center", out.width = "25%"}
+```{r fuik, fig.cap = "Fyke net placement in the upper tank, upstream of the upper valve. Picture taken by Johan Coeck.", fig.show = "hold", fig.align = "center", out.width = "25%"}
 include_graphics(path = c("./media/fuik1.jpg", "./media/fuik2.jpg", "./media/fuik3.jpg"))
 ```
 
@@ -20,22 +22,22 @@ include_graphics(path = c("./media/fuik1.jpg", "./media/fuik2.jpg", "./media/fui
 | 08/05/2023 | 70                        |
 | 23/05/2023 | 340                       |
 
-: Summary of the number of fish introduced in the system during the fyke experiments of 2023.
+: Summary of the number of fish introduced in the system during the fyke net experiments of 2023.
 
-During the fyke experiments it became apparent that a metal plate was needed to direct the flow from the lower valve towards the tank, escape routes from the test tanks needed to be closed of with a small mesh-sized grid and that shelters under the bottom plate of the valves needed to be closed (Fig. \@ref(fig:verbetering)).
+During the fyke net experiments it became apparent that a metal plate was needed to direct the flow from the lower valve towards the tank, escape routes from the test tanks needed to be closed of with a small mesh-sized grid and that shelters under the bottom plate of the valves needed to be closed (Fig. \@ref(fig:verbetering)).
 
 ```{r verbetering, fig.cap = "Improvement of experimental set-up. Picture taken by Johan Coeck.", fig.show = "hold", fig.align = "center", out.width = "50%"}
 include_graphics(path = "./media/verbetering.jpg")
 ```
 
-A total of 49 fish were caught in the fyke net, resulting in an average passage of 10.51% (ranging from 0% to 18 %. Table \@ref(tab:fuikvangsten)). Five of the eight introduced species were caught (roach, white bream, carp, bream and rudd). Observed passage efficiency was very low, but this might have several methodological reasons. The fyke was most likely to far from the valve and too short in length while conditions were likely too turbulent causing quite some fish to not be captured and too even escape the fyke.
+A total of 49 fish were caught in the fyke net, resulting in an average passage of 10.51% (ranging from 0% to 18 %. Table \@ref(tab:fuikvangsten)). Five of the eight introduced species were caught (roach, white bream, carp, bream and rudd). Observed passage efficiency was very low, but this might have several methodological reasons. The fyke net was most likely to far from the valve and too short in length while conditions were likely too turbulent causing quite some fish to not be captured and too even escape the fyke net.
 
 ```{r fuikvangsten}
 options(knitr.kable.NA = '')
 read.csv("./data/intern/fuikvangsten.csv",sep=";") %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Summary of the fyke net experiments") %>% kableExtra::landscape()
 ```
 
-# Test PIT telemetry experiments of 2023
+## Pilot telemetry experiment
 
 A test of the detection range of two PIT antenna in front of the lower and upper valves was conducted. Since these values are made of metal, electromagnetic interference could be an issue. PIT antenna were connected to permanent readers. Settings were altered until an acceptable detection range was obtained. The green grid was lifted permanently to reduce mortality (Fig. \@ref(fig:greenscreen)). Mortality due to this green grid was observed after attraction flushing at 2,5 cm or during opening fase towards the 50 cm full opening, with dead fish found on the antenna afterwards (Fig. \@ref(fig:dodevis)).
 
@@ -71,9 +73,9 @@ options(knitr.kable.NA = '')
 read.csv("./data/intern/movementpathexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper valve for the different species. Number and percentage (between brackets) of the detected individuals are given.") %>% kableExtra::landscape()
 ```
 
-# Additional graphs and tables with all fish used
+## Additional graphs and tables with all fish used
 
-## Gate statistics
+### Gate statistics
 
 ```{r}
 gate %>%
@@ -87,7 +89,7 @@ gate %>%
   kable(caption="Median duration of different phases (min) per experiment")
 ```
 
-## Number of individuals (unique tags) at the different nodes
+### Number of individuals (unique tags) at the different nodes
 
 ```{r}
 comp_dir %>% 
@@ -98,7 +100,7 @@ comp_dir %>%
   kable(caption="Number of individuals (unique tags) at different nodes")
 ```
 
-## Statistics concerning the trajectory from the lower basin to the lower valve
+### Statistics concerning the trajectory from the lower basin to the lower valve
 
 ```{r}
 comp_dir %>% 
@@ -116,7 +118,7 @@ comp_dir %>%
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```
 
-## Statistics concerning the trajectory from the lower to the upper valve
+### Statistics concerning the trajectory from the lower to the upper valve
 
 ```{r}
 comp_dir %>% 
@@ -134,7 +136,7 @@ comp_dir %>%
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```
 
-## Arrival time at different antennas
+### Arrival time at different antennas
 
 ```{r}
 comp_dir %>% 
@@ -147,7 +149,7 @@ comp_dir %>%
   kable_styling(latex_options="scale_down")
 ```
 
-## Number of unique tags per sequence
+### Number of unique tags per sequence
 
 ```{r}
 comp_dir %>% 
@@ -158,7 +160,7 @@ comp_dir %>%
   kable(caption="Number of individuals (unique tags) per sequence")
 ```
 
-## Arrival time at the different antennas during the day
+### Arrival time at the different antennas during the day
 
 ```{r fig.height=10, fig.width=10,}
 ggplot(comp_dir %>% 
@@ -171,7 +173,7 @@ ggplot(comp_dir %>%
     facet_wrap(~ exp + node, ncol=2)
 ```
 
-# Replicate graphs and tables but without the re-used fish
+## Replicate graphs and tables but without the re-used fish
 
 ```{r}
 entrance_efficiency<-function(pattern_value,berekening_value){
@@ -367,9 +369,9 @@ stat_summary(fun.data = give.n2, geom = "text", fun.y = median) +
 stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-# Graphs valve opening
+## Graphs valve opening
 
-## Graphs valve opening exp0 (mei 2023)
+### Graphs valve opening exp0 (mei 2023)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
 plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0")
@@ -387,7 +389,7 @@ plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp
 plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0", trend = TRUE)
 ```
 
-## Graphs valve opening exp1 (mei 2024)
+### Graphs valve opening exp1 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
 plot_vdz(start=start.exp1,stop=stop.exp1,node_input="upper valve",exp_input="exp1")
@@ -405,7 +407,7 @@ plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="upper valve",exp_i
 plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="lower valve",exp_input="exp1", points=TRUE)
 ```
 
-## Graphs valve opening exp2 (mei 2024)
+### Graphs valve opening exp2 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
 plot_vdz(start=start.exp2,stop=stop.exp2,node_input="upper valve",exp_input="exp2")
@@ -431,7 +433,7 @@ plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="lower valve",exp_
 plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="upper valve",exp_input="exp2", trend=TRUE)
 ```
 
-## Graphs valve opening exp3 (mei 2024)
+### Graphs valve opening exp3 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
 plot_vdz(start=start.exp3,stop=stop.exp3,node_input="upper valve",exp_input="exp3")
@@ -457,7 +459,7 @@ plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="lower valve",exp_
 plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="upper valve",exp_input="exp3", trend=TRUE)
 ```
 
-# Network analysis
+## Network analysis
 
 ```{r fig.width=10, fig.height=10, fig.cap="Network analysis for exp0"}
 plot_network("exp0")

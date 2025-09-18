@@ -748,7 +748,7 @@ stat_summary(fun.data = give.n1, geom = "text", fun.y = median,
 stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
-Travel time from the lower basin to the lower valve was considerably lower than the travel time for the lower to the upper valve (Fig. \@ref(fig:cumT)). **50% of all tagged fish had an entrance time of 100 (exp2) to 200 minutes (exp1), while the entered fish had a passage time of 225 (exp1 and exp2) to 1200 minutes (exp3)** (Fig. \@ref(fig:cumTzoom))**.** After 24 hours (or 1440 minutes), approximately 85% of the entering fish had entered the FSSG. After 24 hours, approximately 50 to 85% of the passing fish had passed the FSSG.
+Travel time from the lower basin to the lower valve was considerably lower than the travel time for the lower to the upper valve (Fig. \@ref(fig:cumT)). **50% of all tagged fish had an entrance time of less than 100 (exp2) to 200 minutes (exp1 and exp3), while 50% of all entered fish had a passage time of less than 225 (exp1 and exp2) to 1200 minutes (exp3)** (Fig. \@ref(fig:cumTzoom))**.** After 24 hours (or 1440 minutes), approximately 85% of the entering fish had entered the FSSG. After 24 hours, approximately 50 to 85% of the passing fish had passed the FSSG.
 
 ```{r cumT, fig.cap="Cumulative distribution function of the travel time from the lower basin to the lower valve, and from the lower valve to the upper valve. The y-axis depicts the proportion of fish that after a certain amount of time (x-axis) have completed the trajectory."}
 ggplot(data=comp_dir %>%

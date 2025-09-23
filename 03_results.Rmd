@@ -63,8 +63,6 @@ source("./code/functions/function_plot_network.R")
 ```
 
 ```{r}
-start.exp0<-lubridate::with_tz(as.POSIXct("25-01-2023 03:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
-stop.exp0<-lubridate::with_tz(as.POSIXct("26-05-2023 21:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
 start.exp1<-lubridate::with_tz(as.POSIXct("15-05-2024 14:53",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
 stop.exp1<-lubridate::with_tz(as.POSIXct("21-05-2024 20:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
 start.exp2<-lubridate::with_tz(as.POSIXct("22-05-2024 15:07",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
@@ -72,8 +70,6 @@ stop.exp2<-lubridate::with_tz(as.POSIXct("28-05-2024 20:00",format="%d-%m-%Y %H:
 start.exp3<-lubridate::with_tz(as.POSIXct("29-05-2024 14:08",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
 stop.exp3<-lubridate::with_tz(as.POSIXct("05-06-2024 20:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
 
-start.gate0<-lubridate::with_tz(as.POSIXct("25-05-2023 03:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
-stop.gate0<-lubridate::with_tz(as.POSIXct("26-05-2023 21:00",format="%d-%m-%Y %H:%M",tz="Europe/Brussels"),tzone="UTC")
 start.gate1<-start.exp1
 stop.gate1<-stop.exp1
 start.gate2<-start.exp2
@@ -81,28 +77,21 @@ stop.gate2<-stop.exp2
 start.gate3<-start.exp3
 stop.gate3<-stop.exp3
 
-start.exp<-c(start.exp0,start.exp1,start.exp2,start.exp3)
-stop.exp<-c(stop.exp0,stop.exp1,stop.exp2,stop.exp3)
+start.exp<-c(start.exp1,start.exp2,start.exp3)
+stop.exp<-c(stop.exp1,stop.exp2,stop.exp3)
 interval.exp<-data.frame(start.exp, stop.exp)
 
-start.gate<-c(start.gate0,start.gate1,start.gate2,start.gate3)
-stop.gate<-c(stop.gate0,stop.gate1,stop.gate2,stop.gate3)
+start.gate<-c(start.gate1,start.gate2,start.gate3)
+stop.gate<-c(stop.gate1,stop.gate2,stop.gate3)
 interval.gate<-data.frame(start.gate, stop.gate)
 
 interval<-data.frame(interval.exp,interval.gate)
-rownames(interval)=c("exp0","exp1","exp2","exp3")
+rownames(interval)=c("exp1","exp2","exp3")
 ```
 
 ## Fish experiments
 
-For the experiments of 2023 (exp0) on 5/5/2023 (47 tagged individuals), 8/5/2023 (70 tagged individuals) and 23/5/2023 (49 tagged individuals), a total of 166 individuals of seven different species were used: bleak (*Alburnus alburnus*: 4 individuals), roach (*Rutilus rutilus*: 33 individuals), bream (*Abramis brama*: 12 individuals), gibel carp (*Carassius gibelio*: 6 individuals), carp (*Cyprinus carpio*: 1 individual), white bream (*Blicca bjoerkna*: 100 individuals) and rudd (*Scardinius erythrophthalmus*: 10 individuals). Wild fish, that were caught in the river Ijzer, were used. Fish were not re-used for the different experiments. Recapture data were only limited available which meant that passage efficiency could not be determined accurately. To determine passage efficiency in a sound way at least two measures per fish were needed: Whether a fish entered the system (and moment of entrance preferably) and whether a fish was recaptured (the moment of recapture is less insightful than the moment of entrance as it is the moment that a fish enters a new site of the system (or node, see further) that is of importance). In addition, only limited valve data was available due to an issue of data be overwritten. As such the valves opening values for the upper and lower valves were only available from 23/05/2023 to 26/05/2023. For the experiments of 2024 these issues were resolved.
-
-```{r overzichtexp0}
-options(knitr.kable.NA = '')
-read.csv("./data/intern/overzichtexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Overview of the number of tagged fish per species and per data during the 2023 experiment.")
-```
-
-For the experiments of 2024 on 15/5/2023 (exp1), 22/5/2023 (exp2) and 29/5/2023 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. These fish were bought from fish farm Vandeput in Zonhoven (Belgium) which utilizes fish culture ponds. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used. Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions. Fish were provided with a PIT-tag and the length and weight of each individual was written down. All fish were released together at the start of the experiment in the lower tank. The lower and upper tank had a volume of 6.5 m³ (5.0 m length x 1.3 m water level x 1.0 m width) and 17.0 m³ (3.55 m length x 1.05 m width x 4.56 m water level) respectively. The outflow chamber had a volume of 24.37 m³ (1.2 m width x 4.31 m water level). The inflow chamber was closed of to ensure fish would entire the FSSG.
+For the experiments of 15/5/2024 (exp1), 22/5/2024 (exp2) and 29/5/2024 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. These fish were bought from fish farm Vandeput in Zonhoven (Belgium) which utilizes fish culture ponds. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used. Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). It was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions. Fish were provided with a PIT-tag and the length and weight of each individual was written down. All fish were released together at the start of the experiment in the lower tank. The lower and upper tank had a water volume of 6.5 m³ (5.0 m length x 1.3 m water level x 1.0 m width) and 17.0 m³ (3.55 m length x 1.05 m width x 4.56 m water level) respectively. The outflow chamber had a water volume of 24.37 m³ (1.2 m width x 4.31 m water level). The inflow chamber was closed of to ensure fish would entire the FSSG.
 
 ```{r envvars}
 data_string <- "Description,Date,Time,WaterTemp,pH,OxygenPerc,OxygenConc,AirTemp
@@ -123,7 +112,7 @@ interval %>% kable(caption="Study period description. Start and stop time for th
 ```
 
 ```{r}
-# Read in all pit tag data (exp0, exp1, exp2 and exp3)
+# Read in all pit tag data (exp1, exp2 and exp3)
 dir1<-"./data/extern/pit/"
 folders<-list.files(path=dir1)
 for (i in 1:length(folders)){
@@ -159,6 +148,8 @@ data$exp[which(data$event_date_time_value>=start.exp2 & data$event_date_time_val
 data$exp[which(data$event_date_time_value>=start.exp3 & data$event_date_time_value<=stop.exp3)]="exp3"
 data$tag_code<-paste0(data$tag_code,"_",data$exp)
 data$type<-"detection"
+
+data <- data %>% dplyr::filter(exp!="exp0")
 
 remove(i,j)
 ```
@@ -225,20 +216,6 @@ data<-data[which(!data$tag_code %in% tags.to.remove),]
 remove(uitzet,hervangst)
 ```
 
-```{r warning=FALSE, cache=TRUE}
-# Read in valve data of exp0 
-gate_onder_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 1)[,c(2,3)]
-gate_boven_2023 <- read_excel("./data/extern/valves/2023/valves2023.xlsx", sheet = 2)[,c(2,3)]
-  
-gate_onder_2023<-gate_cleaning(gate_onder_2023,"2023")
-gate_onder_2023$node<-"lower valve"
-gate_boven_2023<-gate_cleaning(gate_boven_2023,"2023")
-gate_boven_2023$node<-"upper valve"
-
-gate<-rbind(gate_onder_2023,gate_boven_2023)
-remove(gate_onder_2023,gate_boven_2023)
-```
-
 ```{r}
 # Read in valve data of exp1, exp2 and exp3 (different format from exp0 :( )
 dir1<-"./data/extern/valves/2024/"
@@ -272,7 +249,7 @@ gate_P1_2024$node<-"P1"
 gate_P5_2024<-gate_cleaning(gate_P5_2024,"2024")
 gate_P5_2024$node<-"P5"
 
-gate<-rbind(gate,gate_onder_2024,gate_boven_2024)
+gate<-rbind(gate_onder_2024,gate_boven_2024)
 remove(temp_onder_2024,temp_boven_2024,gate_onder_2024,gate_boven_2024,temp_P1_2024,temp_P5_2024,dir1,dir2,files,file,i)
 ```
 
@@ -285,16 +262,14 @@ gate<-interval.gate %>%
   dplyr::filter(is.na(opening)==FALSE)
 
 gate <- gate %>%
-  mutate(exp.gate = case_when(date_time>=start.gate0 & date_time<=stop.gate0 ~ "exp0",
-                              date_time>=start.gate1 & date_time<=stop.gate1 ~ "exp1", 
+  mutate(exp.gate = case_when(date_time>=start.gate1 & date_time<=stop.gate1 ~ "exp1", 
                               date_time>=start.gate2 & date_time<=stop.gate2 ~ "exp2",
                               date_time>=start.gate3 & date_time<=stop.gate3 ~ "exp3")) %>%
   group_by(node,exp.gate) %>%
   mutate(peaksid=as.factor(peakwindow(date_time,opening)$peakid)) %>%
   ungroup() %>%
   mutate(
-         trend = case_when(opening>49 & exp.gate=="exp0" ~ "open",
-                           opening>28 & exp.gate!="exp0" ~ "open",
+         trend = case_when(opening>28  ~ "open",
                            opening<3 ~ "closed")) %>%
   arrange(node,exp.gate,date_time) 
 
@@ -331,6 +306,7 @@ for (i in 1:length(folders)){
 metadata$opmerkingen<-NULL
 metadata[which(metadata$tag_code %in% metadata$tag_code[which(duplicated(metadata$tag_code)==TRUE)]),c("lengte","gewicht")]=NA
 metadata<-metadata[!duplicated(metadata), ]
+metadata<-metadata%>%dplyr::filter(soort=="winde")
 remove(temp,temp_boven_2024,temp_onder_2024,folders,tag_code_start)
 ```
 
@@ -417,13 +393,6 @@ nodes <- comp_dir %>%
 ```
 
 ```{r}
-cmpr<-list(c('exp0','exp1'),
- c('exp0','exp2'),        
- c('exp0','exp3'),
- c('exp1','exp2'),        
- c('exp1','exp3'),        
- c('exp2','exp3')
- )
 cmpr2024<-list(c('exp1','exp2'),        
  c('exp1','exp3'),        
  c('exp2','exp3')
@@ -541,12 +510,12 @@ Detection probability at the lower antenna for exp1, exp2 and exp3 were 100%, 83
 
 ```{r dpupperantenna}
 noemer<-comp_dir %>% 
-      dplyr::filter(exp!="exp0" & node %in% c("upper valve","upper basin")) %>%
+      dplyr::filter(node %in% c("upper valve","upper basin")) %>%
       group_by(exp) %>%
       summarise(noemer = n_distinct(tag_code))
   
   teller<-comp_dir %>% 
-      dplyr::filter(exp!="exp0" & last_sequence %in% c("lower basin-upper valve","lower basin-upper basin")) %>%
+      dplyr::filter(last_sequence %in% c("lower basin-upper valve","lower basin-upper basin")) %>%
       group_by(exp) %>%
       summarise(teller = n_distinct(tag_code)) 
   
@@ -557,12 +526,12 @@ dp<-dp%>%mutate(dp=(noemer-teller)/noemer)
 
 ```{r dplowerantenna}
 noemer<-comp_dir %>% 
-      dplyr::filter(exp!="exp0" & node %in% c("upper basin")) %>%
+      dplyr::filter(node %in% c("upper basin")) %>%
       group_by(exp) %>%
       summarise(noemer = n_distinct(tag_code))
   
   teller<-comp_dir %>% 
-      dplyr::filter(exp!="exp0" & last_sequence %in% c("lower basin-upper basin","lower valve-upper basin")) %>%
+      dplyr::filter(last_sequence %in% c("lower basin-upper basin","lower valve-upper basin")) %>%
       group_by(exp) %>%
       summarise(teller = n_distinct(tag_code)) 
   
@@ -595,12 +564,9 @@ Passage efficiency is defined as the percentage of entered fish that successfull
 
 Overall efficiency is defined as the percentage of all approaching fish that are attracted to, enter and pass through the exit of the FSSG [@baker2019]. In this study, the overall efficiency is considered the proportion of all tagged fish that were able to move through the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and or recaptured in the upper basin over the total number of tagged fish. As for the entrance efficiency, **the overall efficiency was very different between experiments and was highest for exp1 (0.79) and lowest for exp3 (0.47). It should be stressed that in this study all tagged fish were considered attracted fish. If failure to attract would have been accounted for (which was not possible for this study), it is likely that this overall efficiency would be considerably lower.**
 
-Passage efficiency and entrance efficiency of exp0 are not provided here but in the appendix as they are likely to be strongly underestimated due to the lacking recapture data.
-
 ```{r}
 entrance_efficiency<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
-      dplyr::filter(exp!="exp0") %>%
       mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "noemer", #the lower basin is the reference and therefore the pattern
                             .default = "teller"), #everything else is what we are interested in
              calculation=berekening_value) %>%
@@ -614,12 +580,12 @@ entrance_efficiency<-function(pattern_value,berekening_value){
 
 passage_efficiency<-function(pattern_value,berekening_value){
   noemer<-comp_dir %>% # the pattern and the lower valve are the reference
-      dplyr::filter(exp!="exp0" & node!="lower basin" & (sapply(node, grepl, pattern = pattern_value) | node=="lower valve")) %>%
+      dplyr::filter(node!="lower basin" & (sapply(node, grepl, pattern = pattern_value) | node=="lower valve")) %>%
       group_by(exp) %>%
       summarise(unieke_tags = n_distinct(tag_code))
   
   teller<-comp_dir %>% 
-      dplyr::filter(exp!="exp0" & node!="lower basin" & sapply(node, grepl, pattern = pattern_value)==TRUE) %>% #the pattern is what we are interested in
+      dplyr::filter(node!="lower basin" & sapply(node, grepl, pattern = pattern_value)==TRUE) %>% #the pattern is what we are interested in
       mutate(calculation=berekening_value) %>%
       group_by(exp, calculation) %>%
       summarise(unieke_tags = n_distinct(tag_code)) %>%
@@ -632,7 +598,6 @@ passage_efficiency<-function(pattern_value,berekening_value){
 
 overall_efficiency<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
-      dplyr::filter(exp!="exp0") %>%
       mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "teller", #the pattern is what we are interested in
                             .default = "noemer"), #the reference is the lower basin
              calculation=berekening_value) %>%
@@ -658,7 +623,7 @@ rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance
   row_spec(c(1,2,5), bold = T, color = "white", background = "red")
 ```
 
-To assess which factors were determinative for a fish making it up the FSSG or not, a simple logistic model was used with as response whether a fish made it up the FSSG or not and as explanatory variables the length, weight, species and experiment number. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the experiment number. This suggests **there was no effect of length, weight or species on whether a fish made it up the FSSG or not.** When using only fish that were only used once, the same results were obtained.
+To assess which factors were determinative for a fish making it up the FSSG or not, a simple logistic model was used with as response whether a fish made it up the FSSG or not and as explanatory variables the length and weight. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained an intercept. This suggests **there was no effect of length or weight on whether a fish made it up the FSSG or not.** When using only fish that were only used once, the same results were obtained.
 
 ```{r include=FALSE}
 model.data<-comp_dir %>%
@@ -672,7 +637,7 @@ model.data<-comp_dir %>%
   slice(1)
 
 model.data$response<-as.factor(model.data$response)
-model<-stepAIC(nnet::multinom(formula=as.formula(response~lengte*soort*exp), data=model.data))
+model<-stepAIC(nnet::multinom(formula=as.formula(response~lengte), data=model.data))
 summary(model)$coefficients %>% kable(caption="Coefficients of the model")
 z <- summary(model)$coefficients/summary(model)$standard.errors
 p <- (1 - pnorm(abs(z), 0, 1)) * 2 
@@ -693,12 +658,45 @@ model.data<-comp_dir %>%
   slice(1)
 
 model.data$response<-as.factor(model.data$response)
-model<-stepAIC(glm(formula=as.formula(response~lengte+soort+exp), data=model.data,family="binomial"),direction="backward")
+model<-stepAIC(glm(formula=as.formula(response~lengte*gewicht), data=model.data,family="binomial"),direction="backward")
 
 summary(model)$coefficients %>% kable(caption="Coefficients of the model")
 ```
 
-To assess which factors were determinative for the opening of the valve (upper and below) through which fish entered a simple logistic model was used with as response the opening as a percentage (i.e. 0% was fully closed and 100% was fully open) and as explanatory variables the length, weight, experiment number, whether it was the upper or lower valve and their interaction. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained whether the concerned valve was upper or lower, though the factor itself was not significant. This suggests **there was no effect of length, weight, experiment number or which valve was involved on the opening through which a fish entered the lower valve or left the upper valve.** When using only fish that were only used once, the same results were obtained.
+```{r eval=FALSE}
+# 1. Create a data frame for plotting with a range of 'lengte' values
+#    and all unique 'exp' values from your original data.
+plot.data <- expand.grid(
+  lengte = seq(min(model.data$lengte), max(model.data$lengte), length.out = 100),
+  exp = unique(model.data$exp)
+)
+
+# 2. Predict the probabilities for this new data using your simplified model.
+plot.data$predicted_prob <- predict(model, newdata = plot.data, type = "response")
+
+# 3. Create the plot using ggplot2.
+library(ggplot2)
+
+ggplot(plot.data, aes(x = lengte, color = exp)) +
+  # Plot the predicted probability curves
+  geom_line(aes(y = predicted_prob), size = 1.2) +
+  # Overlay the original data points
+  geom_point(data = model.data, aes(y = as.numeric(as.character(response))), size = 2, alpha = 0.6) +
+  labs(
+    title = "Probability of Response vs. Length for Different Experiments",
+    x = "Length",
+    y = "Response and Predicted Probability",
+    color = "Experiment"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_y_continuous(labels = scales::percent) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  )
+```
+
+To assess which factors were determinative for the opening of the valve (upper and below) through which fish entered a simple logistic model was used with as response the opening as a percentage (i.e. 0% was fully closed and 100% was fully open) and as explanatory variables the length, weight, and whether it was the upper or lower valve and their interaction. Model selection via the AIC criterium and a backward approach of adding and removing variables resulted in a model that only retained the interecept. This suggests **there was no effect of length, weight, or which valve was involved on the opening through which a fish entered the lower valve or left the upper valve.** When using only fish that were only used once, the same results were obtained.
 
 ```{r include=FALSE}
 model.data<-comp_dir %>%
@@ -709,7 +707,7 @@ model.data<-comp_dir %>%
   group_by(tag_code,node) %>%
   slice(1)
 
-model<-stepAIC(glm(formula=as.formula(opening~lengte+exp+node), data=model.data,family="binomial"),trace=FALSE)
+model<-stepAIC(glm(formula=as.formula(opening~lengte+node), data=model.data,family="binomial"),trace=FALSE)
 
 summary(model)
 
@@ -931,22 +929,12 @@ ylab("Opening (cm)") +
 xlab("Experiment") + 
 theme_bw() +
 stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
-stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
+stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
 ## Graphs valve opening
 
-In the following graphs the working of the lower and upper valve are depicted. As mentioned earlier the cycle duration and phase distribution of exp0 (Figure \@ref(fig:gate0valvelower) and Figure \@ref(fig:gate0valveupper)) are completely different from those of exp1 (Figure \@ref(fig:gate1valvelower) and Figure \@ref(fig:gate1valveupper)), exp2 (Figure \@ref(fig:gate2valvelower) and Figure \@ref(fig:gate2valveupper)) and exp3 (Figure \@ref(fig:gate3valvelower) and Figure \@ref(fig:gate3valveupper)). The seemingly different cycle duration and phase distribution of exp1 versus exp2 and exp3 is most likely the result of the much lower temporal resolution of the valve-measurement-data of the former. The pressure at the entrance ranged from 0.05 to 0.40 kPa (Figures \@ref(fig:P1exp1), \@ref(fig:P1exp2) and \@ref(fig:P1exp3)), while at the exit it ranged from -0.30 to 0.05 kPa (Figures \@ref(fig:P5exp1), \@ref(fig:P5exp2) and \@ref(fig:P5)).
-
-### Graphs valve opening exp0 (may 2023)
-
-```{r gate0valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="lower valve",exp_input="exp0", trend = TRUE, gate=gate)
-```
-
-```{r gate0valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="upper valve",exp_input="exp0", trend = TRUE, gate=gate)
-```
+In the following graphs the working of the lower and upper valve are depicted. The cycle duration and phase distribution of exp1 (Figure \@ref(fig:gate1valvelower) and Figure \@ref(fig:gate1valveupper)), exp2 (Figure \@ref(fig:gate2valvelower) and Figure \@ref(fig:gate2valveupper)) and exp3 (Figure \@ref(fig:gate3valvelower) and Figure \@ref(fig:gate3valveupper)) are very similar. The slight difference in cycle duration and phase distribution of exp1 versus exp2 and exp3 is most likely the result of the much lower temporal resolution of the valve-measurement-data of the former. The pressure at the entrance ranged from 0.05 to 0.40 kPa (Figures \@ref(fig:P1exp1), \@ref(fig:P1exp2) and \@ref(fig:P1exp3)), while at the exit it ranged from -0.30 to 0.05 kPa (Figures \@ref(fig:P5exp1), \@ref(fig:P5exp2) and \@ref(fig:P5)).
 
 ### Graphs valve opening exp1 (may 2024)
 

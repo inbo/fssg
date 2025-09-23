@@ -6,73 +6,6 @@ INBOmd::references(appendix = TRUE)
 
 # Appendix
 
-## Pilot fyke net experiment
-
-A fyke net (two funnel throats, two chambers, total length 3.75 m, mesh size from entrance to end = 16 mm, 12mm, 9 mm) was installed in the upper tank, upstream of the upper valve (Fig. \@ref(fig:fuik)). A total of 466 fish from eight species (perch, bleak, roach, bream, white bream, carp, gibel carp and rudd) were introduced to the lower tank on five different days.
-
-```{r fuik, fig.cap = "Fyke net placement in the upper tank, upstream of the upper valve. Picture taken by Johan Coeck.", fig.show = "hold", fig.align = "center", out.width = "25%"}
-include_graphics(path = c("./media/fuik1.jpg", "./media/fuik2.jpg", "./media/fuik3.jpg"))
-```
-
-|            |                           |
-|------------|:--------------------------|
-| Date       | Number of fish introduced |
-| 17/04/2023 | 9                         |
-| 05/05/2023 | 47                        |
-| 08/05/2023 | 70                        |
-| 23/05/2023 | 340                       |
-
-: Summary of the number of fish introduced in the system during the fyke net experiments of 2023.
-
-During the fyke net experiments it became apparent that a metal plate was needed to direct the flow from the lower valve towards the tank, escape routes from the test tanks needed to be closed of with a small mesh-sized grid and that shelters under the bottom plate of the valves needed to be closed (Fig. \@ref(fig:verbetering)).
-
-```{r verbetering, fig.cap = "Improvement of experimental set-up. Picture taken by Johan Coeck.", fig.show = "hold", fig.align = "center", out.width = "50%"}
-include_graphics(path = "./media/verbetering.jpg")
-```
-
-A total of 49 fish were caught in the fyke net, resulting in an average passage of 10.51% (ranging from 0% to 18 %. Table \@ref(tab:fuikvangsten)). Five of the eight introduced species were caught (roach, white bream, carp, bream and rudd). Observed passage efficiency was very low, but this might have several methodological reasons. The fyke net was most likely to far from the valve and too short in length while conditions were likely too turbulent causing quite some fish to not be captured and too even escape the fyke net.
-
-```{r fuikvangsten}
-options(knitr.kable.NA = '')
-read.csv("./data/intern/fuikvangsten.csv",sep=";") %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Summary of the fyke net experiments") %>% kableExtra::landscape()
-```
-
-## Pilot telemetry experiment
-
-A test of the detection range of two PIT antenna in front of the lower and upper valves was conducted. Since these values are made of metal, electromagnetic interference could be an issue. PIT antenna were connected to permanent readers. Settings were altered until an acceptable detection range was obtained. The green grid was lifted permanently to reduce mortality (Fig. \@ref(fig:greenscreen)). Mortality due to this green grid was observed after attraction flushing at 2,5 cm or during opening fase towards the 50 cm full opening, with dead fish found on the antenna afterwards (Fig. \@ref(fig:dodevis)).
-
-```{r dodevis, fig.cap = "Dead fish on antenna. Picture taken by Johan Coeck.", fig.show = "hold", fig.align = "center", out.width = "25%"}
-include_graphics(path = "./media/deadfish.jpg")
-```
-
-```{r greenscreen, fig.cap = "Green grid was permanently lefted to avoid fish mortality. Picture taken by Johan Coeck.", fig.show = "hold", fig.align = "center", out.width = "25%"}
-include_graphics(path = "./media/greenscreen.jpg")
-```
-
-Water quality during the testing might have been an issue (Table \@ref(tab:wq2023)). Algae blooms (green water) and biogenic decalcification (pH\>8) were visible during the tests. These are most likely the result of the high nutrient concentration and low bacterial activity of the water because of the absence of a filter or substrates.
-
-```{r wq2023}
-options(knitr.kable.NA = '')
-read.csv("./data/intern/wq2023.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Water quality measurements during the 2023 experiments. Temperature (Temp) is expressed in degrees Celsius. Conductivity (Cond) is expressed in µS/cm. O2 sat is expressed in percentage. O2 concentration (O2 conc) is expressed in mg/L.")
-```
-
-21% of the tagged population was found to pass the FSSG (Table \@ref(tab:passagesuccessexp0)). 46% of the tagged population was able to find the entrance of the FSSG via the lower valve, but only 45% of these fish were able to move up the FSSG and pass through the upper valve into the upper tank.
-
-```{r passagesuccessexp0}
-options(knitr.kable.NA = '')
-read.csv("./data/intern/passagesuccessexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper valve. Number and percentage (between brackets) of the detected individuals and species are given.")
-```
-
-```{r passagesuccessexp0species}
-options(knitr.kable.NA = '')
-read.csv("./data/intern/passagesuccessexp0species.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper valve for the different species. Number and percentage (between brackets) of the detected individuals are given.")
-```
-
-```{r movementpathexp0}
-options(knitr.kable.NA = '')
-read.csv("./data/intern/movementpathexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Passage efficiency for exp0 at the lower and upper valve for the different species. Number and percentage (between brackets) of the detected individuals are given.") %>% kableExtra::landscape()
-```
-
 ## Additional graphs and tables with all fish used
 
 ### Gate statistics
@@ -179,7 +112,6 @@ ggplot(comp_dir %>%
 entrance_efficiency<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
       dplyr::filter(hergebruikt==1) %>%
-      dplyr::filter(exp!="exp0") %>%
       mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "noemer", #the lower basin is the reference and therefore the pattern
                             .default = "teller"), #everything else is what we are interested in
              calculation=berekening_value) %>%
@@ -193,13 +125,13 @@ entrance_efficiency<-function(pattern_value,berekening_value){
 
 passage_efficiency<-function(pattern_value,berekening_value){
   noemer<-comp_dir %>% # the pattern and the lower valve are the reference
-      dplyr::filter(exp!="exp0" & node!="lower basin" & (sapply(node, grepl, pattern = pattern_value) | node=="lower valve")) %>%
+      dplyr::filter(node!="lower basin" & (sapply(node, grepl, pattern = pattern_value) | node=="lower valve")) %>%
       dplyr::filter(hergebruikt==1) %>%
       group_by(exp) %>%
       summarise(unieke_tags = n_distinct(tag_code))
   
   teller<-comp_dir %>% 
-      dplyr::filter(exp!="exp0" & node!="lower basin" & sapply(node, grepl, pattern = pattern_value)==TRUE) %>% #the pattern is what we are interested in
+      dplyr::filter(node!="lower basin" & sapply(node, grepl, pattern = pattern_value)==TRUE) %>% #the pattern is what we are interested in
       dplyr::filter(hergebruikt==1) %>%
       mutate(calculation=berekening_value) %>%
       group_by(exp, calculation) %>%
@@ -213,7 +145,6 @@ passage_efficiency<-function(pattern_value,berekening_value){
 
 overall_efficiency<-function(pattern_value,berekening_value){
   data<-comp_dir %>% 
-      dplyr::filter(exp!="exp0") %>%
       dplyr::filter(hergebruikt==1) %>%
       mutate(niveau = case_when(sapply(node, grepl, pattern = pattern_value) ~ "teller", #the pattern is what we are interested in
                             .default = "noemer"), #the reference is the lower basin
@@ -243,11 +174,9 @@ rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance
 my_labeller<-as_labeller(c("lower basin-lower valve"="entrance time","lower valve-upper valve"="passage time"))
 ```
 
-
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(travel_time)==FALSE) %>%
             #dplyr::filter(!(abs(travel_time - median(travel_time)) > 1.5*sd(travel_time))) %>%
             dplyr::filter(hergebruikt==1) %>%
@@ -269,7 +198,6 @@ stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args =
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(peaksid)==FALSE) %>%
             dplyr::filter(hergebruikt==1) %>%
             arrange(tag_code,min_det) %>%
@@ -331,7 +259,6 @@ theme_bw()
 ```{r fig.width=10, fig.height=10}
 ggplot(data=comp_dir %>%
             dplyr::filter(node == "lower valve" | node == "upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(since_open)==FALSE) %>%
             #dplyr::filter(!(abs(since_open - median(since_open)) > 1.5*sd(since_open))) %>%
             dplyr::filter(hergebruikt==1) %>%
@@ -366,28 +293,10 @@ ylab("Opening at entrance (cm)") +
 xlab("Experiment") + 
 theme_bw() +
 stat_summary(fun.data = give.n2, geom = "text", fun.y = median) + 
-stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
+stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args = symnum.args, p.adjust.method = "bonferroni", label='p.adj')
 ```
 
 ## Graphs valve opening
-
-### Graphs valve opening exp0 (mei 2023)
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0", gate=gate)
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0", gate=gate)
-```
-
-```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0", trend = TRUE, gate=gate)
-```
-
-```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0", trend = TRUE, gate=gate)
-```
 
 ### Graphs valve opening exp1 (mei 2024)
 
@@ -492,10 +401,6 @@ plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="P5",exp_input="ex
 ```
 
 ## Network analysis
-
-```{r fig.width=10, fig.height=10, fig.cap="Network analysis for exp0"}
-plot_network("exp0")
-```
 
 ```{r fig.width=10, fig.height=10, fig.cap="Network analysis for exp1."}
 plot_network("exp1", to_include = "not all")

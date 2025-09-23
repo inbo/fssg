@@ -42,7 +42,7 @@ Due to its design, the function of the multi-chamber lock system (Fig. \@ref(fig
 include_graphics(path = "./media/locks.pdf")
 ```
 
-Artificial lighting using LED strips is provided. The central tube is flood-proof and closed at the top with a translucent dome. Waterproof maintenance accesses are installed at the top of the lock system for cleaning and filling with base substrate. Electrical or hydraulically automated devices for the lock doors are also located here, along with a safety railing to prevent falls.
+Artificial lighting using LED strips is provided. To mimic nature-like conditions inside the FSSG, LED-lighting was operated to approximate day/night conditions with the light being turned off during the night and turned on during the day. The central tube is flood-proof and closed at the top with a translucent dome. Waterproof maintenance accesses are installed at the top of the lock system for cleaning and filling with base substrate. Electrical or hydraulically automated devices for the lock doors are also located here, along with a safety railing to prevent falls.
 
 ## Set-up
 

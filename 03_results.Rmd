@@ -102,7 +102,21 @@ options(knitr.kable.NA = '')
 read.csv("./data/intern/overzichtexp0.csv",sep=";", check.names = F) %>% rename_with(~gsub(".", " ", .x, fixed = TRUE)) %>% kable(caption="Overview of the number of tagged fish per species and per data during the 2023 experiment.")
 ```
 
-For the experiments of 2024 on 15/5/2023 (exp1), 22/5/2023 (exp2) and 29/5/2023 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. These fish were bought from a fish farm which utilizes fish culture ponds. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used). Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions.
+For the experiments of 2024 on 15/5/2023 (exp1), 22/5/2023 (exp2) and 29/5/2023 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. These fish were bought from fish farm Vandeput in Zonhoven (Belgium) which utilizes fish culture ponds. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used. Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). Here it was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions. Fish were provided with a PIT-tag and the length and weight of each individual was written down. All fish were released together at the start of the experiment in the lower tank. The lower and upper tank had a volume of 6.5 m³ (5.0 m length x 1.3 m water level x 1.0 m width) and 17.0 m³ (3.55 m length x 1.05 m width x 4.56 m water level) respectively. The outflow chamber had a volume of 24.37 m³ (1.2 m width x 4.31 m water level). The inflow chamber was closed of to ensure fish would entire the FSSG.
+
+```{r envvars}
+data_string <- "Description,Date,Time,WaterTemp,pH,OxygenPerc,OxygenConc,AirTemp
+exp1,15-5-2024,13:00,19.1,8.3,73.7,6.8,18.8
+exp1,21-5-2024,09:00,17.4,8.8,62.2,6.0,15.0
+exp2,22-5-2024,10:00,16.9,8.3,70.2,6.8,16.8
+exp2,28-5-2024,07:00,17.2,8.7,102.0,10.7,12.5
+exp3,29-5-2024,10:00,16.9,8.4,55.0,5.4,17.0
+exp3,03-6-2024,09:00,/,/,62.7,6.1,12.0"
+
+df <- read.csv(text = data_string, sep = ",")
+
+knitr::kable(df, caption="At the start and end of each experiment water temperature (WaterTemp in °C), pH (unitless), dissolved oxygen percentage (OxygenPerc in percentage), dissolved oxygen concentration (OxygenConc in mg/L) and air temperature (AirTemp in °C) were measured. Water temperature and pH could not be measured at the end of exp3 due to issues with the measuring equipment.")
+```
 
 ```{r}
 interval %>% kable(caption="Study period description. Start and stop time for the fish experiment and valve data collection are given.")
@@ -234,22 +248,32 @@ for (i in 1:length(files)){
   file<-read.csv(dir2,sep=";")
   temp_onder_2024<-file[,c(1,2)]
   temp_boven_2024<-file[,c(3,4)]
+  temp_P1_2024<-file[,c(5,6)]
+  temp_P5_2024<-file[,c(13,14)]
   if (i==1){
     gate_onder_2024=temp_onder_2024
     gate_boven_2024=temp_boven_2024
+    gate_P1_2024=temp_P1_2024
+    gate_P5_2024=temp_P5_2024
   } else{
     gate_onder_2024=rbind(gate_onder_2024,temp_onder_2024)
     gate_boven_2024=rbind(gate_boven_2024,temp_boven_2024)
-    }
+    gate_P1_2024=rbind(gate_P1_2024,temp_P1_2024)
+    gate_P5_2024=rbind(gate_P5_2024,temp_P5_2024)
+  }
 }
 
 gate_onder_2024<-gate_cleaning(gate_onder_2024,"2024")
 gate_onder_2024$node<-"lower valve"
 gate_boven_2024<-gate_cleaning(gate_boven_2024,"2024")
 gate_boven_2024$node<-"upper valve"
+gate_P1_2024<-gate_cleaning(gate_P1_2024,"2024")
+gate_P1_2024$node<-"P1"
+gate_P5_2024<-gate_cleaning(gate_P5_2024,"2024")
+gate_P5_2024$node<-"P5"
 
 gate<-rbind(gate,gate_onder_2024,gate_boven_2024)
-remove(gate_onder_2024,gate_boven_2024,dir1,dir2,files,file,i)
+remove(temp_onder_2024,temp_boven_2024,gate_onder_2024,gate_boven_2024,temp_P1_2024,temp_P5_2024,dir1,dir2,files,file,i)
 ```
 
 ```{r}
@@ -427,14 +451,21 @@ When linking the valve data to the fish data, for passage through the lower and 
 
 Time was for all data initially in local Brussels time but was changed to UTC for transparency.
 
++-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Metric                | Definition                                                                     | Calculation                                                                                                                                 |
-|-----------------------|--------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
++=======================+================================================================================+=============================================================================================================================================+
 | Entrance time         | Time between release and entrance                                              | Time between release and first detection at the lower antenna                                                                               |
++-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Passage time          | Time between entrance and exit                                                 | Time between last detection at the lower antenna and last detection at the upper antenna                                                    |
++-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Attraction efficiency | Proportion of tagged fish able to locate the entrance of the FSSG              | /                                                                                                                                           |
++-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Entrance efficiency   | Proportion of tagged fish able to enter the FSSG                               | Proportion of released fish detected on either the lower antenna, upper antenna or recaptured in the upper basin                            |
++-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Passage efficiency    | Proportion of entered fish that were able to move through the exit of the FSSG | Proportion of fish that are detected on the upper antenna and/or recaptured in the upper basin over the fish that are known to have entered |
++-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | Overall efficiency    | Proportion of tagged fish able to move through the FSSG                        | Proportion of fish that are detected on the upper antenna and or recaptured in the upper basin over the total number of tagged fish.        |
++-----------------------+--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 
 : Overview of the used metrics with their according definition and how they were calculated.
 
@@ -905,44 +936,44 @@ stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = sym
 
 ## Graphs valve opening
 
-In the following graphs the working of the lower and upper valve are depicted. As mentioned earlier the cycle duration and phase distribution of exp0 (Figure \@ref(fig:gate0valvelower) and Figure \@ref(fig:gate0valveupper)) are completely different from those of exp1 (Figure \@ref(fig:gate1valvelower) and Figure \@ref(fig:gate1valveupper)), exp2 (Figure \@ref(fig:gate2valvelower) and Figure \@ref(fig:gate2valveupper)) and exp3 (Figure \@ref(fig:gate3valvelower) and Figure \@ref(fig:gate3valveupper)). The seemingly different cycle duration and phase distribution of exp1 versus exp2 and exp3 is most likely the result of the much lower temporal resolution of the valve-measurement-data of the former.
+In the following graphs the working of the lower and upper valve are depicted. As mentioned earlier the cycle duration and phase distribution of exp0 (Figure \@ref(fig:gate0valvelower) and Figure \@ref(fig:gate0valveupper)) are completely different from those of exp1 (Figure \@ref(fig:gate1valvelower) and Figure \@ref(fig:gate1valveupper)), exp2 (Figure \@ref(fig:gate2valvelower) and Figure \@ref(fig:gate2valveupper)) and exp3 (Figure \@ref(fig:gate3valvelower) and Figure \@ref(fig:gate3valveupper)). The seemingly different cycle duration and phase distribution of exp1 versus exp2 and exp3 is most likely the result of the much lower temporal resolution of the valve-measurement-data of the former. The pressure at the entrance ranged from 0.05 to 0.40 kPa (Figures \@ref(fig:P1exp1), \@ref(fig:P1exp2) and \@ref(fig:P1exp3)), while at the exit it ranged from -0.30 to 0.05 kPa (Figures \@ref(fig:P5exp1), \@ref(fig:P5exp2) and \@ref(fig:P5)).
 
 ### Graphs valve opening exp0 (may 2023)
 
 ```{r gate0valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="lower valve",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="lower valve",exp_input="exp0", trend = TRUE, gate=gate)
 ```
 
 ```{r gate0valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="upper valve",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.gate0,stop=start.gate0+hours(6),node_input="upper valve",exp_input="exp0", trend = TRUE, gate=gate)
 ```
 
 ### Graphs valve opening exp1 (may 2024)
 
 ```{r gate1valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="lower valve",exp_input="exp1", trend=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="lower valve",exp_input="exp1", trend=TRUE, gate=gate)
 ```
 
 ```{r gate1valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="upper valve",exp_input="exp1", trend=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="upper valve",exp_input="exp1", trend=TRUE, gate=gate)
 ```
 
 ### Graphs valve opening exp2 (may 2024)
 
 ```{r gate2valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="lower valve",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="lower valve",exp_input="exp2", trend=TRUE, gate=gate)
 ```
 
 ```{r gate2valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="upper valve",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="upper valve",exp_input="exp2", trend=TRUE, gate=gate)
 ```
 
 ### Graphs valve opening exp3 (may 2024)
 
 ```{r gate3valvelower, fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="lower valve",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="lower valve",exp_input="exp3", trend=TRUE, gate=gate)
 ```
 
 ```{r gate3valveupper, fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish. The different phases are depicted in different colors."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="upper valve",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="upper valve",exp_input="exp3", trend=TRUE, gate=gate)
 ```

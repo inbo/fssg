@@ -1,4 +1,4 @@
-plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE, trend = FALSE, peaksid = FALSE){
+plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE, trend = FALSE, peaksid = FALSE, gate=gate){
   start = as.POSIXct(start,tz = "UTC")
   stop = as.POSIXct(stop,tz = "UTC")
   

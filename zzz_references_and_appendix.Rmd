@@ -374,89 +374,121 @@ stat_compare_means(comparisons = cmpr, method = "wilcox.test", symnum.args = sym
 ### Graphs valve opening exp0 (mei 2023)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0")
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0")
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="upper valve",exp_input="exp0", trend = TRUE, gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0", trend = TRUE)
+plot_vdz(start=start.exp0,stop=stop.exp0,node_input="lower valve",exp_input="exp0", trend = TRUE, gate=gate)
 ```
 
 ### Graphs valve opening exp1 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=stop.exp1,node_input="upper valve",exp_input="exp1")
+plot_vdz(start=start.exp1,stop=stop.exp1,node_input="upper valve",exp_input="exp1", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish.."}
-plot_vdz(start=start.exp1,stop=stop.exp1,node_input="lower valve",exp_input="exp1")
+plot_vdz(start=start.exp1,stop=stop.exp1,node_input="lower valve",exp_input="exp1", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="upper valve",exp_input="exp1", points=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="upper valve",exp_input="exp1", points=TRUE, gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="lower valve",exp_input="exp1", points=TRUE)
+plot_vdz(start=start.exp1,stop=start.exp1+days(1),node_input="lower valve",exp_input="exp1", points=TRUE, gate=gate)
 ```
 
 ### Graphs valve opening exp2 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=stop.exp2,node_input="upper valve",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=stop.exp2,node_input="upper valve",exp_input="exp2", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=stop.exp2,node_input="lower valve",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=stop.exp2,node_input="lower valve",exp_input="exp2", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="upper valve",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="upper valve",exp_input="exp2", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="lower valve",exp_input="exp2")
+plot_vdz(start=start.exp2,stop=start.exp2+days(1),node_input="lower valve",exp_input="exp2", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="lower valve",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="lower valve",exp_input="exp2", trend=TRUE, gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="upper valve",exp_input="exp2", trend=TRUE)
+plot_vdz(start=start.exp2,stop=start.exp2+hours(2),node_input="upper valve",exp_input="exp2", trend=TRUE, gate=gate)
 ```
 
 ### Graphs valve opening exp3 (mei 2024)
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=stop.exp3,node_input="upper valve",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=stop.exp3,node_input="upper valve",exp_input="exp3", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=stop.exp3,node_input="lower valve",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=stop.exp3,node_input="lower valve",exp_input="exp3", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="upper valve",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="upper valve",exp_input="exp3", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="lower valve",exp_input="exp3")
+plot_vdz(start=start.exp3,stop=start.exp3+days(1),node_input="lower valve",exp_input="exp3", gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the lower valve opening over time in blue. The vertical red lines represent the first detection at the lower valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="lower valve",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="lower valve",exp_input="exp3", trend=TRUE, gate=gate)
 ```
 
 ```{r fig.width=10, fig.cap="Progression of the upper valve opening over time in blue. The vertical red lines represent the first detection at the upper valve per attempt per fish."}
-plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="upper valve",exp_input="exp3", trend=TRUE)
+plot_vdz(start=start.exp3,stop=start.exp3+hours(2),node_input="upper valve",exp_input="exp3", trend=TRUE, gate=gate)
+```
+
+## Graphs pressure
+
+### Graphs pressure lower basin exp1
+
+```{r P1exp1, fig.width=10, fig.cap="Progression of the pressure in the lower basin over time."}
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="P1",exp_input="exp1", points=TRUE, gate=gate_P1_2024) + ylab("Pressure (kPa)") + scale_y_continuous(breaks = round(seq(min(gate_P1_2024$opening), max(gate_P1_2024$opening), by = 0.05),2))
+```
+
+```{r P5exp1, fig.width=10, fig.cap="Progression of the pressure in the upper basin over time."}
+plot_vdz(start=start.exp1,stop=start.exp1+hours(6),node_input="P5",exp_input="exp1", points=TRUE, gate=gate_P5_2024) + ylab("Pressure (kPa)") + scale_y_continuous(breaks = round(seq(min(gate_P5_2024$opening), max(gate_P5_2024$opening), by = 0.05),2))
+```
+
+### Graphs pressure lower basin exp2
+
+```{r P1exp2, fig.width=10, fig.cap="Progression of the pressure in the lower basin over time."}
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="P1",exp_input="exp2", points=TRUE, gate=gate_P1_2024) + ylab("Pressure (kPa)") + scale_y_continuous(breaks = round(seq(min(gate_P1_2024$opening), max(gate_P1_2024$opening), by = 0.05),2))
+```
+
+```{r P5exp2, fig.width=10, fig.cap="Progression of the pressure in the upper basin over time."}
+plot_vdz(start=start.exp2,stop=start.exp2+hours(6),node_input="P5",exp_input="exp2", points=TRUE, gate=gate_P5_2024) + ylab("Pressure (kPa)") + scale_y_continuous(breaks = round(seq(min(gate_P5_2024$opening), max(gate_P5_2024$opening), by = 0.05),2))
+```
+
+### Graphs pressure lower basin exp3
+
+```{r P1exp3, fig.width=10, fig.cap="Progression of the pressure in the lower basin over time."}
+plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="P1",exp_input="exp3", points=TRUE, gate=gate_P1_2024) + ylab("Pressure (kPa)") + scale_y_continuous(breaks = round(seq(min(gate_P1_2024$opening), max(gate_P1_2024$opening), by = 0.05),2))
+```
+
+```{r P5exp3, fig.width=10, fig.cap="Progression of the pressure in the upper basin over time."}
+plot_vdz(start=start.exp3,stop=start.exp3+hours(6),node_input="P5",exp_input="exp3", points=TRUE, gate=gate_P5_2024) + ylab("Pressure (kPa)") + scale_y_continuous(breaks = round(seq(min(gate_P5_2024$opening), max(gate_P5_2024$opening), by = 0.05),2))
 ```
 
 ## Network analysis

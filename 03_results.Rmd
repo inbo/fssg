@@ -91,7 +91,27 @@ rownames(interval)=c("exp1","exp2","exp3")
 
 ## Fish experiments
 
-For the experiments of 15/5/2024 (exp1), 22/5/2024 (exp2) and 29/5/2024 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. These fish were bought from fish farm Vandeput in Zonhoven (Belgium) which utilizes fish culture ponds. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used. Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). It was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions. Fish were provided with a PIT-tag and the length and weight of each individual was written down. All fish were released together at the start of the experiment in the lower tank. The lower and upper tank had a water volume of 6.5 m³ (5.0 m length x 1.3 m water level x 1.0 m width) and 17.0 m³ (3.55 m length x 1.05 m width x 4.56 m water level) respectively. The outflow chamber had a water volume of 24.37 m³ (1.2 m width x 4.31 m water level). The inflow chamber was closed of to ensure fish would entire the FSSG.
+For the experiments of 15/5/2024 (exp1), 22/5/2024 (exp2) and 29/5/2024 (exp3) 60, 102 and 124 individuals of ide (*Leuciscus idus*) were used. These fish were bought from fish farm Vandeput in Zonhoven (Belgium) which utilizes fish culture ponds. If possible, fish used for one experiment were re-used for the next to increase the sampling size and assess the effect of experience. In the second experiment 42 fish were re-used while in the last experiment 88 fish were re-used. Valve data was available for the entire duration of the experiments, albeit at different temporal resolutions (see further). It was decided to work with only one species to allow for an acceptable statistical power to draw sound conclusions. Fish were provided with a PIT-tag and the length and weight of each individual was written down. All fish were released together at the start of the experiment (in the morning to early noon) in the lower tank. The lower and upper tank had a water volume of 6.5 m³ (5.0 m length x 1.3 m water level x 1.0 m width) and 17.0 m³ (3.55 m length x 1.05 m width x 4.56 m water level) respectively. The outflow chamber had a water volume of 24.37 m³ (1.2 m width x 4.31 m water level). The inflow chamber was closed of to ensure fish would entire the FSSG.
+
+### Environmental conditions
+
+Water velocities were measured during preliminary tests under different conditions and ranged between 0.1 m/s to 0.4 m/s (Table \@ref(tab:velocity)). Environmental measurements were taken at the beginning and at the end of every experiment in the morning to early noon. Water temperature, pH, oxygen percentage and air temperature were on average respectively 17.5 °C, 8.5, 7.0 mg/L and 15.4 °C (Table \@ref(tab:envvars)).
+
+```{r velocity}
+# Create the data frame with spaces in column names
+table_data<-data.frame(
+  `Measured at` = c("Lower valve", "Lower valve", "Upper valve", "Upper valve"),
+  `Opening of lower valve` = c("100.0 %", "100.0 %", "2.5 %", "5.0 %"),
+  `Opening of upper valve` = c("2.5 %", "5.0 %", "100.0 %", "100.0 %"),
+  `Water velocity (m/s)` = c(0.2, 0.4, 0.1, 0.2),
+  check.names = FALSE # This is the key argument to prevent R from changing names
+)
+
+# Display the table using kable()
+knitr::kable(table_data,caption="Water velocity measurements taken at the lower and upper valve.")
+
+remove(table_data)
+```
 
 ```{r envvars}
 data_string <- "Description,Date,Time,WaterTemp,pH,OxygenPerc,OxygenConc,AirTemp
@@ -100,11 +120,11 @@ exp1,21-5-2024,09:00,17.4,8.8,62.2,6.0,15.0
 exp2,22-5-2024,10:00,16.9,8.3,70.2,6.8,16.8
 exp2,28-5-2024,07:00,17.2,8.7,102.0,10.7,12.5
 exp3,29-5-2024,10:00,16.9,8.4,55.0,5.4,17.0
-exp3,03-6-2024,09:00,/,/,62.7,6.1,12.0"
+exp3,05-6-2024,09:00,/,/,62.7,6.1,12.0"
 
 df <- read.csv(text = data_string, sep = ",")
 
-knitr::kable(df, caption="At the start and end of each experiment water temperature (WaterTemp in °C), pH (unitless), dissolved oxygen percentage (OxygenPerc in percentage), dissolved oxygen concentration (OxygenConc in mg/L) and air temperature (AirTemp in °C) were measured. Water temperature and pH could not be measured at the end of exp3 due to issues with the measuring equipment.")
+knitr::kable(df, caption="Before the start and end of each experiment water temperature (WaterTemp in °C), pH (unitless), dissolved oxygen percentage (OxygenPerc in percentage), dissolved oxygen concentration (OxygenConc in mg/L) and air temperature (AirTemp in °C) were measured. Water temperature and pH could not be measured at the end of exp3 due to issues with the measuring equipment.")
 ```
 
 ```{r}
@@ -406,15 +426,15 @@ symnum.args <- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, Inf), symbols = 
 
 ## Data processing
 
-All the different sites were fish were either released, detected or recaptured are further one referred to as nodes.
+All the different sites where fish were either released, detected or recaptured are further on referred to as nodes.
 
-Pit tag data was compressed using the default settings of the function compress of the R package PITCleanr. This data compression involves determining the first and last detection of a series of subsequent detections on a node as well as the number of detections during each slot (from first and last detection).
+Pit tag data were compressed using the default settings of the function *compress* of the R package *PITCleanr*. This data compression involves determining the first and last detection of a series of subsequent detections on a node as well as the number of detections during each slot (from first and last detection).
 
-The location where the fish were released (i.e., the lower tank) was designated as the initial node, with the corresponding timestamp marking the start of each fish's journey. Conversely, the recapture location was identified as the final node, with the corresponding timestamp indicating the end of each fish's journey. All fish were alive and presumed to still have their tags at the time of release. However, some fish were found dead and/or tagless upon recapture. Due to the low detection rate of the antennas, particularly the upper one, we did not attempt to match unidentified fish with tag IDs from the release data. In a system with higher detectability, it might have been feasible to trace unidentified fish back to known but not-recaptured tag IDs with a reasonable degree of certainty. Unfortunately, this was not the case in our system. For the experiments of 2024, for which recapture data was available, fish were only included in the dataset if they were recaptured and identified upon capture. More specifically, detections and observations of fish which were not recaptured, had escaped the system or could not be identified due to tag loss were omitted. For exp1, six fish were found without a tag and 13 fish were not recaptured (six of them because of the absence of a tag). For exp2, three fish were not recaptured. For exp3, one fish was found without a tag and eight fish were not recaptured (one of them because of the absence of a tag). Since for the experiments of 2023 no recapture data was available, all data were used though it should be noted that this comes with a level of unquantifiable uncertainty.
+The location where the fish were released (i.e., the lower tank) was designated as the initial node, with the corresponding timestamp marking the start of each fish's journey. Conversely, the recapture location was identified as the final node, with the corresponding timestamp indicating the end of each fish's journey. All fish were alive and presumed to still have their tags at the time of release. However, some fish were found dead and/or tagless upon recapture. Due to the low detection rate of the antennas, particularly the upper one, we did not attempt to match unidentified fish with tag IDs from the release data. In a system with higher detectability, it might have been feasible to trace unidentified fish back to known but not-recaptured tag IDs with a reasonable degree of certainty. Unfortunately, this was not the case in our system. For the experiments, for which recapture data was available, fish were only included in the dataset if they were recaptured and identified upon capture. More specifically, detections and observations of fish which were not recaptured, had escaped the system or could not be identified due to tag loss were omitted. For exp1, six fish were found without a tag and 13 fish were not recaptured (six of them because of the absence of a tag). For exp2, three fish were not recaptured. For exp3, one fish was found without a tag and eight fish were not recaptured (one of them because of the absence of a tag).
 
 <!-- To prevent artificial inflation of the number of fish entering the experiment, fish found without a tag in the basin below were excluded from the dataset. For instance, an unidentified fish with a new ID (e.g., unknown_4) would also have had a real ID. Including this fish in the data would have resulted in double-counting. However, fish found without a tag in other locations were still included in the dataset, as there was no risk of double-counting once they had moved away from their initial node. -->
 
-The temporal resolution and range of the valve-opening and pressure data was different between experiments. In order to harmonize the temporal resolution between experiments and to easily link fish data with valve and pressure data, linear interpolation was applied to yield a temporal resolution of one second. A valve was considered open when the opening was larger than 28 and 49 cm in the case of the experiments of 2024 and 2023, respectively. For all experiments the valve was considered closed when the opening was less than 3 cm. For every second the time since the last opening was determined.
+The temporal resolution and range of the valve-opening and pressure data was different between experiments. In order to harmonize the temporal resolution between experiments and to easily link fish data with valve and pressure data, linear interpolation was applied to yield a temporal resolution of one second. A valve was considered open when the opening was larger than 28 cm. For all experiments the valve was considered closed when the opening was less than 3 cm. For every second the time since the last opening was determined.
 
 When linking the valve data to the fish data, for passage through the lower and upper valve respectively the first detection and last detection were used. This was done because we were mainly interested in when fish enter (via the lower valve) and leave (via the upper valve) the system.
 
@@ -490,7 +510,7 @@ summary(lm(formula = as.numeric(travel_time_adapted) ~ last_sequence * as.factor
             dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted)))))
 ```
 
-Although most fish went through the system (from the lower valve to the upper valve) only once, some went through the system several times (Table \@ref(tab:loop)). Especially for exp0 a relatively large amount went two (12 individuals) to three times (3 individuals) through the system. For exp3, one fish went up to six times through the system.
+Although most fish went through the system (from the lower valve to the upper valve) only once, some went through the system several times (Table \@ref(tab:loop)). For exp3, one fish went up to six times through the system.
 
 ```{r loop}
 options(knitr.kable.NA = 0)
@@ -544,9 +564,9 @@ dp<-dp%>%mutate(dp=(noemer-teller)/noemer)
 
 Before fish can successfully enter and pass the FSSG they need to be able to find the entrance (i.e., attraction efficiency). Unfortunately, the current experimental set-up does not allow for an assessment of the attraction efficiency as the area in which fish were released was too narrow to be representative for most real-life situations [@triano2022].
 
-Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of tagged fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of released fish detected on either the lower antenna, upper antenna or recaptured in the upper basin. Since all tagged fish are considered to be attracted to the FSSG due to the narrowness of the lower basin and proximity of the entrance of the FSSG, all tagged fish were considered for the entrance efficiency. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.70)** (Table \@ref(tab:passagesuccess))**.** It should be noted that the metric is **most likely an overestimation** because fish in the narrow lower basin had no real other options than move towards the entrance and fish that lingered outside the entrance without entering might also have been detected by the lower antenna. Due to the imperfect detection probability of the lower antenna (exp1: 100%, exp2: 83% and exp3: 83%) fish might have passed through the lower antenna without being detected, resulting in an underestimation of the metric. However, this effect is most likely to be less of an issue compared to the former two. Not only because the detection probability of the lower antenna was relatively high, also because of the combined opportunities of detection at both the lower and upper antennas and the opportunity to recapture fish at the upper basin (i.e., fish that were not detected at the lower antenna but detected at the upper antenna and/or recaptured in the upper basin must have entered at some point and were therefore also labelled as such).
+Entrance efficiency is defined as the percentage of attracted fish that enter the fishway [@cooke2013]. In this study the entrance efficiency is considered the proportion of tagged fish able enter the FSSG (i.e., the lower valve) and swim through it. In practice, this is the proportion of released fish detected on either the lower antenna, upper antenna or recaptured in the upper basin. Since all tagged fish are considered to be attracted to the FSSG due to the narrowness of the lower basin and proximity of the entrance of the FSSG, all tagged fish were considered for the entrance efficiency. **Entrance efficiency was very different between experiments and was highest for exp1 (0.98) and lowest for exp3 (0.70)** (Table \@ref(tab:passagesuccess))**.** It should be noted that the calculated metric is **most likely an overestimation** **from the actual entrance** **efficiency that was obtained in this lab setting.** This is because fish in the narrow lower basin had no real other options than move towards the entrance and fish that lingered outside the entrance without entering might also have been detected by the lower antenna. Due to the imperfect detection probability of the lower antenna (exp1: 100%, exp2: 83% and exp3: 83%) fish might have passed through the lower antenna without being detected, resulting in an underestimation of the metric. However, this effect is most likely to be less of an issue compared to the former two. Not only because the detection probability of the lower antenna was relatively high, also because of the combined opportunities of detection at both the lower and upper antennas and the opportunity to recapture fish at the upper basin (i.e., fish that were not detected at the lower antenna but detected at the upper antenna and/or recaptured in the upper basin must have entered at some point and were therefore also labelled as such).
 
-Passage efficiency is defined as the percentage of entered fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of entered fish that were able to move through the exit of the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and/or recaptured in the upper basin over the fish that are known to have entered the FSSG (i.e., they were detected on at least one antenna or recaptured in the upper basin). **Passage efficiency was more similar between experiments than the entrance efficiency and was highest for exp2 (0.84) and lowest for exp3 (0.68)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antenna this would not have been recorded. Nevertheless, because of the very low detectability (exp1: 6%, exp2: 28% and exp3: 39%) the issue remains that fish moving to the upper basin and back to the lower basin or the area between the lower and upper valve, might not always have been detected. In addition, since the number of entered fish is most likely to be an overestimation and given that this is the reference for the estimation of the passage efficiency, the latter might be further underestimated. The passage efficiency determined here, even the one that combines recapture and detections, is therefore **most likely to be an underestimation**.
+Passage efficiency is defined as the percentage of entered fish that successfully pass the FSSG [@cooke2013]. In this study, the passage efficiency is considered the proportion of entered fish that were able to move through the exit of the FSSG. In practice, this is the proportion of fish that are detected on the upper antenna and/or recaptured in the upper basin over the fish that are known to have entered the FSSG (i.e., they were detected on at least one antenna or recaptured in the upper basin). **Passage efficiency was more similar between experiments than the entrance efficiency and was highest for exp2 (0.84) and lowest for exp3 (0.68)** (Table \@ref(tab:passagesuccess))**.** Unfortunately, the pit antenna at the upper valve failed to detect numerous fish (as many fish undetected by the upper antenna were recaptured in the upper basin) and for this reason it was important to also look at the number of fish that were recaptured in the upper basin to determine the passage efficiency. Using both the number of recaptured fish and the detections yielded the highest and most representative passage efficiency as some fish that reached the upper basin might have moved back to the lower basin. Without the pit antenna this would not have been recorded. Nevertheless, because of the very low detectability (exp1: 6%, exp2: 28% and exp3: 39%) the issue remains that fish moving to the upper basin and back to the lower basin or the area between the lower and upper valve, might not always have been detected. In addition, since the number of entered fish is most likely to be an overestimation and given that this is the reference for the estimation of the passage efficiency, the latter might be further underestimated. The passage efficiency calculated here, even the one that combines recapture and detections, is therefore **most likely to be an underestimation from the actual passage** **efficiency that was obtained in this lab setting**.
 
 +---------------------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------+--------------------------------+
 | Metric              | Underestimation                                                                            | Overestimation                                                                                         | Reliability                    |
@@ -619,7 +639,7 @@ rbind(entrance_efficiency(pattern_value='lower basin',berekening_value="entrance
       overall_efficiency(pattern_value='upper basin',berekening_value="overall efficiency: recapture"),
       overall_efficiency(pattern_value='upper valve',berekening_value="overall efficiency: detections")) %>% 
   pivot_wider(names_from = exp, values_from = efficiency) %>%
-  kable(caption="Entrance efficiency, passage efficiency and overall efficiency calculated in different ways. The most reliable estimates are marked in red. As there was no recapture data available for the experiments of 2023, the estimates were not provided here but in the appendix (as it comes with an amount of unquantifiable uncertainty).") %>% kable_styling() %>%
+  kable(caption="Entrance efficiency, passage efficiency and overall efficiency calculated in different ways. The most reliable estimates are marked in red.") %>% kable_styling() %>%
   row_spec(c(1,2,5), bold = T, color = "white", background = "red")
 ```
 
@@ -648,7 +668,6 @@ p %>% kable(caption="p-values of the model ")
 model.data<-comp_dir %>%
   dplyr::filter(is.na(lengte)==FALSE) %>%
   dplyr::filter(hergebruikt==1) %>%
-  #dplyr::filter(exp!="exp0") %>%
   mutate(response = case_when(node=="upper basin" | node=="upper valve" ~ 1,
                               node=="lower valve" ~ 0,
                               node=="lower basin" ~ 0)) %>%
@@ -700,7 +719,7 @@ To assess which factors were determinative for the opening of the valve (upper a
 
 ```{r include=FALSE}
 model.data<-comp_dir %>%
-  dplyr::filter(is.na(lengte)==FALSE & last_sequence %in% c("lower valve-upper valve","lower basin-lower valve") & exp != "exp0")  %>%
+  dplyr::filter(is.na(lengte)==FALSE & last_sequence %in% c("lower valve-upper valve","lower basin-lower valve"))  %>%
   dplyr::filter(hergebruikt==1) %>%
   dplyr::select(opening,tag_code,node,exp,lengte,gewicht,hergebruikt) %>%
   mutate(opening=opening/30) %>%
@@ -716,8 +735,6 @@ summary(model)
 ## Statistics of the FSSG during the experiments
 
 The duration of one cycle was similar between the upper and lower valve within a certain experiment (Figure \@ref(fig:phaseduration). This makes sense as they need to work synchronized. Between experiments there was however a clear difference in the total duration of a cycle and how it was distributed over the different phases (closed, opening, open, and closing).
-
-One cycle in exp0 took more than twice as long as the cycles of exp1 to 3. For exp0, the distribution between the different phases of a cycle did not seem to differ much between the two valves and also the open and closed phase had a comparable duration.
 
 Exp1 to exp3 were more or less similar in the total duration of one cycle (though it seemed to be slightly shorter for exp1) and the distribution among the different phases within a valve. While the lower valve was closed most of the time, the upper valve was open most of the time. For exp1 especially, the time the lower valve was open appeared only slightly more than half of that of exp2 and exp3. Also the time the upper valve was open appeared smaller for exp1, but not to the same level as for the lower valve. Important to note is that the temporal resolution of the valve-opening-measurements of exp1 were more than 10 times coarser than for the other experiments (Table \@ref(tab:temporalresolutiongate))), which might cause the opening and closing seem to start earlier and later respectively and the duration of the open phase to appear smaller. One might therefore argue that the operational settings of exp1, exp2 and exp3 were most likely to be the same and any difference between them would be the result of other conditions (e.g. learning behaviour of fish or weather conditions and related differences in oxygen concentration and temperature).
 
@@ -759,7 +776,6 @@ my_labeller<-as_labeller(c("lower basin-lower valve"="entrance time","lower valv
 ```{r traveltime, fig.width=10, fig.height=10, fig.cap = "Travel time (min) from the lower basin to the lower valve and from the lower valve to the upper valve per experiment. Pairwise wilcoxon ranks sum tests with Bonferroni correction were applied. p-values were classified as ns ($>$0.05), * (0.05-0.01), ** (0.01-0.001), *** (0.001-0.0001), **** (0.0001-0)."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
             #dplyr::filter(!(abs(travel_time_adapted - median(travel_time_adapted)) > 1.5*sd(travel_time_adapted))) %>%
             arrange(tag_code,min_det) %>%
@@ -782,7 +798,6 @@ Travel time from the lower basin to the lower valve was considerably lower than 
 ```{r cumT, fig.cap="Cumulative distribution function of the travel time from the lower basin to the lower valve, and from the lower valve to the upper valve. The y-axis depicts the proportion of fish that after a certain amount of time (x-axis) have completed the trajectory."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
             arrange(tag_code,min_det) %>%
             group_by(tag_code,last_sequence) %>%
@@ -795,7 +810,6 @@ facet_wrap(~last_sequence,labeller = my_labeller) + xlab("Travel time (min)") + 
 ```{r cumTzoom, fig.cap="Zoomed in (until 1000 minutes) cumulative distribution function of the travel time from the lower basin to the lower valve, and from the lower valve to the upper valve. The y-axis depicts the proportion of fish that after a certain amount of time (x-axis) have completed the trajectory."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
             arrange(tag_code,min_det) %>%
             group_by(tag_code,last_sequence) %>%
@@ -809,7 +823,6 @@ facet_wrap(~last_sequence,labeller = my_labeller) + xlab("Travel time (min)") + 
 ```{r fishstats}
 comp_dir %>%
   dplyr::filter(is.na(travel_time_adapted)==FALSE) %>%
-  dplyr::filter(exp != "exp0") %>%
   dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
   arrange(tag_code,min_det) %>%
   group_by(tag_code,last_sequence) %>%
@@ -833,7 +846,6 @@ For all experiments there were also fish that took a very long time to move to t
 ```{r numbercycles, fig.width=10, fig.height=10, fig.cap="Number of cycles before fish entering the lower valve (lower basin to lower valve) and leaving the upper valve (lower valve to upper valve) per experiment."}
 ggplot(data=comp_dir %>%
             dplyr::filter(last_sequence == "lower basin-lower valve" | last_sequence == "lower valve-upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(peaksid)==FALSE) %>%
             arrange(tag_code,min_det) %>%
             group_by(tag_code,last_sequence) %>%
@@ -848,7 +860,7 @@ theme_bw() +
 theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) 
 ```
 
-**For exp2 and exp3, fish seem to wait until the lower valve is completely open** before entering, but some fish also seem to enter when the valve is opening and closing (Figure \@ref(fig:phaseentered)). The time the lower valve was entered since the valve last started to open decreased significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:timesinceopening)). Especially for exp1 the time since the valve opened was much higher than for exp2 and exp3. This is somewhat to be expected as fish seem to mainly wait for the valve to be fully opened before entering and the time it takes for the valve to open and close seemed much larger for exp1 than for exp2 and exp3 (although, as mentioned earlier, this might be the result of the much lower temporal resolution of the valve-opening-measurements of exp1). However, when accounting for the different durations of the different phases the open phase still seems most important for exp2 and exp3, unlike for exp1 where now not only the opening phase seems to be more important than the open phase, but also the closing phase seems to be relatively important (Figure \@ref(fig:phaseenterednormalized)). Since the opening and closing phase are most important for exp1 it is to be expected that the opening of the valve at which they seem to enter the lower valve will be smaller than for exp2 and exp3. Indeed the opening at which fish enter seems to decrease significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:opening))).
+**For exp2 and exp3, fish seem to wait until the lower valve is completely open** before entering, but some fish also seem to enter when the valve is opening and closing (Figure \@ref(fig:phaseentered)). The time the lower valve was entered since the valve last started to open decreased significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:timesinceopening)). Especially for exp1 the time since the valve opened was much higher than for exp2 and exp3. This is somewhat to be expected as fish seem to mainly wait for the valve to be fully opened before entering and the time it takes for the valve to open and close seemed much larger for exp1 than for exp2 and exp3 (although, as mentioned earlier, this might be the result of the much lower temporal resolution of the valve-opening-measurements of exp1). However, when accounting for the different durations of the different phases the open phase still seems most important for exp2 and exp3, unlike for exp1 where now not only the opening phase seems to be more important than the open phase, but also the closing phase seems to be relatively important (Figure \@ref(fig:phaseenterednormalized)). Since the opening and closing phase are most important for exp1 it is to be expected that the opening of the valve at which they seem to enter the lower valve will be smaller than for exp2 and exp3. Indeed the opening at which fish enter seems to decrease significantly from exp1 to exp2 and exp3 (Figure \@ref(fig:opening)).
 
 Regarding the upper valve, fish also seem to mainly wait until it is completely open (Figure \@ref(fig:phaseentered)), but compared to the lower valve, a relatively large number seem also to leave when the valve is opening or closing. It is striking how some fish seem to pass the upper valve when it is closed. This might be the result of the detection range of the antenna being too large (detecting animals outside the FSSG) or too low (not being able to detect animals at the moment they leave). Given the low observed detectability of the upper antenna, it is most likely that the detection range is too low.
 
@@ -896,7 +908,6 @@ theme_bw()
 ```{r timesinceopening, fig.width=10, fig.height=10, fig.cap="Time since opening (min) at which fish enter or leave the lower and upper valve respectively per experiment."}
 ggplot(data=comp_dir %>%
             dplyr::filter(node == "lower valve" | node == "upper valve") %>% 
-            dplyr::filter(exp != "exp0") %>%
             dplyr::filter(is.na(since_open)==FALSE) %>%
             #dplyr::filter(!(abs(since_open - median(since_open)) > 1.5*sd(since_open))) %>%
             arrange(tag_code,min_det) %>%
@@ -934,7 +945,7 @@ stat_compare_means(comparisons = cmpr2024, method = "wilcox.test", symnum.args =
 
 ## Graphs valve opening
 
-In the following graphs the working of the lower and upper valve are depicted. The cycle duration and phase distribution of exp1 (Figure \@ref(fig:gate1valvelower) and Figure \@ref(fig:gate1valveupper)), exp2 (Figure \@ref(fig:gate2valvelower) and Figure \@ref(fig:gate2valveupper)) and exp3 (Figure \@ref(fig:gate3valvelower) and Figure \@ref(fig:gate3valveupper)) are very similar. The slight difference in cycle duration and phase distribution of exp1 versus exp2 and exp3 is most likely the result of the much lower temporal resolution of the valve-measurement-data of the former. The pressure at the entrance ranged from 0.05 to 0.40 kPa (Figures \@ref(fig:P1exp1), \@ref(fig:P1exp2) and \@ref(fig:P1exp3)), while at the exit it ranged from -0.30 to 0.05 kPa (Figures \@ref(fig:P5exp1), \@ref(fig:P5exp2) and \@ref(fig:P5)).
+In the following graphs the working of the lower and upper valve are depicted. The cycle duration and phase distribution of exp1 (Figure \@ref(fig:gate1valvelower) and Figure \@ref(fig:gate1valveupper)), exp2 (Figure \@ref(fig:gate2valvelower) and Figure \@ref(fig:gate2valveupper)) and exp3 (Figure \@ref(fig:gate3valvelower) and Figure \@ref(fig:gate3valveupper)) are very similar. The slight difference in cycle duration and phase distribution of exp1 versus exp2 and exp3 is most likely the result of the much lower temporal resolution of the valve-measurement-data of the former. The pressure at the entrance ranged from 0.05 to 0.40 kPa (Figures \@ref(fig:P1exp1), \@ref(fig:P1exp2) and \@ref(fig:P1exp3)), while at the exit it ranged from -0.30 to 0.05 kPa (Figures \@ref(fig:P5exp1), \@ref(fig:P5exp2) and \@ref(fig:P5exp3)).
 
 ### Graphs valve opening exp1 (may 2024)
 

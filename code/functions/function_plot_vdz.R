@@ -17,5 +17,5 @@ plot_vdz <- function(start, stop, node_input, exp_input, points = FALSE, trend =
     ylab("opening valve (cm)")+
     xlab("date") +
     scale_y_continuous(breaks = round(seq(min(gate$opening), max(gate$opening), by = 1),1))
-  print(g)
+  return(g)
 }

@@ -16,6 +16,18 @@ Comparing the overall efficiency, which brings together attraction, entrance and
 
 Despite the high efficiencies, entrance time (time from release to entry; most likely an underestimation) and passage time (time from entry to exit) were typically quite high. This was somehow to be expected as approaching fish have to wait for the different valves to open and close. Fish that missed a cycle to hitch along would need to wait for the next. The first 50% of fish that would enter, did so in 100 to 200 minutes while the majority of Arctic grayling, trout and suckers were found to enter a Denil fishway in less than one hour after their release. Passage times are very difficult to compare due to differences in the fishway type, volumetric power dissipation, height drop between pools, slope, obstacle height, pool depth, species and fork length in the fishway [@bravo-córdoba2021].
 
-## Limitations of the study
+## Limitations of the study {.unnumbered}
 
 During the first experiment of 2024 it seemed that the temporal resolution of the valve data was too low to capture the moment the valves opened and closed. The last two experiments had sound valve measurement data for the entire duration of the experiment at an adequate temporal resolution. Another important limitation, typical for any laboratory experiment, involves the controlled conditions that not necessarily mimic real-life conditions. Not only will actual river conditions be different from those in the lab, river conditions are also known to vary strongly in time and space. Since in this study laboratory conditions were fixed, the effect environmental conditions might have had, could not be assessed. In addition, the cultured fish themselves, sedated, operated and transported, are unlikely to show the same behaviour (e.g., movement, intent and motivation) as wild fish would under natural conditions [@noonan2012]. Finally, the limitations of the experimental design and pit telemetry set-up also prevented the estimation of attraction efficiency and introduced some important uncertainty tied up with the estimates of the other metrics.
+
+# Conclusion
+
+This study demonstrates that the Fish Spiral Sluice Gate (FSSG) holds strong potential as an effective fish passage system. The FSSG achieved a relatively high entrance efficiency (0.70–0.98) and passage efficiency (0.68–0.84), performing comparably to nature-like fishways without being significantly influenced by fish length, weight, or species.
+
+However, critical limitations inherent to the laboratory setting frame these findings:
+
+- **Efficiency metric uncertainties:** Entrance efficiency was likely overestimated due to detection range boundaries extending outside the entrance, whereas passage efficiency was likely underestimated.
+- **Uncertain attraction efficiency:** Forced entry conditions in the lower basin prevented a true evaluation of attraction flow, which remains a key concern given the system's low, discontinuous water supply.
+- **Delayed passage timing:** Entry and transit durations were noticeably high as fish had to wait for valves to open.
+
+While these preliminary results confirm the core functionality of the FSSG, lab performance cannot fully predict behavior under dynamic river conditions. Field evaluations in real-world settings are strongly advised to assess attraction efficiency, evaluate operational configurations, and validate passage success in natural fish communities before widespread deployment.

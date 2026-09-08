@@ -1,60 +1,85 @@
 ---
-title: "Evaluation of the Fish Spiral Sluice Gate as a fish migration facility under experimental conditions"
+title: Evaluation of the Fish Spiral Sluice Gate as a fish migration facility under experimental conditions
+shorttitle: evaluation-fssg
+shortauthor: Bruneel et al.
+subtitle: 
+version: 1.0.0
+license: CC-BY-4.0
+org_list:
+  - name: Research Institute for Nature and Forest
+header-includes:
+   - \usepackage{lineno}
+   - \linenumbers
 author:
   - name:
       given: "Stijn"
       family: "Bruneel"
     email: "stijn.bruneel@inbo.be"
     orcid: "0000-0002-8226-8080"
-    affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
+    affiliation: "Research Institute for Nature and Forest (INBO)"
     corresponding: true
   - name:
       given: "Arc'hantael"
       family: "Labrière"
     email: "archantael.labriere@kau.se"
-    orcid: "?"
-    affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
+    orcid: "0009-0000-6890-0791"
+    affiliation: "Research Institute for Nature and Forest (INBO)"
   - name:
       given: "David"
       family: "Buysse"
     email: "david.buysse@inbo.be"
     orcid: "0000-0002-4437-5678"
-    affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
+    affiliation: "Research Institute for Nature and Forest (INBO)"
   - name:
       given: "Nico"
       family: "De Maerteleire"
     email: "nico.demaerteleire@inbo.be"
-    orcid: "?"
-    affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
+    orcid: "0009-0004-9436-8937"
+    affiliation: "Research Institute for Nature and Forest (INBO)"
   - name:
       given: "Johan"
       family: "Coeck"
     email: "johan.coeck@inbo.be"
     orcid: "0000-0003-2732-7428"
-    affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
+    affiliation: "Research Institute for Nature and Forest (INBO)"
 reviewer:
   - name:
       given: "Lenin"
       family: "Riascos Flores"
     email: "lenin.riascosflores@inbo.be"
     orcid: "0000-0002-9356-4088"
-    affiliation: "Instituut voor Natuur- en Bosonderzoek (INBO)"
-lang: en
+    affiliation: "Research Institute for Nature and Forest (INBO)"
+year: 2026
+doi: 10.21436/inbor.156782614
+reportnr: 68
+depotnr: D/2026/3241/326
+lang: en-GB
 style: Flanders
 client:
   - Vandezande
+client_logo: LogoVDZ
 floatbarrier: subsubsection
 lof: TRUE
 lot: TRUE
-keywords: "Vandezande; visveiligheid; vijzel; pit-tags"
+keywords: "Vandezande; fish safety; pit-tags; ide"
+cover_description: "The Fish Spiral Sluice Gate in an experimental setting"
 community: "inbo"
-publication_type: report
-funder: Instituut voor Natuur- en Bosonderzoek (INBO)
-rightsholder: Instituut voor Natuur- en Bosonderzoek (INBO)
+publisher: INBO
+publication_type: publication-report
+funder:
+  - name:
+      given: Research Institute for Nature and Forest (INBO)
+    email: info@inbo.be
+    ror: 00j54wy13
+rightsholder:
+  - name:
+      given: Research Institute for Nature and Forest (INBO)
+    email: info@inbo.be
+    ror: 00j54wy13
 bibliography: references.bib
 link-citations: TRUE
 site: bookdown::bookdown_site
-always_allow_html: true
+always_allow_html: TRUE
 output:
   INBOmd::gitbook: default
   INBOmd::pdf_report: default

@@ -1,4 +1,4 @@
-# Rapport_Vandezande_PIT_INBO_2024
+# Fish Spiral Sluice Gate (FSSG)
 Assessment of the Fish Spiral Sluice Gate (FSSG) by Vandezande. Following questions were answered:
 * What are the entrance, passage and overall efficiency of the FSSG?
 * What is the entrance and passage time?

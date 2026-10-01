@@ -81,8 +81,8 @@ Ensure you have **R** (>= 4.0.0) and **RStudio** installed.
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/your-username/Rapport_Vandezande_PIT_INBO_2024.git
-cd Rapport_Vandezande_PIT_INBO_2024
+git clone https://github.com/stijnbruneel/fssg.git
+cd fssg
 
 ```
 

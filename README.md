@@ -1,45 +1,114 @@
-# Fish Spiral Sluice Gate (FSSG)
-Assessment of the Fish Spiral Sluice Gate (FSSG) by Vandezande. Following questions were answered:
-* What are the entrance, passage and overall efficiency of the FSSG?
-* What is the entrance and passage time?
-* How many times do fish move up and down the FSSG?
-* When do fish enter and leave the FSSG with respect to the cycle duration and valve opening?
-* How do species, length and weight affect whether fish are able to move through the FSSG?
-* How do species, length and weight affect the opening of the valves through which fish pass?
+# Fish Spiral Sluice Gate (FSSG) Assessment
 
-The directory of the R project is divided as follows:
+Assessment of the Fish Spiral Sluice Gate (FSSG) developed by Vandezande, evaluated by the Research Institute for Nature and Forest (INBO).
 
-* code
-  * functions:
-    * function_clean_hervangst_and_uitzet.R: clean the recapture and release data
-    * function_gate_cleaning.R: clean the valve opening data
-    * function_give_n.R: 
-    * function_plot_network.R: plot network based on igraph
-    * function_plot_vdz.R: plot valve opening in function of time with depiction of fish passing respective valves
-  * not_functions:
-    * libraries.R 
-* data
-  * extern
-    * hervangst: "hervangst" or recapture files of the three experiments of 2024
-    * lengte_en_soort: two folders: "ruw" or raw files are the original files, while "verwerkt" or processed are the files with corrections made in the files themselves (only fundamental mistakes were corrected).
-      * Data proefvis Vandeput.xlsx: length and weight per unique fish for 2024
-      * Proefvis_5_5.xlsx: length and weight per unique fish for 2023
-      * Proefvis_8_05.xlsx: length and weight per unique fish for 2023
-      * Proefvis_23_05.xlsx: length and weight per unique fish for 2023
-    * pit: pit data per date and per antenna
-    * uitzet: "uitzet" or release files of the three experiments of 2024
-    * valves: opening of the different valves for every moment in time
-    * configuration.csv: overview of the nodes
-    * parent_child.csv: how the nodes are connected + direction
-  * intern: internally created files
-* media: pictures and drawings
-* output: output file as pdf or word are stored here
-* .gitignore: which files are never pushed
-* 000_abstract.Rmd: English abstract
-* 001_samenvatting.Rmd: Dutch abstract
-* 002_resume.Rmd: French abstract
-* 03_results.Rmd: calculation of the results
-* 04_discussion.Rmd: discussion of the results
-* index.Rmd: overarching file with direction on how to build
-* references.bib.Rmd: references cited
-* zzz_references_and_appendix.Rmd: biblio + supplementary information
+---
+
+## 📌 Research Questions
+
+This project evaluates the passage efficiency and behavioral patterns of fish encountering the Fish Spiral Sluice Gate:
+
+* **Efficiency Metrics**: What are the entrance, passage, and overall efficiency of the FSSG?
+
+
+* **Passage Timing**: What are the typical entrance and passage times?
+
+
+* **Movement Patterns**: How many times do fish move up and down the FSSG?
+
+
+* **Gate Dynamics**: When do fish enter and leave the FSSG with respect to cycle duration and valve opening?
+
+
+* **Morphological Effects on Passage**: How do species, length, and weight affect whether fish are able to move through the FSSG?
+
+
+* **Morphological Effects on Valves**: How do species, length, and weight affect the opening of the valves through which fish pass?
+
+
+
+---
+
+## 📁 Repository Structure
+
+```text
+├── code/
+│   ├── functions/
+│   │   ├── function_clean_hervangst_and_uitzet.R  # Cleans recapture and release data
+│   │   ├── function_gate_cleaning.R             # Cleans valve opening data
+│   │   ├── function_give_n.R                    # Helper function to compute sample sizes
+│   │   ├── function_plot_network.R               # Network visualization based on igraph
+│   │   └── function_plot_vdz.R                   # Plots valve opening vs. time with fish passage
+│   └── not_functions/
+│       └── libraries.R                           # Required R packages and dependencies
+│
+├── data/
+│   ├── extern/
+│   │   ├── hervangst/                            # Recapture files from 2024 experiments
+│   │   ├── lengte_en_soort/                      # Fish length and weight metrics
+│   │   │   ├── ruw/                              # Raw original data files
+│   │   │   └── verwerkt/                         # Processed data (corrected fundamental errors)
+│   │   ├── pit/                                  # PIT telemetry data per date and antenna
+│   │   ├── uitzet/                               # Release files from 2024 experiments
+│   │   ├── valves/                               # Valve opening measurements over time
+│   │   ├── configuration.csv                     # Overview of network nodes
+│   │   └── parent_child.csv                      # Node connections and directional flow
+│   └── intern/                                   # Internally generated intermediate files
+│
+├── media/                                        # Images, diagrams, and project graphics
+├── output/                                       # Generated reports and exports (PDF, Word)
+│
+├── index.Rmd                                     # Master R Markdown file to build the report
+├── 000_abstract.Rmd                              # Abstract in English
+├── 001_samenvatting.Rmd                          # Abstract in Dutch (Samenvatting)
+├── 002_resume.Rmd                                # Abstract in French (Résumé)
+├── 03_results.Rmd                                # Data analysis and results generation
+├── 04_discussion.Rmd                             # Discussion of study findings
+├── references.bib.Rmd                            # Bibliography and references cited
+└── zzz_references_and_appendix.Rmd              # Appendix and supplementary material
+
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Ensure you have **R** (>= 4.0.0) and **RStudio** installed.
+
+### Installation & Setup
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/your-username/Rapport_Vandezande_PIT_INBO_2024.git
+cd Rapport_Vandezande_PIT_INBO_2024
+
+```
+
+
+2. **Install required packages:**
+Open the R project in RStudio and load the dependency script:
+```R
+source("code/not_functions/libraries.R")
+
+```
+
+
+
+---
+
+## 🛠 Usage & Building the Report
+
+The overarching document is managed through `index.Rmd`. You can render the full report into PDF or Word format in RStudio by clicking **Knit**, or by running the following command in the R console:
+
+```R
+rmarkdown::render("index.Rmd")
+
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the terms specified in the [LICENSE.md](LICENSE.md) file.

@@ -34,9 +34,9 @@ This project evaluates the passage efficiency and behavioral patterns of fish en
 ```text
 ├── code/
 │   ├── functions/
-│   │   ├── function_clean_hervangst_and_uitzet.R  # Cleans recapture and release data
-│   │   ├── function_gate_cleaning.R             # Cleans valve opening data
-│   │   ├── function_give_n.R                    # Helper function to compute sample sizes
+│   │   ├── function_clean_hervangst_and_uitzet.R # Cleans recapture and release data
+│   │   ├── function_gate_cleaning.R              # Cleans valve opening data
+│   │   ├── function_give_n.R                     # Helper function to compute sample sizes
 │   │   ├── function_plot_network.R               # Network visualization based on igraph
 │   │   └── function_plot_vdz.R                   # Plots valve opening vs. time with fish passage
 │   └── not_functions/
@@ -65,7 +65,7 @@ This project evaluates the passage efficiency and behavioral patterns of fish en
 ├── 03_results.Rmd                                # Data analysis and results generation
 ├── 04_discussion.Rmd                             # Discussion of study findings
 ├── references.bib.Rmd                            # Bibliography and references cited
-└── zzz_references_and_appendix.Rmd              # Appendix and supplementary material
+└── zzz_references_and_appendix.Rmd               # Appendix and supplementary material
 
 ```
 

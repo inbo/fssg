@@ -2,7 +2,7 @@ Titel: Evaluation of the Fish Spiral Sluice Gate as a fish migration facility un
 Subtitel: 
 Auteur(s): Stijn Bruneel, Arc'hantael Labrière, David Buysse, Nico De Maerteleire, Johan Coeck
 Contactpersoon: stijn.bruneel@inbo.be
-Afbeelding voor cover: 
+Afbeelding voor cover: cover
 Embargo tot: 
 Geen druk
 Logo klant: LogoVDZ

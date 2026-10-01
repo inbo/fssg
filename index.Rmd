@@ -7,9 +7,9 @@ version: 1.0.0
 license: CC-BY-4.0
 org_list:
   - name: Research Institute for Nature and Forest
-header-includes:
-   - \usepackage{lineno}
-   - \linenumbers
+# header-includes:
+#    - \usepackage{lineno}
+#    - \linenumbers
 author:
   - name:
       given: "Stijn"
@@ -62,6 +62,8 @@ floatbarrier: subsubsection
 lof: TRUE
 lot: TRUE
 keywords: "Vandezande; fish safety; pit-tags; ide"
+cover_photo: cover
+cover: cover.pdf
 cover_description: "The Fish Spiral Sluice Gate in an experimental setting"
 community: "inbo"
 publisher: INBO
@@ -91,7 +93,7 @@ output:
   bookdown::dontrun: default
 ---
 
-# Acknowledgements
+# Acknowledgements {.unnumbered}
 
 We would like to thank Dries Vandezande (Vandezande), Maik Schroeter (ESE Group) and the local Vandezande technical team for their aid during the project.
 

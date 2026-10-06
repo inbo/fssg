@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the accompanying report."
+type: software
+authors:
+  - family-names: "Bruneel"
+    given-names: "Stijn"
+    orcid: "https://orcid.org/0000-0002-8226-8080" # Optional
+title: "Code for report "Evaluation of the Fish Spiral Sluice Gate as a fish migration facility under experimental conditions""
+version: 1.0.0
+date-released: 2026-10-06
+url: "https://github.com/INBO/fssg"
+preferred-citation:
+  type: report
+  authors:
+    - family-names: "Bruneel"
+      given-names: "Stijn"
+  - family-names: "Labrière"
+      given-names: "Arc'hantael"
+  - family-names: "Buysse"
+      given-names: "David"
+  - family-names: "De Maerteleire"
+      given-names: "Nico"
+  - family-names: "Coeck"
+      given-names: "Johan"
+  title: "Evaluation of the Fish Spiral Sluice Gate as a fish migration facility under experimental conditions"
+  year: 2026
+  institution:
+    name: "Research Institute for Nature and Forest (INBO)"

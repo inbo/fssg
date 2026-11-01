@@ -13,6 +13,23 @@ Assessment of the Fish Spiral Sluice Gate (FSSG) developed by Vandezande, evalua
 
 ---
 
+## 📚 Citation
+
+If you use the data or code in your research, please cite the official report:
+
+```bibtex
+@techreport{bruneel2024fssg,
+  title       = {Evaluation of the Fish Spiral Sluice Gate as a fish migration facility under experimental conditions},
+  author      = {Bruneel, S., Labrière, A., Buysse, D., De Maerteleire, N., & Coeck, J.},
+  institution = {Research Institute for Nature and Forest (INBO)},
+  year        = {2026},
+  doi         = {10.5281/zenodo.22298750},
+  url         = {[https://pureportal.inbo.be/nl/publications/evaluation-of-the-fish-spiral-sluice-gate-as-a-fish-migration-fac/](https://pureportal.inbo.be/nl/publications/evaluation-of-the-fish-spiral-sluice-gate-as-a-fish-migration-fac/)}
+}
+```
+
+---
+
 ## 📌 Research Questions
 
 This project evaluates the passage efficiency and behavioral patterns of fish encountering the Fish Spiral Sluice Gate:

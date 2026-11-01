@@ -1,5 +1,7 @@
-
 # Fish Spiral Sluice Gate (FSSG) Assessment
+
+[![Report - INBO](https://img.shields.io/badge/Report-INBO_Pure-006400?style=flat&logo=read-the-docs&logoColor=white)](https://pureportal.inbo.be/nl/publications/evaluation-of-the-fish-spiral-sluice-gate-as-a-fish-migration-fac/)
+[![Data](https://img.shields.io/badge/Data-10.5281%2Fzenodo.22298750-blue)](https://zenodo.org/records/22298750)
 
 Assessment of the Fish Spiral Sluice Gate (FSSG) developed by Vandezande, evaluated by the Research Institute for Nature and Forest (INBO).
 

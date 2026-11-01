@@ -1,3 +1,4 @@
+
 # Fish Spiral Sluice Gate (FSSG) Assessment
 
 Assessment of the Fish Spiral Sluice Gate (FSSG) developed by Vandezande, evaluated by the Research Institute for Nature and Forest (INBO).
@@ -9,23 +10,11 @@ Assessment of the Fish Spiral Sluice Gate (FSSG) developed by Vandezande, evalua
 This project evaluates the passage efficiency and behavioral patterns of fish encountering the Fish Spiral Sluice Gate:
 
 * **Efficiency Metrics**: What are the entrance, passage, and overall efficiency of the FSSG?
-
-
 * **Passage Timing**: What are the typical entrance and passage times?
-
-
 * **Movement Patterns**: How many times do fish move up and down the FSSG?
-
-
 * **Gate Dynamics**: When do fish enter and leave the FSSG with respect to cycle duration and valve opening?
-
-
 * **Morphological Effects on Passage**: How do species, length, and weight affect whether fish are able to move through the FSSG?
-
-
 * **Morphological Effects on Valves**: How do species, length, and weight affect the opening of the valves through which fish pass?
-
-
 
 ---
 
@@ -80,21 +69,22 @@ Ensure you have **R** (>= 4.0.0) and **RStudio** installed.
 ### Installation & Setup
 
 1. **Clone the repository:**
+
 ```bash
-git clone https://github.com/stijnbruneel/fssg.git
+git clone [https://github.com/stijnbruneel/fssg.git](https://github.com/stijnbruneel/fssg.git)
 cd fssg
 
 ```
 
-
-2. **Install required packages:**
+2. **Download required data and media:**
+Download the `data` and `media` folders from [Zenodo (DOI: 10.5281/zenodo.22298750)](https://doi.org/10.5281/zenodo.22298750) and place them directly in the root directory of the project repository.
+3. **Install required packages:**
 Open the R project in RStudio and load the dependency script:
+
 ```R
 source("code/not_functions/libraries.R")
 
 ```
-
-
 
 ---
 
@@ -112,3 +102,7 @@ rmarkdown::render("index.Rmd")
 ## 📜 License
 
 This project is licensed under the terms specified in the [LICENSE.md](LICENSE.md) file.
+
+```
+
+```

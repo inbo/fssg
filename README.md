@@ -1,5 +1,6 @@
 # Fish Spiral Sluice Gate (FSSG) Assessment
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23929508.svg)](https://doi.org/10.5281/zenodo.23929508)
 [![Report - INBO](https://img.shields.io/badge/Report-INBO_Pure-006400?style=flat&logo=read-the-docs&logoColor=white)](https://pureportal.inbo.be/nl/publications/evaluation-of-the-fish-spiral-sluice-gate-as-a-fish-migration-fac/)
 [![Data](https://img.shields.io/badge/Data-10.5281%2Fzenodo.22298750-blue)](https://zenodo.org/records/22298750)
 
